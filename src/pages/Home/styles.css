@@ -1,0 +1,123 @@
+button#login-page {
+  border: none;
+  background-color: rgb(196, 196, 196);
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  padding: 19px 20px;
+  text-decoration: none;
+  text-align: left;
+}
+button#login-page :hover {
+  opacity: 0.8;
+}
+
+.nav-bar {
+  min-width: 100%;
+}
+.input {
+  width: 50%;
+  color: white;
+}
+a:hover {
+  opacity: 0.8;
+}
+.auth-page {
+  display: "flex";
+  color: white;
+  padding: 14px 20px;
+  width: 100%;
+  height: 100%;
+  margin: 8px 0;
+  border: none;
+  background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  font-family: "Garamond";
+}
+div#rs-btn-toolbar {
+  display: flex;
+  width: auto;
+}
+.footer-bottom {
+  font-size: 14px;
+  align-items: center;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  text-justify: auto;
+  justify-content: center;
+}
+
+.footer-bottom ::before {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  height: 4px;
+  width: 50px;
+  border-radius: 2px;
+  background-color: #818d86;
+}
+
+.home-search-bar {
+  display: flex;
+  flex-direction: row;
+  font-size: 17px;
+  float: left;
+  width: 80%;
+  border: none;
+  height: 55px;
+  background: white;
+  border-radius: 0;
+  padding: 2px;
+}
+.search-icon {
+  height: 55px;
+  background-color: black;
+  color: white;
+  width: 55px;
+}
+.search-icon:hover {
+  opacity: 0.8;
+  background-color: #686868;
+}
+.box {
+  text-align: left;
+  border: black ridge 1px;
+  border-radius: 10px;
+  margin: 3px;
+  width: 25rem;
+  padding-left: 10px;
+  font-size:25px;
+  
+  color:black;
+}
+.dataResult {
+  margin-top: 3px;
+  width: 600px;
+  height: 300px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.dataResult::-webkit-scrollbar {
+  display: none;
+}
+
+.dataResult .dataItem {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  color: black;
+  font-weight: bold;
+  font-size:25px;
+  font-family:"Garamond";
+}
+
+.dataItem p {
+  margin-left: 10px;
+}

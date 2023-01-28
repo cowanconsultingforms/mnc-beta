@@ -1,0 +1,131 @@
+.body h1 {
+  font-family: Garamond;
+  color: rgb(128, 128, 128);
+  padding-top: 10%;
+  text-decoration: underline;
+  -webkit-text-decoration: underline;
+  align-items: center;
+  font-size: 29px;
+}
+div#admin-flex-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.listing-form {
+  font-size: 16px;
+  width: 80%;
+  color: whitesmoke;
+  padding: "10px";
+  margin: "5%";
+}
+.listing-flexbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 5%;
+
+  width: "80%";
+  height: "100%";
+  font-size: "20px";
+  background-color: "gray";
+  border: "2px solid black";
+}
+
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+  font-family: Garamond;
+  color: rgb(22, 22, 22);
+  text-decoration-style: bold;
+  height: 100%;
+  background-color: rgb(104, 100, 100);
+  margin-top: 100px;
+  background-color: whitesmoke;
+  border-style: ridge;
+}
+.admin-search-container {
+  position: absolute;
+  text-align: center;
+  background-color: #eeeeee;
+  color: rgb(22, 22, 22);
+  font-size: 20px;
+  width: 80%;
+  height: 100px;
+  border: 3px solid rgb(197, 197, 197);
+  align-items: center;
+}
+.search-button {
+  margin-bottom: 20px;
+  padding: 15px;
+  font-size: 17px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: black;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10%;
+  margin-right: 10%;
+  text-decoration: none;
+  font-weight: bold;
+}
+.search-button :hover {
+  opacity: 0.6;
+}
+.rs-form-group {
+  align-items: center;
+}
+.search-user-container {
+  display: flex;
+  text-align: center;
+  background-color: #eeeeee;
+  color: rgb(128, 128, 128);
+  font-size: 20px;
+  width: 80%;
+  border: 1px solid rgb(197, 197, 197);
+}
+
+.audit-log-frame {
+  display: block;
+  background-color: black;
+  z-index: 2;
+  font-size: medium;
+}
+.add-user-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  height: 100%;
+  font-size: 20px;
+  background-color: gray;
+  border: 1px solid black;
+  z-index: 1;
+  margin:5%;
+
+}
+.add-user-container{
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: #eeeeee;
+  color: whitesmoke;
+  font-size: 20px;
+  width: 80%;
+  border: 1px solid rgb(197, 197, 197);
+}
+.add-user-container h1{
+  color:black;
+}
+.search-field{
+  font-size:20px;
+}

@@ -1,0 +1,45 @@
+.account-page-profile {
+  height: 100%;
+  display: flex;
+  position: relative;
+  text-align: left;
+  background-color: rgb(238, 238, 238);
+  color: rgb(128, 128, 128);
+  font-size: 20px;
+  width: 90%;
+  left: 5%;
+  position: relative;
+}
+.account-page-container {
+  padding-top: 100px;
+  display: flex;
+  width: 75%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.account-page-container h1 {
+  font-size: 30px;
+}
+.SignOutBox {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  text-align: left;
+  background-color: #eeeeee;
+  color: rgb(128, 128, 128);
+  font-size: 20px;
+  width: 50%;
+}
+.delete-profile {
+  height: 100%;
+  grid-column: 3;
+  grid-row: 5 / span 2;
+  position: relative;
+  text-align: left;
+  background-color: #eeeeee;
+  color: rgb(128, 128, 128);
+  font-size: 20px;
+  width: 100%;
+}

@@ -1,38 +1,265 @@
-.App {
+* {
+  font-family: "Garamond";
+}
+*body {
+  font-family: "Garamond";
+}
+.login-page {
+  background-color: rgb(196, 196, 196);
+  height: 60px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  color: white;
+  box-shadow: 0px 5px 10px 2px #888888;
+  text-decoration: none;
+}
+
+button#login-page {
+  border: none;
+  background-color: rgb(196, 196, 196);
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  padding: 19px 20px;
+  text-decoration: none;
+  text-align: left;
+}
+button#login-page :hover {
+  opacity: 0.8;
+}
+div#rs-btn-toolbar {
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+}
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s;
+}
+
+@-webkit-keyframes animatezoom {
+  from {
+    -webkit-transform: scale(0);
+  }
+  to {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes animatezoom {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/***************************** CSS to match modal with different screen sizes   *****************************/
+[class*="col-"] {
+  width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {
+    width: 8.33%;
+  }
+  .col-2 {
+    width: 16.66%;
+  }
+  .col-3 {
+    width: 25%;
+  }
+  .col-4 {
+    width: 33.33%;
+  }
+  .col-5 {
+    width: 41.66%;
+  }
+  .col-6 {
+    width: 50%;
+  }
+  .col-7 {
+    width: 58.33%;
+  }
+  .col-8 {
+    width: 66.66%;
+  }
+  .col-9 {
+    width: 75%;
+  }
+  .col-10 {
+    width: 83.33%;
+  }
+  .col-11 {
+    width: 91.66%;
+  }
+  .col-12 {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 1639px) {
+  .modal-content {
+    width: 400px;
+  }
+}
+
+@media only screen and (max-width: 1229px) {
+  .modal-content {
+    width: 450px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .modal-content {
+    width: 90%;
+  }
+}
+
+.docs-main {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.add-listing {
+  height: 40px;
+  width: 200px;
+  background-color: #ffc107;
+  border: none;
+  cursor: pointer;
+}
+.header-modal {
+  border-radius: 10px;
+  color: rgb(78, 78, 78);
+  font-size: 20px;
+  margin: 5%;
+  padding: 5%;
+  border: rgb(73, 73, 73) 2px solid;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.buy-button {
+  width: 90px;
+  padding: 15px;
+  border: 1px solid black;
+  letter-spacing: 1px;
+  font-size: 100%;
+  cursor: pointer;
+  border-radius: 0px;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.rent-button {
+  width: 90px;
+  padding: 15px;
+  border: 1px solid black;
+  letter-spacing: 1px;
+  font-size: 100%;
+  cursor: pointer;
+  border-radius: 0px;
+}
+.sold-button {
+  width: 90px;
+  padding: 15px;
+  border: 1px solid black;
+  letter-spacing: 1px;
+  font-size: 100%;
+  cursor: pointer;
+  border-radius: 0px;
+}
+.search-box {
+  height: 300px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  width: 90%;
+  border-bottom: 3px solid rgb(177, 177, 177);
+  margin-left: 5%;
+}
+.navigation-bar {
+  background-color: rgb(196, 196, 196);
+  height: 60px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
   color: white;
+  box-shadow: 0px 5px 10px 2px #888888;
+  text-decoration: none;
+  overflow: hidden;
+}
+.navigation-bar :hover {
+  opacity: 0.8;
+  background-color: grey;
+}
+.navigation-bar-right {
+  font-size: 20px;
+  display: inline-flex;
+  color: white;
+  text-align: center;
+  padding: 19px 20px;
+  text-decoration: none;
+}
+.navigation-bar-left {
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  justify-content: space-between;
+  text-decoration: none;
+}
+.nav-btn {
+  border: none;
+  background-color: rgb(196, 196, 196);
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  padding: 19px 20px;
+  text-decoration: inherit;
+  text-align: left;
+  z-index: 3;
+}
+.search-box {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  width: 90%;
+  border-bottom: 3px solid rgb(177, 177, 177);
+  margin-left: 5%;
+}
+.search-button-grid {
+  position: relative;
+  display: flex;
+  grid-template-rows: auto;
+}
+.buy-button {
+  width: 90px;
+}
+.rent-button {
+  width: 90px;
+  background-color: #686868;
 }
 
-.App-link {
-  color: #61dafb;
+.btn :hover {
+  opacity: 0.8;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.MuiOutlinedInput-root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+#root > div > div.home-page.MuiBox-root.css-0 > div.search-box > form > div {
+  background: rgb(238, 237, 237);
+}
+#root > div > div.home-page.MuiBox-root.css-0 > div.search-box > form > button {
+  background-color: black;
+  color: white;
 }

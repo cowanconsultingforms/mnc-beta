@@ -1,0 +1,149 @@
+/*button#login-page {
+  border: none;
+  background-color: rgb(196, 196, 196);
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  padding: 19px 20px;
+  text-decoration: none;
+  text-align: left;
+}
+button#login-page :hover {
+  opacity: 0.8;
+}
+
+.nav-bar {
+  min-width: 100%;
+}
+.input {
+  width: 50%;
+  color: white;
+}
+a:hover {
+  opacity: 0.8;
+}
+.auth-page {
+  display: "flex";
+  color: white;
+  padding: 14px 20px;
+  width: 100%;
+  height: 100%;
+  margin: 8px 0;
+  border: none;
+  background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  font-family: "Garamond";
+}
+div#rs-btn-toolbar {
+  display: flex;
+  width: auto;
+}
+.footer-bottom {
+  font-size: 14px;
+  align-items: center;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  text-justify: auto;
+  justify-content: center;
+}
+
+.footer-bottom ::before {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  height: 4px;
+  width: 50px;
+  border-radius: 2px;
+  background-color: #818d86;
+}
+
+.home-search-bar {
+  display: flex;
+  flex-direction: row;
+  font-size: 17px;
+  float: left;
+  width: 80%;
+  border: none;
+  height: 55px;
+  background: white;
+  border-radius: 0;
+  padding: 2px;
+}
+.search-icon {
+  height: 55px;
+  background-color: black;
+  color: white;
+  width: 55px;
+}
+.search-icon:hover {
+  opacity: 0.8;
+  background-color: #686868;
+}
+.boxStyles {
+  text-align: left;
+  border: black ridge 1px;
+  border-radius: 10px;
+  margin: 3px;
+  width: 25rem;
+  padding-left: 10px;
+  font-size: 25px;
+  font-weight: bold;
+  color:black;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+a:hover {
+  color: black;
+  background-color: lightgrey;
+}
+*/
+.searchStyle{
+  text-align: left;
+  border: black ridge 1px;
+  border-radius: 10px;
+  margin: 3px;
+  width: 30rem;
+  padding-left: 10px;
+  font-size: 25px;
+  font-weight: bold;
+  color:black;
+}
+.CarouselImage {
+  width: 850px;
+  height: 400px;
+  margin: auto;
+  justify-items: stretch;
+}
+
+.Sidebar{
+  height:100%;
+  width:250px;
+  background-color: grey;
+}
+/*
+@media (max-width: 100px), (max-height:100px) {
+  .carousel {
+    width:auto;
+    height:auto;
+
+  }
+}
+*/
+.carousel {
+width:1200px;
+height:620px;
+margin: auto;
+}
+a {
+text-decoration: none;
+color: black;
+}
+a:hover {
+color: black;
+background-color: lightgrey;
+}
