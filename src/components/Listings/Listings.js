@@ -1,35 +1,35 @@
-import React, { useEffect, useState, useReducer } from "react";
-import { Box, Table, TextField } from "@mui/material";
+import React, { useEffect, useState, useReducer } from 'react';
+import { Box, Table, TextField } from '@mui/material';
 import {
   orderBy,
   doc,
   collection,
   collectionGroup,
   getDoc,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 import {
   useFirestore,
   useFirestoreCollection,
   useFirestoreDocDataOnce,
-} from "reactfire";
-
+} from 'reactfire';
+// Old Listings Design
 const initialValues = {
-  type: "",
-  id: "",
-  street: "",
-  city: "",
-  state: "",
-  zip: "",
-  price: "",
-  description: "",
+  type: 'forSale',
+  id: '',
+  street: '',
+  city: '',
+  state: '',
+  zip: '',
+  price: '',
+  description: '',
   images: [],
-  listed_by: "",
-  created_at: "",
+  listed_by: '',
+  created_at: '',
 };
 const reducer = (action, state) => {
   const { type, payload } = action;
   switch (type) {
-    case "FIELD_SET":
+    case 'FIELD_SET':
       return {
         ...state,
         [payload.fieldName]: payload.field,
@@ -57,7 +57,7 @@ export const Listing = (props) => {
   const listingBucket = collectionGroup(db, `${type}`);
 
   const listingDoc = useFirestoreCollection(
-    collection(db, `listings/${type}/properties`)
+    collection(db, `listings/${type}/properties`),
   );
   const [docData, setDocData] = useState({ ...listingDoc });
 
@@ -71,9 +71,5 @@ export const Listing = (props) => {
     fetchDoc();
   });
 
-  return (
-    <Box className="Listing" component="div">
-     
-    </Box>
-  );
+  return <Box className="Listing" component="div"></Box>;
 };
