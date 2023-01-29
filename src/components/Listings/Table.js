@@ -11,7 +11,7 @@ documentId,
 setDoc,
 writeBatch,
 } from "firebase/firestore";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -28,14 +28,12 @@ import {
   useStorageDownloadURL,
   useStorageTask,
 } from "reactfire";
-import SearchForm from "../Home/SearchForm";
+import SearchForm from "../Home/HomeSearchForm";
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import emailjs from "@emailjs/browser";
+import { Button } from "@mui/material";
 
-/*I tried to put the button outside the table container but it didn't work. 
-So for now it will be there for now. Maybe there is way to change
-
-*/
 const initialValues = {
   type: "forSale",
   id: "",
@@ -50,9 +48,8 @@ const initialValues = {
   bathrooms:"",
   created_at: "",
 };
-const BasicTable =({searchQuery})=>{
-  
-  const {bathrooms} = useParams();
+const BasicTable =({Data})=>{
+  const {listing_ID} = useParams();
   const firestore = useFirestore();
   const storage = useStorage();
   const batch = writeBatch(firestore);
@@ -61,37 +58,46 @@ const BasicTable =({searchQuery})=>{
 
   const listingsRef = collection(firestore, `listings/${Data.type}/properties`);
   
+  const getData = useCallback(async()=>{
+    const data = await getDocs(listingsRef);
+    setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
+    console.log(data);
+  }, []);
+
   useEffect(()=>{
-    const getData = async ()=>{
-     const data = await getDocs(listingsRef);
-     setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
-     console.log(data);
-    }
     getData();
- }, []);
-  
-  //const newDoc = doc(firestore, `$listings/${searchQuery.type}/properties/${docID}`, );
-  /*
-  const collectionRef = collection(
-    firestore,
-    `listings/${searchQuery.type}/properties/`
-  );
-*/
-  function createData(name, info) {
-    return { name, info};
-  }
-    
-  const rows = [
-    createData('Street',  ),
-    createData('City', ),
-    createData('State', ),
-    createData('Zip', ),
-    createData('Bedroom(s)', ),
-    createData('Bathroom(s)', ),
-    createData('Price', ),
-    createData('Listed At',),
-    createData('Listed By', ),
-  ];
+  }, [getData])
+
+
+  const [isHover5, setIsHover5] = useState(false);
+
+  const handleMouseEnter5 = () => {
+    setIsHover5(true);
+  };
+
+  const handleMouseLeave5 = () => {
+    setIsHover5(false);
+  };
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    emailjs
+      .sendForm(
+        "service_pr7qyvs",
+        "template_li0il5a",
+        formRef.current,
+        "7avGOyYSCkf7Kx45h"
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
+  };
   return(
     <div>
       {  
@@ -103,7 +109,7 @@ const BasicTable =({searchQuery})=>{
         <TableHead>
           <TableRow>
           <TableCell sx ={{fontWeight:"bold"}}>{Data.type}</TableCell>
-          <TableCell align="left" style={{display:"none"}}>{listing.listing_ID}</TableCell> 
+          <TableCell align="left" ></TableCell> 
           </TableRow>
           </TableHead>
         <TableBody>
@@ -154,8 +160,25 @@ const BasicTable =({searchQuery})=>{
         </TableBody>
       </Table>
       <div></div>
-      
-      <ContactButton></ContactButton>
+      <Button variant="outlined"
+      onClick={handleSubmit}
+      onMouseEnter={handleMouseEnter5}
+      onMouseLeave={handleMouseLeave5}
+      ref={formRef}
+      style={{
+        fontSize: "14px",
+        color: isHover5 ? "black" : "white",
+        backgroundColor: isHover5 ? "white" : "#63666A",
+        fontWeight: "bold",
+        padding: "12px",
+        fontFamily: "Garamond",
+        width: "100%",
+        border: "2px solid white",
+        borderRadius: "10px",
+      }}
+     >
+      Contact an agent about this listing
+      </Button>
     </TableContainer>
         </div>
               ))}

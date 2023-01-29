@@ -22,13 +22,20 @@ import {
 import { Spinner } from "react-bootstrap";
 import { useNavigate, createSearchParams } from "react-router-dom";
 import "../../pages/Home/styles.css";
-import { UseButtonGroup } from "./HomePageComponents";
+import "../../pages/Listings/styles.css";
+import { UseButtonGroup } from "./HomeButtons";
 import { useParams } from "react-router-dom";
 import { Link } from 'react-router-dom'
-
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import MenuIcon from '@mui/icons-material/Menu';
+import App from "../../App";
 //import FilterBox from "./Filter";
-//import FormControlLabelPlacement from "./FilterRadioButtons";
-import FilterRadioButtons  from "../../components/Home/FilterRadioButtons";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+
+import { async } from "@firebase/util";
 const blue = {
   100: "#DAECFF",
   200: "#80BFFF",
@@ -108,9 +115,6 @@ const initialValues = {
 
 export const HomeSearchForm = (props) => {
 
-
-  //const [data, setData] = useState("");
-  //const[info, setInfo] = useState(initialValues);
   const [isHover, setIsHover] = useState(false);
   const [isHover2, setIsHover2] = useState(false);
   const [isHover3, setIsHover3] = useState(false);
@@ -144,67 +148,36 @@ export const HomeSearchForm = (props) => {
   
   const goListings = () =>
     navigate({
-      //pathname: `/listings/${searchQuery.bathrooms}`
-      pathname:'/listings'
+      pathname: `/listings/${searchQuery.bathrooms}`
+
     });
-/*
-  const [listings, setListings] = useState([
-    {
-    bathrooms:"",
-    bedrooms:"",
-    street:"", 
-    city:"", 
-    state:"", 
-    zip:"", 
-    price:"",
-    description:"",
-    images:[],
-    listed_by:"",
-    created_at:""
-  }
-  ]);
- 
-  //const { status, data: signInCheckResult } = useSigninCheck();
+  
   const firestore = useFirestore();
-  //const [docID, setDocID] = useState("");
+
  
-  //const [type, setType] = useState("forSale");
   const listingsRef = collection(firestore, `listings/${info.type}/properties`);
   const [searchQuery, setSearchQuery] = useState([]);
   
   const handleType = (e)=>{
     setInfo({ ...info, type: e.target.value })
   }
-  /*
-  const handleChange = (e) => {
-    setSearchQuery(e.target.value);
-    e.preventDefault();
-
-  };
-  */
+  
   useEffect(()=>{
-    const getData = async ()=>{
-      const q = await getDocs(listingsRef,where()).then((onSnapshot)=>{
-        onSnapshot.docs.entries();
-        setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
-        console.log(data);
-        })
-      
-    };
-    getData();
+     const getData = async ()=>{
+      const data = await getDocs(listingsRef);
+      setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
+      console.log(data);
+     }
+     getData();
   }, []);
 
  const handleFilter =(e) =>{
   const searchWord = e.target.value;
   const seachFilter = listings.filter((listing)=>{
-    return listing.bathrooms.includes(searchWord) || 
-    listing.bedrooms.includes(searchWord) || 
-    listing.street.toLowerCase().includes(searchWord) ||
-    listing.zip.toLowerCase().includes(searchWord) ||
-    listing.price.includes(searchWord) ||
-    listing.description.toLowerCase().includes(searchWord) ||
-    listing.city.toLowerCase().includes(searchWord) ||
-    listing.state.toLowerCase().includes(searchWord) 
+    return listing.city.toLowerCase().includes(searchWord) ||
+    listing.city.toUpperCase().includes(searchWord) ||
+    listing.city.includes(searchWord)
+  
   });
   if (searchWord === ""){
     setSearchQuery([]);
@@ -212,45 +185,10 @@ export const HomeSearchForm = (props) => {
     setSearchQuery(seachFilter);
   }
  };
- /*const seachFilter = listings.filter((listing)=>{
-    if (listings === ''){
-       return listing;
-    }
-    else if (listing.bathrooms.includes(searchWord)) {
-      return listing;
-    }
-  });
-  setListings(seachFilter);
- } */
-
-/*
-  const getData = async ()=>{
-    const data = await getDocs(listingsRef, where("bathrooms" , "==", `${searchQuery}`)).then((onSnapshot)=>{
-      onSnapshot.docs.entries(listings.bathrooms);
-      setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
-      console.log(data);
-      })
-  };
-  getData();
-  
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-  }
-  */
-
-  const getInfo = async() =>{
-      await getDocs(listingsRef, {bathrooms: searchQuery})
-  };
-
-  const handleChange = (e) => {
-    setSearchQuery(e.target.value);
-    e.preventDefault();
-
-  };
+ 
+ 
 
   return (
-    <div className="HomeSearchForm">
     <Grid2
       component="form"
       sx={{
@@ -267,19 +205,29 @@ export const HomeSearchForm = (props) => {
           elevation={0}
           sx={{ display: "flex", flexDirection: "row", width: "100%" }}
         >
-      </Item>
+    
+        </Item>
       </Grid2>
-     <Grid2>
+     
       <Item
         elevation={0}
         sx={{ width: "100%", flexDirection: "column", display: "flex" }}
       >
-       <UseButtonGroup
+        
+        <Item elevation={0}
+        sx={{ width: "100%", flexDirection: "row", display: "flex", 
+        alignItems: "center", justifyContent: "center"}}>
+        <UseButtonGroup
         aria-label="listing-type"
         onChange={(e) => setInfo({ ...info, type: e.target.value })}
         name="type"
+        sx={{alignItems: "center", justifyContent: "center"}}
         />
-        <CustomInput onChange={handleFilter}>
+        </Item>
+      
+      <Item elevation={0} 
+      sx={{ width: "100%", flexDirection: "row", display: "flex" }}>
+      <CustomInput onChange={handleFilter}>
           
           </CustomInput> 
         
@@ -304,24 +252,21 @@ export const HomeSearchForm = (props) => {
           />
         </IconButton>
       </Item>
-        </Grid2>
+
+      </Item>
       <Item elevation={0}
 sx={{flexDirection: "column", display: "flex" }}>
 <>
 {searchQuery.length !== 0 && (
- <div>
+ <div className= "dataResult">
   {searchQuery.slice(0,15).map((listing, index)=>{
     return(
-      <div className = "box" key = {index}>
-      <p>Bathrooms: {listing.bathrooms}</p>
-      <p>Bedrooms: {listing.bedrooms}</p>
-      <p>Price: {listing.price}</p>
+      <div className = "dataItem" key = {index}>
+      <a href = {`/search/${listing.city}`}> 
+     
       <p>City: {listing.city}</p>
-     <p>Description: {listing.description}</p> 
-     <p>State: {listing.state}</p>
-     <p>Street: {listing.street}</p>
-     <p>Zip: {listing.zip}</p>
     
+     </a>
       </div>
       
     )
@@ -332,13 +277,10 @@ sx={{flexDirection: "column", display: "flex" }}>
       </Item>
       <br></br>
     </Grid2>
-    </div>
   );
 };
 
-export default SearchForm;
-
-
+export default HomeSearchForm;
 
 
 
