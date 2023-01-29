@@ -39,6 +39,9 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 //import ListingPage from "../../pages/Listings";
 import CarouselSearchImage from "./SearchCarousel";
+
+import 'bootstrap/dist/css/bootstrap.css';
+import Carousel from 'react-bootstrap/Carousel';
 import {
   CustomInput,
   grey,
@@ -62,6 +65,13 @@ const initialValues = {
 };
 
 export const SearchForm = () => {
+
+
+  const [index1, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex, e) => {
+    setIndex(selectedIndex);
+  };
   const [isHover, setIsHover] = useState(false);
   const [isHover2, setIsHover2] = useState(false);
   const [isHover3, setIsHover3] = useState(false);
@@ -268,11 +278,38 @@ export const SearchForm = () => {
                       <div key={index} elevation={0}>
                         <Grid2 container spacing={1} elevation={0}>
                           <Grid xs={8} elevation={0}>
-                            <Item sx={{}}>
-                              <div>
-                                <CarouselSearchImage></CarouselSearchImage>
-                              </div>
-                            </Item>
+                          <Item xs={8} elevation={0} spacing={2} >
+<div className="full-card" key={ index }>
+    <Carousel activeIndex={index1} onSelect={handleSelect} fade style={{ width: "850px",
+  height: "400px",margin: "auto"}}>
+      <Carousel.Item>
+        <img className="CarouselImage" src={listing.images.image1} alt="First slide" />
+        <Carousel.Caption>
+          <h3>First slide label</h3>
+          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img className="CarouselImage" src={listing.images.image2} alt="Second slide" />
+
+        <Carousel.Caption>
+          <h3>Second slide label</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img className="CarouselImage" src={listing.images.image3} alt="Third slide" />
+
+        <Carousel.Caption>
+          <h3>Third slide label</h3>
+          <p>
+            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+          </p>
+        </Carousel.Caption>
+      </Carousel.Item>
+    </Carousel>
+      </div>
+</Item>
                           </Grid>
                           <Grid xs={4} elevation={0}>
                             <Item
