@@ -1,26 +1,10 @@
-import { ConstructionOutlined } from '@mui/icons-material';
 import {
-  Alert,
-  Box,
-  Button,
-  ButtonGroup,
-  Dialog,
-  TextField,
-} from '@mui/material';
-import {
-  beforeAuthStateChanged,
-  createUserWithEmailAndPassword,
-  reauthenticateWithCredential,
-} from 'firebase/auth';
+  Alert,Box,Button,ButtonGroup,TextField,} from '@mui/material';
+import {createUserWithEmailAndPassword,reauthenticateWithCredential,} from 'firebase/auth';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import {
-  useAuth,
-  useFirestore,
-  useFirestoreCollectionData,
-  useUser,
-} from 'reactfire';
+import {useAuth,useFirestore,useUser} from 'reactfire';
 
 export const RegisterForm = ({ title }) => {
   const location = useLocation();
@@ -32,7 +16,7 @@ export const RegisterForm = ({ title }) => {
   const navigate = useNavigate();
   const formRef = useRef();
   const userID = useId();
-  const { data: user } = useUser();
+  const { status,data: user } = useUser();
   const firestore = useFirestore();
   const collectionRef = collection(firestore, 'users');
   const auth = useAuth();
@@ -43,7 +27,7 @@ export const RegisterForm = ({ title }) => {
   })
 
 }*/
-    const resetPassword = () => {
+    const resetPassword = ({data:user}) => {
     navigate('/reset-password');
   };
   const getCurrentLocation = async (e) => {
@@ -118,7 +102,9 @@ export const RegisterForm = ({ title }) => {
   
 
   useEffect(() => {
-   
+    if (status === "error") {
+     <Alert severity='error'>Problem Loading page - contact Server Admin</Alert>
+   }
   });
       
   return (

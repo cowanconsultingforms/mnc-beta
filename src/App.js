@@ -11,24 +11,20 @@ import AuditLog from './pages/Admin/AuditLog';
 import { preloadUser, useFirestore, useUser } from 'reactfire';
 import NavBar from './components/Misc/NavBar';
 import SearchPage from './pages/Search';
-import {  getDoc } from 'firebase/firestore';
+import { getDoc } from 'firebase/firestore';
 import ResetPasswordPage from './pages/ResetPassword';
 import AuthPage from './pages/Authentication';
-import {
-  collection,
-  query,
-  where,
-} from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { errorPrefix } from '@firebase/util';
 import { getIdTokenResult } from 'firebase/auth';
-
+import { List } from '@mui/material';
 
 export const App = ({ children }) => {
   const { status, data: user } = useUser();
   const firestore = useFirestore();
   const fsCollection = collection(firestore, 'users');
   const [userData, setUserData] = useState([]);
-  const [admin, setAdmin] = userData.role;
+  const [admin, setAdmin] = useState(userData);
   const getUser = async () => {
     if (status === 'loading') {
       preloadUser()
@@ -38,17 +34,17 @@ export const App = ({ children }) => {
   };
   const roleCheck = async (e) => {
     e.preventDefault();
-    
+
     await getUser().then((res) => {
       if (res) {
         const uid = res.uid;
         const email = res.email;
         const verified = res.emailVerified;
         const displayName = res.displayName;
-        const formData = new FormData(uid,email,verified,displayName)
+        const formData = new FormData(uid, email, verified, displayName);
         const q = query(
           collection(firestore, 'users'),
-          where('email', '==', formData.get('email'))
+          where('email', '==', formData.get('email')),
         );
         const role = getDoc(q).then((snapshot) => {
           if (snapshot.get('Admin') === true) setUserData(...snapshot.data());
@@ -57,8 +53,19 @@ export const App = ({ children }) => {
       }
     }, console.log(errorPrefix));
   };
+  const browseUsers = () => {
+    if (userData.length !== 0) {
+      userData.forEach((val, idx) => {
+        const users = [
+          <List dense id={idx}>
+            {val}
+          </List>,
+        ];
+      });
+    }
+  };
   useEffect(() => {
-    roleCheck().then(getIdTokenResult);
+    roleCheck();
   });
 
   return (
@@ -76,12 +83,19 @@ export const App = ({ children }) => {
         <Route exact path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route exact path="/login" element={<AuthPage title={'Login'} />} />
-        <Route exact path="/register" element={<AuthPage title={'register'} />} />
+        <Route
+          exact
+          path="/register"
+          element={<AuthPage title={'register'} />}
+        />
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
         <Route path="/listings/" element={<ListingPage />} />
         <Route path="/listings/:listing_ID" element={<ListingPage />} />
+        <Route path="/listings/:state" element={<ListingPage />} />
         <Route path="/search/:city" element={<SearchPage />} />
+        <Route path="/listings/:address" element={<ListingPage />} />
+        <Route path="/listings/:zip" element={<ListingPage />} />
       </Routes>
     </div>
   );
