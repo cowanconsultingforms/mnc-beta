@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { RegisterPage } from './pages/Register';
 import ListingPage from './pages/Listings/index';
 import { useEffect, useState } from 'react';
 import AccountPage from './pages/Account/index';
@@ -14,16 +13,16 @@ import NavBar from './components/Misc/NavBar';
 import SearchPage from './pages/Search';
 import {  getDoc } from 'firebase/firestore';
 import ResetPasswordPage from './pages/ResetPassword';
-
+import AuthPage from './pages/Authentication';
 import {
   collection,
   query,
   where,
 } from 'firebase/firestore';
-import LoginPage from 'pages/Login';
 import { errorPrefix } from '@firebase/util';
-
 import { getIdTokenResult } from 'firebase/auth';
+
+
 export const App = ({ children }) => {
   const { status, data: user } = useUser();
   const firestore = useFirestore();
@@ -76,8 +75,8 @@ export const App = ({ children }) => {
 
         <Route exact path="/reset-password" element={<ResetPasswordPage />} />
 
-        <Route exact path="/login" element={<LoginPage />} />
-        <Route exact path="/register" element={<RegisterPage />} />
+        <Route exact path="/login" element={<AuthPage title={'Login'} />} />
+        <Route exact path="/register" element={<AuthPage title={'register'} />} />
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
         <Route path="/listings/" element={<ListingPage />} />
