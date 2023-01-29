@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { getDownloadURL, ref as reff } from "firebase/storage";
 import { useStorage, useStorageDownloadURL } from "reactfire";
 //components used to render the logo on various pages. 

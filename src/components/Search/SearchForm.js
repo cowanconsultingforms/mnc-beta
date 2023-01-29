@@ -266,7 +266,7 @@ export const SearchForm = () => {
                   .map((listing, index) => {
                     return (
                       <div key={index} elevation={0}>
-                        <Grid container spacing={1} elevation={0}>
+                        <Grid2 container spacing={1} elevation={0}>
                           <Grid xs={8} elevation={0}>
                             <Item sx={{}}>
                               <div>
@@ -303,7 +303,7 @@ export const SearchForm = () => {
                               </div>
                             </Item>
                           </Grid>
-                        </Grid>
+                        </Grid2>
                       </div>
                     );
                   })}

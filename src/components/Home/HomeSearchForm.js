@@ -250,6 +250,7 @@ export const HomeSearchForm = (props) => {
   };
 
   return (
+    <div className="HomeSearchForm">
     <Grid2
       component="form"
       sx={{
@@ -268,7 +269,7 @@ export const HomeSearchForm = (props) => {
         >
       </Item>
       </Grid2>
-     
+     <Grid2>
       <Item
         elevation={0}
         sx={{ width: "100%", flexDirection: "column", display: "flex" }}
@@ -303,8 +304,7 @@ export const HomeSearchForm = (props) => {
           />
         </IconButton>
       </Item>
-
-      </Item>
+        </Grid2>
       <Item elevation={0}
 sx={{flexDirection: "column", display: "flex" }}>
 <>
@@ -332,6 +332,7 @@ sx={{flexDirection: "column", display: "flex" }}>
       </Item>
       <br></br>
     </Grid2>
+    </div>
   );
 };
 

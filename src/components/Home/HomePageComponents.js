@@ -19,7 +19,6 @@ import {
   ButtonGroup
 } from "@mui/material";
 import { useEffect, useState, useRef, forwardRef } from "react";
-import { getValue } from "firebase/remote-config";
 
 export const Item = styled(Paper)({});
 

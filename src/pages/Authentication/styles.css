@@ -1,0 +1,41 @@
+.login-button {
+    color: white;
+    padding: 14px 20px;
+    width: 100%;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    background-color: red;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #FFFFFF;
+    color: dimgray;
+}
+
+.register-button {
+    color: "white";
+    padding: "14px 20px";
+    width: "50%";
+    margin: "8px 0";
+    border: "none";
+    cursor: "pointer";
+    background-color: "#686868";
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    font-size: large;
+    background-color: #FFFFFF;
+    padding: 3%;
+    color: dimgray;
+}
