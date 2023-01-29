@@ -10,26 +10,20 @@ import {
 import {
   beforeAuthStateChanged,
   createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
 } from 'firebase/auth';
-import { addDoc, collection, doc, serverTimestamp } from 'firebase/firestore';
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import {
-  useAsyncValue,
-  useNavigate,
-  Link,
-  NavigateProps,
-} from 'react-router-dom';
-import {
-  checkOptions,
   useAuth,
   useFirestore,
   useFirestoreCollectionData,
   useUser,
 } from 'reactfire';
-import { CustomButton } from '../Misc/Buttons';
-import { NavBarButton } from './Misc/Buttons';
 
 export const RegisterForm = ({ title }) => {
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,45 +31,20 @@ export const RegisterForm = ({ title }) => {
   const [error, setError] = useState({});
   const navigate = useNavigate();
   const formRef = useRef();
+  const userID = useId();
   const { data: user } = useUser();
   const firestore = useFirestore();
   const collectionRef = collection(firestore, 'users');
   const auth = useAuth();
+  /* const createUserInFirestore = async (e) => {
+  e.preventDefault()
+  createUserWithEmailAndPassword(auth, email, password).then((user) => {
+    user = user;
+  })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (!validatePassword()) {
-      listErrors();
-      return <Alert severity="error">Passwords dont match</Alert>;
-    } else {
-      try {
-        await createUserWithEmailAndPassword(auth, email, password).then(
-          (userCred) => {
-            const email = userCred.user.email;
-            const uuid = userCred.user.uid;
-
-            createUserInFirestore(email, uuid).then((res) => {
-              setTimeout(res, 2000);
-              if (!res.error) {
-                return (
-                  (<Alert severity="success"> New User {uuid} created</Alert>),
-                  setLoading(false),
-                  navigate('/')
-                );
-              } else {
-                return <Alert severity="error"> Problem Creating User</Alert>;
-              }
-            });
-          },
-        );
-      } catch (error) {
-        console.log(error, 'error message');
-      }
-    }
-  };
-  const resetPassword = () => {
-    navigate('/reset-password', NavigateOptions());
+}*/
+    const resetPassword = () => {
+    navigate('/reset-password');
   };
   const getCurrentLocation = async (e) => {
     e.preventDefault();
@@ -96,6 +65,7 @@ export const RegisterForm = ({ title }) => {
     return errors;
   };
   const handleChange = (e) => e.target.value;
+
   const validatePassword = () => {
     let isValid = true;
     if (password !== '' && confirmPassword !== '') {
@@ -106,41 +76,61 @@ export const RegisterForm = ({ title }) => {
     }
     return isValid;
   };
-  useEffect(() => {
-    const createUserInFirestore = async (email, uuid) => {
+  const handleSubmit = async (e,) => {
+    const id =userID
+    e.preventDefault();
+    setLoading(true);
+    if (!validatePassword()) {
+      listErrors();
+      return <Alert severity="error">Passwords dont match</Alert>;
+    } else {
       try {
-        const uuid = uuid;
-        const email = email;
-        addDoc(collectionRef + `${uuid}`, {
-          email: email,
-          role: 'user',
-          uid: uuid,
-          created_at: serverTimestamp(),
-          portfolioMin: 0,
-          portfolioMax: 1000000,
-        }).then((onComplete) => {
-          console.log(onComplete);
-          setTimeout(onComplete, 3000);
-          navigate('/');
-        });
+        await createUserWithEmailAndPassword(auth, email, password).then(
+          (userCred) => {
+            const email = userCred.user.email;
+            const admin = false;
+            const loggedIn = serverTimestamp()
+            const uuid = userCred.user.uid
+            setDoc(collectionRef, doc(firestore, `users/${userID}`, { email, admin, loggedIn, uuid }).then((res) => {
+              if (!res.error) {
+                return (
+                  (<Alert severity="success"> New User  created</Alert>),
+                  setLoading(false),
+                  navigate('/')
+                );
+              } else {
+                setLoading(false)
+                return <Alert severity="error"> Problem Creating User</Alert>;
+              }
+            })
+            )
+          }
+        
+    
+        )
       } catch (error) {
-        console.log(error, 'error creating user in firestore');
-      }
-    };
-    createUserInFirestore();
-    const subscribe = beforeAuthStateChanged(auth, userCred, () =>
-      createUserInFirestore(email, uuid),
-    );
+        console.log(error.message);
+      };
+    }
+  }  
+        
+    
+  
+
+  useEffect(() => {
+   
   });
+      
   return (
     <div className="register-form">
-      <h1> Registration Form</h1>
+      <h1>{title} Form</h1>
       <Box
         component="form"
         autoComplete
         noValidate
         ref={formRef}
         onSubmit={handleSubmit}
+        onChange={handleChange}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -190,7 +180,9 @@ export const RegisterForm = ({ title }) => {
           }}
         />
         <ButtonGroup>
-          <NavBarButton type="submit">Register</NavBarButton>
+          <Button type="submit" onClick={handleSubmit}>
+            Register
+          </Button>
           <Button onClick={resetPassword}>Forgot Password?</Button>
         </ButtonGroup>
       </Box>
@@ -198,4 +190,4 @@ export const RegisterForm = ({ title }) => {
   );
 };
 
-export default RegisterForm;
+export default RegisterForm

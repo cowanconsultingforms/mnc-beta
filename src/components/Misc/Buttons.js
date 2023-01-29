@@ -11,11 +11,7 @@ export const NavBarButton = ({ handleAction,page,text,idx}) => {
   const [profile,setProfile] = useState(null);
 
   useEffect(()=>{
-    onAuthStateChanged(authObj =>{
-      if(authObj){
 
-      }
-    })
   },[])
   return (
     <Button variant="contained" onClick={handleAction} disableElevation>

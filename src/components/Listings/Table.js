@@ -76,19 +76,7 @@ const BasicTable =({searchQuery})=>{
     firestore,
     `listings/${searchQuery.type}/properties/`
   );
-
-<<<<<<< HEAD
-  <div>
-    {data.filter(listing => listing.bathrooms === bathrooms).map((listing,index)=> (
-      <div key ={index}>
-       <p>{listing.bathrooms}</p>
-       <p>{listing.bedrooms}</p>
-      </div>
-    ))}
-   </div>
 */
-=======
->>>>>>> master
   function createData(name, info) {
     return { name, info};
   }
@@ -105,7 +93,6 @@ const BasicTable =({searchQuery})=>{
     createData('Listed By', ),
   ];
   return(
-<<<<<<< HEAD
     <div>
       {  
               listings.filter((listing) => listing.listing_ID === listing_ID)
@@ -174,35 +161,6 @@ const BasicTable =({searchQuery})=>{
               ))}
     </div>
    
-=======
-    <TableContainer component={Paper}>
-    <Table sx={{ minWidth: 200, minHeight: 600 }} aria-label="simple table">
-      <TableHead>
-        <TableRow>
-        <TableCell sx ={{fontWeight:"bold"}}>{data.type}</TableCell>
-        <TableCell align="left"></TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {searchQuery.filter((listing) => listing.bathrooms === bathrooms).map((listing, index) => (
-          <TableRow
-            key={index}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-          >
-            <TableCell component="th" scope="row">
-              {listing.bedrooms}
-            </TableCell>
-            <TableCell align="left">{listing.bathrooms}</TableCell>
-            
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-    <div></div>
-    
-    <ContactButton></ContactButton>
-  </TableContainer>
->>>>>>> master
   )
 }
 export default BasicTable

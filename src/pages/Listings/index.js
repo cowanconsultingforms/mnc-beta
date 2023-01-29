@@ -69,7 +69,7 @@ const initialValues = {
   created_at: "",
 };
 /*  <p style={{display:"none"}}>{listing_ID}</p> inside the topography and it causes invaild dom nesting */
-export const ListingPage = ({}) => {
+export const ListingPage = ({chiildren}) => {
   const {listing_ID} = useParams();
   const firestore = useFirestore();
   const [listings, setListings] = useState([]);

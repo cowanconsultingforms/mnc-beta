@@ -7,7 +7,7 @@ import app, { auth } from "../../firebase";
 import { useUser, useFirestore, useSigninCheck, useFirestoreDocData, checkOptions, useInitAuth, useFirestoreCollection } from "reactfire";
 import { doc, getDoc, query, where, collection, orderBy } from "firebase/firestore";
 import { setTokenAutoRefreshEnabled } from "firebase/app-check";
-
+import { MNCLogo,MNCLogoGray } from "./MNCLogo";
 const logoutButton = document.getElementById('logout');
 const loginButton = document.getElementById('login-page');
 const adminButton = document.getElementById('admin-page');
