@@ -10,8 +10,9 @@ import {
   where,
   serverTimestamp,
   setDoc,
+  db
 } from "firebase/firestore";
-import { useAuth, useFirestore } from "reactfire";
+import { useAuth, useFirestore,} from "reactfire";
 import { Box, TextField, Button } from "@mui/material";
 //code to render search user from the admin page
 export const Search = () => {

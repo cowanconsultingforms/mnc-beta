@@ -6,8 +6,13 @@ import {
   BrowserRouter,
   createBrowserRouter,
   RouterProvider,
+  Routes
 } from "react-router-dom";
 import { useAuth, useUser } from "reactfire";
+import HomePage from "../../pages/Home";
+import Contact from "../Contact/Contact";
+import AccountPage from "../../pages/Account";
+
 
 const PublicRoute = ({ children, ...props }) => {
   const auth = useAuth();

@@ -1,23 +1,25 @@
-import React from 'react';
+import React, {lazy, Suspense} from "react";
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import ListingPage from './pages/Listings/index';
 import { useEffect, useState } from 'react';
-import AccountPage from './pages/Account/index';
-import Contact from './pages/Contact/index';
-import HomePage from './pages/Home/index';
-import AdminDashboard from './pages/Admin';
-import AuditLog from './pages/Admin/AuditLog';
 import { preloadUser, useFirestore, useUser } from 'reactfire';
 import NavBar from './components/Misc/NavBar';
-import SearchPage from './pages/Search';
 import { getDoc } from 'firebase/firestore';
 import ResetPasswordPage from './pages/ResetPassword';
-import AuthPage from './pages/Authentication';
 import { collection, query, where } from 'firebase/firestore';
 import { errorPrefix } from '@firebase/util';
 import { getIdTokenResult } from 'firebase/auth';
 import { List } from '@mui/material';
+
+const AuthPage = lazy(()=> import("./pages/Authentication"));
+const ListingPage = lazy(()=> import("./pages/Listings/index"));
+const AccountPage = lazy(()=> import("./pages/Account/index"));
+const Contact  = lazy(()=> import("./pages/Contact/index"));
+const HomePage = lazy(()=> import("./pages/Home/index"));
+const AdminDashboard = lazy(()=> import( "./pages/Admin"));
+const AuditLog = lazy(()=> import("./pages/Admin/AuditLog"));
+const SearchPage  = lazy(()=> import("./pages/Search"));
+
 
 export const App = ({ children }) => {
   const { status, data: user } = useUser();
@@ -71,7 +73,7 @@ export const App = ({ children }) => {
   return (
     <div className="App">
       <NavBar />
-
+      <Suspense fallback={<h1>loading....</h1>}>
       <Routes>
         <Route exact path="/" element={<HomePage />} />
         <Route exact path="/contact" element={<Contact />} />
@@ -97,6 +99,7 @@ export const App = ({ children }) => {
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
       </Routes>
+      </Suspense>
     </div>
   );
 };

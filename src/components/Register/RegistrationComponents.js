@@ -9,12 +9,13 @@ import {
   useFieldArray,
 } from "react-hook-form";
 
-export const RegistrationInput = ({ control, onSubmit, register }) => {
+export const RegistrationInput = ({}) => {
   const {
     register,
     handleSubmit,
     control,
     resetField,
+    field,
     formState: { errors },
   } = useForm();
   const { fields, append } = useFieldArray();

@@ -150,37 +150,7 @@ export const SearchForm = () => {
       setSearchQuery(searchFilter);
     }
   };
-  /*const seachFilter = listings.filter((listing)=>{
-    if (listings === ''){
-       return listing;
-    }
-    else if (listing.bathrooms.includes(searchWord)) {
-      return listing;
-    }
-  });
-  setListings(seachFilter);
- } */
-
-  /*
-  const getData = async ()=>{
-    const data = await getDocs(listingsRef, where("bathrooms" , "==", `${searchQuery}`)).then((onSnapshot)=>{
-      onSnapshot.docs.entries(listings.bathrooms);
-      setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
-      console.log(data);
-      })
-  };
-  getData();
   
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-  }
-  */
-  /*
-  const getInfo = async() =>{
-      await getDocs(listingsRef, {bathrooms: searchQuery})
-  };
-*/
 
   return (
     <Grid2

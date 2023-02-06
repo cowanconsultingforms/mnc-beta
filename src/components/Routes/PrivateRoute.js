@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useAuth, useFirestore, useSigninCheck, useUser } from "reactfire";
 import AdminPage from "pages/Admin";
-export const PrivateRoutes = ({Component:<AdminPage />,...rest })  {
+export const PrivateRoutes = ({Component:<AdminPage />,...rest }),  {
   const auth = useAuth();
   const location = useLocation();
   const firestore = useFirestore();
