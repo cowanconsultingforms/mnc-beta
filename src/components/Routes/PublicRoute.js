@@ -9,9 +9,22 @@ import {
   Routes
 } from "react-router-dom";
 import { useAuth, useUser } from "reactfire";
-import HomePage from "../../pages/Home";
-import Contact from "../Contact/Contact";
-import AccountPage from "../../pages/Account";
+import { AuthPage } from "./pages/Authentication";
+import ListingPage from "./pages/Listings/index";
+import AccountPage from "./pages/Account/index";
+import Contact from "./pages/Contact/index";
+import HomePage from "./pages/Home/index";
+import AdminDashboard from "./pages/Admin";
+import AuditLog from "./pages/Admin/AuditLog";
+import NavBar from "./components/Misc/NavBar";
+import { Spinner } from "react-bootstrap";
+import SearchPage from "./pages/Search";
+import ResetPasswordPage from "../../pages/ResetPassword";
+import { confirmPasswordReset } from "firebase/auth";
+/* 
+<Route exact path="/login" element={<LoginPage />} />
+<Route exact path="/register" element={<RegisterPage />} />
+  */ 
 
 
 const PublicRoute = ({ children, ...props }) => {
@@ -40,10 +53,8 @@ const PublicRoute = ({ children, ...props }) => {
         path="/reset-password"
         element={<ResetPasswordPage user={auth.currentUser} />}
       />
-      <route exact path="confirm-reset" element={confirmPasswordReset} />
-      <Route exact path="/login" element={<LoginPage />} />
-      <Route exact path="/register" element={<RegisterPage />} />
-
+      <Route exact path="confirm-reset" element={confirmPasswordReset} />
+     
       <Route exact path="/auditlog" element={<AuditLog />} />
       <Route path="/listings/" element={<ListingPage />} />
       <Route path="/listings/:listing_ID" element={<ListingPage />} />
