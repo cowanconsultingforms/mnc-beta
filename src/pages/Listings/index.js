@@ -54,6 +54,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+//Values for a Listing
 const initialValues = {
   type: "forSale",
   id: "",
@@ -87,6 +88,8 @@ export const ListingPage = ({chiildren}) => {
   return (
    <div>
     {
+//using filter method to find a specific listing using listingID
+
        listings
               .filter((listing) => listing.listing_ID === listing_ID)
               .map((listing, index) => (
@@ -121,3 +124,14 @@ export const ListingPage = ({chiildren}) => {
 };
 
 export default ListingPage;
+
+
+/*React component - for Listings page
+The component fetches and displays data for a single property listing using data from a Firestore database. 
+The component has the following functionalities:
+
+Fetch data for the selected property using useEffect and useFirestore hooks.
+Display images of the property using CarouselImage component.
+Display details of the property like the description, address, price etc. using BasicTable component.
+The component takes the listing_ID as a URL parameter and filters the fetched listings to get the data
+ for the selected property. The filtered data is passed to the CarouselImage and BasicTable components as a prop Data.*/

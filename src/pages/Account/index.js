@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
+//This line imports the useNavigate and useLocation hooks from the react-router-dom library. 
+//useNavigate provides a way to programmatically navigate between different routes in a React application that uses React Router
+//.useLocation gives access to the current location (the URL) of the application and is used to get information about the current route that the user is on.
+
 import { useNavigate, useLocation } from "react-router-dom";
+
+//Imports from Material-UI Library - Google's Material Design Library
 import { Box, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 
-import SignOutBox from "../../components/Account/SignOutBox";
+import SignOutBox from "../../components/Account/SignOutBox"; //imports SignOutBox Component - allow the user to sign out
 //import NavBar from "../../components/Misc/NavBar";
 import {ProfileChange} from "../../components/Account/ProfileChange";
 import ChangePassword from "../../components/Account/ChangePassword";
@@ -33,6 +39,10 @@ const Item2 = styled(Paper)(({ theme }) => ({
 
 //need a profile edit component/form
 //needs a component to display the profile automatically upon loading
+
+//The component uses the useLocation hook to get the current location from the react-router-dom library. 
+//It also uses the useAuth hook to get the authentication status and user data, and the useFirestore hook to get access to Firestore.
+//The component uses the useEffect hook to perform a side effect when the component is mounted and the status is 'success'. The effect logic is currently empty.
 export const AccountPage = (props) => {
   const { role,email,userName } = props;
   const location = useLocation();
@@ -83,3 +93,10 @@ export const AccountPage = (props) => {
 };
 
 export default AccountPage;
+
+
+//The code defines a React component named "AccountPage" that allows users to edit their profile information and change their password. 
+//The component uses other components such as "ProfileChange", "SignOutBox", and "ChangePassword". The component is styled using "styled" 
+//from "@mui/material/styles" library to provide the appearance of the components. It uses hooks like useEffect, useLocation, useAuth, and
+ //useFirestore to interact with Firebase for user authentication and data storage. The component displays two paper components with different
+ //background colors for different items.

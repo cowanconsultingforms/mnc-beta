@@ -60,3 +60,17 @@ export const SearchPage = (props) => {
 };
 
 export default SearchPage;
+
+/*Page Definition: "SearchPage". 
+The component makes use of hooks such as useState and useLocation, as well as several
+ other imported components such as Footer, HomeTop, Grid, Box, Item, NavBar, MNCLogoGray, and MNCLogo.
+
+The component has a search state, initialized using the useState hook with an empty string as its initial 
+value. The component also contains a function named handleSearch, which is triggered by the form submit 
+event and prevents the default behavior of the form.
+
+The component also has a loggedIn state initialized using the useState hook with an empty object as its initial value.
+
+The component renders a Box component which acts as the main container for the page, and has a Grid component inside of
+ it which creates a grid layout. The SearchForm component is also rendered within the Grid component. The Footer component
+  is also rendered at the end.*/

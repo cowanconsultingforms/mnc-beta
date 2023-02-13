@@ -12,8 +12,14 @@ import { HomeSearchForm } from "../../components/Home/HomeSearchForm";
 //needs to be styled and modularized into a logo and search bar , and a footer underneath
 
 export const HomePage = (props) => {
+
+    //useLocation hook to get current location object from the react-router-dom library
   const location = useLocation();
+
+    //useState hook to maintain a state variable named search
   const [search, setSearch] = useState("");
+    
+  //async function that prevents the default behavior of an event
   const handleSearch = async (e) => {
     e.preventDefault();
   };
@@ -31,6 +37,7 @@ export const HomePage = (props) => {
           display: "flex",
         }}
       >
+
         <Grid
           item
           sx={{
@@ -61,3 +68,12 @@ export const HomePage = (props) => {
 };
 
 export default HomePage;
+
+/*Brief - defines a React functional component called HomePage. It imports several other components and 
+libraries, such as React, Footer, HomeTop, Stack, Grid, Box, Item, useLocation, NavBar, and MNCLogo. The
+component has a state for the search term, managed using the useState hook, and an event handler for handling
+the search form submission, handleSearch. It also has a state for tracking whether the user is logged in, 
+managed using the useState hook.
+
+The component renders a Box component with a Grid container inside. The grid container has two items - the MNCLogo
+ component and a Item component containing the HomeSearchForm component. The component also renders a Footer component.*/

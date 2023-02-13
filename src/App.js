@@ -38,6 +38,10 @@ export const App = ({ children }) => {
     e.preventDefault();
 
     await getUser().then((res) => {
+
+      //Then, the function creates a query to the firestore collection 'users' to find a document where the email equals the user's email. The result of the query 
+      //is used to determine if the user is an Admin by checking the Admin property of the snapshot. If the user is an Admin, the function sets userData with the 
+      //retrieved snapshot data.
       if (res) {
         const uid = res.uid;
         const email = res.email;
@@ -48,6 +52,8 @@ export const App = ({ children }) => {
           collection(firestore, 'users'),
           where('email', '==', formData.get('email')),
         );
+        
+        //If the document contains a field Admin with a value of true, it sets the userData state with the data from the retrieved snapshot.
         const role = getDoc(q).then((snapshot) => {
           if (snapshot.get('Admin') === true) setUserData(...snapshot.data());
           console.log(userData);
@@ -55,6 +61,8 @@ export const App = ({ children }) => {
       }
     }, console.log(errorPrefix));
   };
+    
+  //Loops through the 'userData' and displays a list of all users
   const browseUsers = () => {
     if (userData.length !== 0) {
       userData.forEach((val, idx) => {
@@ -105,3 +113,20 @@ export const App = ({ children }) => {
 };
 //  <Route path="/editListing/:id" element={<EditDocs database={database}/>} />
 export default App;
+
+
+
+/*
+This code is a React functional component representing the root of a web application. It is using react-router-dom 
+for routing, and "useFirestore" and "useUser" hooks from "reactfire" for authentication.
+
+It defines several routes for different pages in the web application, such as "HomePage", "Contact", "AccountPage",
+ "AdminDashboard", "ResetPasswordPage", "AuthPage", "AuditLog", "ListingPage", and "SearchPage".
+
+The component is using the "useEffect" hook to call the "roleCheck" function when the component is mounted. 
+
+The "roleCheck" function is checking the status of a user, and, if the user is signed in, retrieves the user
+ data from Firestore and checks if the user is an admin or not. 
+
+ If the user is an admin, it sets the user data in the "userData" state. The "browseUsers" function is then used 
+ to browse the "userData" state and return a list of users.*/

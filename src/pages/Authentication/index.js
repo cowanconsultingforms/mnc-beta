@@ -48,3 +48,16 @@ export const AuthPage = ({ title }) => {
 };
 
 export default AuthPage;
+
+
+/*This code is a functional component  Reactjs that implements an authentication page.
+The AuthPage component receives a title prop and based on the title, it either renders a 
+LoginForm component or a RegisterForm component.
+It also uses the useAuth hook to access the authentication status of the user and useUser 
+hook to get the user information. The component uses the useNavigate hook from react-router-dom 
+to navigate to different pages in the app.
+It also contains a getUser function that checks if the user is already logged in. If the user is 
+logged in, it returns an alert message with the users display name and navigates to the 
+route after 2 seconds.
+The components main component is displayed in a Box component that has a auth-page class and the styles
+of flexbox to display elements in a column. The component also uses the MNCLogo component to display a logo.*/

@@ -43,3 +43,19 @@
   font-size: 20px;
   width: 100%;
 }
+
+
+/*CSS for Account.js 
+This code defines four CSS classes: account-page-profile, account-page-container, SignOutBox, and delete-profile.
+
+The account-page-profile class sets the height, display, position, text alignment, background color, font size, width, 
+and left position of the element.
+
+The account-page-container class sets the padding-top, display, width, height, flex-direction, justify-content, and
+ align-items properties. It also styles the h1 elements within the container.
+
+The SignOutBox class sets the display, flex-direction, height, text-align, background color, color, font size, and 
+width of the element.
+
+The delete-profile class sets the height, grid-column, grid-row, position, text-align, background color, color, 
+font size, and width of the element.*/

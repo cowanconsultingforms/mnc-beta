@@ -7,9 +7,13 @@ import { Stack } from "@mui/material";
 import { useAuth, useSigninCheck } from "reactfire";
 
 const ContactPage = () => {
+    //useAuth hook from reactfire library to access firebase authentication
+
   const auth = useAuth();
+    //useSignInCheck hook to check if the user is signed in
   const { status, data: signInCheckResult } = useSigninCheck();
  
+  //checks if user is actually signed in
   const getSignedInUser = async () => {
     try {
       if (signInCheckResult.user !== false) {
@@ -20,6 +24,8 @@ const ContactPage = () => {
   };
   useEffect(() => {});
   return (
+        
+    //Stack component from @mui/material library
     <Stack
       className="contact-container"
       component="div"

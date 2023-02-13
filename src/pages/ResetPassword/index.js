@@ -7,7 +7,7 @@ import { FormatColorFillRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../../components/Authentication/RegisterForm";
 
-
+//fetches current user info with the hook useUser - sets email use useState function from authentication
 export const ResetPasswordPage = () =>{
     const {status,data:user} = useUser();
     const [email,setEmail] = useState('');
@@ -29,6 +29,7 @@ export const ResetPasswordPage = () =>{
             console.log(user.displayName);
         }
     }
+    //handles Password Change
     const handlePasswordChange = async(e)=>{
         e.preventDefault();
         if(user === auth.currentUser){
@@ -53,3 +54,11 @@ export const ResetPasswordPage = () =>{
 }
 
 export default ResetPasswordPage;
+
+/*defines a reset password page 
+exports a functional component ResetPasswordPage that is used for resetting the password of a user.
+ It makes use of the useUser and useAuth hooks from reactfire to retrieve information about the current 
+ user and the authentication instance. The component checks whether the user is currently logged in and if so, 
+ it displays a warning message that the user should change their password from the profile page. If the user is
+  not logged in, the component allows them to input their email address and sends a password reset email to that 
+  address. The component also includes a RegisterForm component that is used to register a new user.*/

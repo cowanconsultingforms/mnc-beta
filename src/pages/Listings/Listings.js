@@ -58,9 +58,11 @@ export const ListingPage = () => {
   const q = query(listingRef, orderBy("listed_at", "desc"));
   const [listing] = useCollectionData(q, { idField: "listed_at" });
 
+  //function to getNextListing
   const getNextListing = async (e) => {
     e.preventDefault();
 
+  //retrieves data from the Firestore using 'getdocs'
     const listings = await getDocs(listingRef).then((docs) => {
       return docs.map((doc) => {
         return (listings = {
@@ -70,6 +72,8 @@ export const ListingPage = () => {
       });
     });
   };
+
+ //function to getPrevListing
   const getPrevListing = async (e) => {
     e.preventDefault();
   };
@@ -125,3 +129,10 @@ export const ListingPage = () => {
 };
 
 export default ListingPage;
+
+/*This is a React functional component that displays a listings page for real estate listings. 
+It fetches data from a Firebase Firestore database and displays it in a React-Bootstrap Carousel 
+and a table. The component uses several React hooks such as useEffect, useState, and useRef, as 
+well as data retrieval functions provided by the reactfire library. The listing page includes 
+information such as type of listing, address, number of bedrooms and bathrooms, description, listed by,
+ images, price, and ID.*/

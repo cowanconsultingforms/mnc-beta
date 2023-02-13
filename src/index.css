@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/*This is a CSS code block that sets the default styles for the HTML "body" element and the "code" element.
+
+For the "body" element:
+
+The "margin" is set to 0, meaning there will be no margin around the body.
+The "font-family" property sets the default font family for text within the body to a system font stack, 
+which includes a range of commonly available fonts on different operating systems.
+The "webkit-font-smoothing" and "moz-osx-font-smoothing" properties set the font smoothing behavior for text 
+within the body on different browsers, with the aim of making text appear smoother and more legible.
+For the "code" element:
+
+The "font-family" property sets the font family for text within the "code" element to a monospace font stack, 
+which includes a range of fixed-width fonts. This is commonly used for code blocks, as it ensures that all characters 
+occupy the same width, making it easier to read and understand.*/
