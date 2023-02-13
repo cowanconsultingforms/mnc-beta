@@ -4,6 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+NPM is used to manage dependencies for packages. 
+If you were to unpack a framework and use it outside NPM, you would have to do this every time you want to update the framework.
+
 In the project directory, you can run:
 
 ### `npm start`
