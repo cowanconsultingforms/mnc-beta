@@ -263,4 +263,16 @@ div#rs-btn-toolbar {
   background-color: black;
   color: white;
 }
-/*Cyril*/
+/*CSS for App.js 
+The CSS sets default font-family to "Garamond",
+sets styles for the "login-page" class,
+sets styles for a button with the ID "login-page",
+sets styles for a "rs-btn-toolbar" division, 
+sets an animation for the "animate" class, sets styles for different screen sizes,
+sets styles for a "header-modal", 
+sets styles for "buy-button", 
+"rent-button", 
+"sold-button",
+sets a "search-box" style,
+and sets styles for a "navigation-bar".
+*/
