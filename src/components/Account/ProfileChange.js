@@ -41,9 +41,16 @@ const Item2 = styled(Paper)(({ theme }) => ({
 
 /*
 Jose: I had changed ProfileChange. 
-In this version displays the user information but it doesn't navigate 
- useparams will take 
-navigate the user but this isn't 
+In this version displays the user information and uses useParams to navigate to user page. 
+But the profile page cannot be navigated through the navbar. I think that navbar has to have a 
+usercheck and have the user information to get navbar to work. 
+If you see homesearch or search page, the information is nested inside 
+map of the listing information and have navigation inside the map to successfully 
+navigate to listing. Useparams is used to navigate and compare the information inside the 
+map filter. 
+
+Example https://mnc-development.web.app/search/Brooklyn, this would take a user to page 
+where the listing information is filtered to Brooklyn. 
 
 */
 
