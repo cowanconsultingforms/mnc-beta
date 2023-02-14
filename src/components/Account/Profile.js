@@ -95,3 +95,12 @@ export const Profile = () => {
       );
     } */
 export default Profile;
+
+
+/*Breif: This is a React component that renders a profile page for a user.
+ It makes use of the useState and useEffect hooks to manage the state of the form and retrieve data from the Firebase Firestore.
+
+The component displays a form with an email input field, and a submit button.
+The form uses the Box component from the Material-UI library, with a TextField component for the email input.
+The TextField component is passed several props for controlling its behavior and appearance, such as id, label, value, canEdit, onChange,
+and required.*/

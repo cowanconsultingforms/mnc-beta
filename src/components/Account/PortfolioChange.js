@@ -137,3 +137,11 @@ export const PortfolioChange = forwardRef((props, ref) => {
     </Box>
   );
 });
+
+/*Breif: This is a React component that allows users to edit their portfolio information in a form.
+ The component uses several hooks from the "reactfire" library, such as "useUser" and "useFirestoreDocData", 
+ to access the Firebase authentication and Firestore databases. 
+ The component also uses Material UI components, such as the "Box", "TextField", and "Button" components, to 
+ create a visually appealing form for the user to input their information. The form includes two text fields for 
+ the user to enter the minimum and maximum values for their portfolio. When the user submits the form, the information
+  is saved to the user's document in the Firestore database.*/

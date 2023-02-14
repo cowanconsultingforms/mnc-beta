@@ -97,3 +97,19 @@ export const ProfileEdit = () => {
 };
 
 export default ProfileEdit;
+
+/*Breif: This is a React functional component that allows a user to edit their profile information in a form.
+ The component uses React hooks, such as useState, useRef, and useEffect, to manage the state of the form and handle 
+ the submission of the form data.
+
+The component makes use of the useUser hook from the reactfire library 
+to retrieve the current user's data, and the useFirestoreDocData hook to retrieve the data from the Firestore database.
+ The useFirestore hook is used to initialize the Firestore instance, and the doc method is used to create a reference to the document 
+ in the users collection for the current user.
+
+The handleSubmit function is called when the form is submitted and updates the user's information in the Firestore database
+ using the setDoc method. If the update is successful, a success alert is displayed to the user.
+
+The form fields are rendered using the TextField component from the Material UI library and display the user's information.
+ The form fields for role, user ID, email, portfolio min, and portfolio max are displayed as disabled text fields, meaning 
+ that the user cannot edit these fields in the form.*/

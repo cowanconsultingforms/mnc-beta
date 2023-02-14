@@ -249,3 +249,9 @@ export const ProfileChange = (props) => {
     </Stack>
   );
 };
+
+/* Breif: This is a React component that displays a form for changing a user's profile information. 
+It uses the ReactFire library to interact with Firebase and Firestore to retrieve the user's information, 
+update the information in the Firestore database, and log the change in the user's profile. The form has fields for email,
+ username, role, and the user's unique ID. The component also uses Material-UI for styling and layout. 
+ When the form is submitted, it will trigger an update in the Firestore database with the new information and log the change in the audit log.*/

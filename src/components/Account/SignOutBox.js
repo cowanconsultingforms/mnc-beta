@@ -49,3 +49,14 @@ export const SignOutBox = () => {
 };
 
 export default SignOutBox;
+
+
+/*Breif: This is a React component called "SignOutBox". It provides a sign-out button that allows a user to log out of a web application.
+
+The component uses the useNavigate hook from react-router-dom to navigate to the "/" route when a user logs out. It also uses the useAuth hook
+from reactfire to determine the current authentication status and access the user data.
+
+When the "Sign Out" button is clicked, the component calls the handleSignOut function, which invokes the signOut function from the
+firebase/auth library to log the user out.
+
+The component also includes some Material UI components (Box, Typography, TextField, and Button) for styling and layout purposes.*/

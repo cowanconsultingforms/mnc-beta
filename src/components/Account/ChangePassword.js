@@ -90,3 +90,17 @@ export const ChangePassword = () => {
 };
 
 export default ChangePassword;
+
+/*Breif: This code is a React component for a password change form.
+ It uses the useState hook to manage the state of the old password, new password, and confirm password fields. 
+ The handlePWChange function is called when the "Change Password" button is clicked, which validates if 
+ the new password and confirm password match, then re-authenticates the user using the current email and old password. 
+ If re-authentication is successful, it updates the password using the new password. If the passwords don't match, 
+ it shows an alert saying "Passwords do not match".
+
+It's using EmailAuthProvider.credential method to get the credentials of the user and then passing this credential to the
+ reauthenticateWithCredential method. If the password is successfully updated, it returns a success alert.
+
+It uses the useUser hook from reactfire to retrieve the user data and then uses the updatePassword method from Firebase's
+ authentication module to change the password.*/
+
