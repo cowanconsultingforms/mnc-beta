@@ -1,7 +1,7 @@
 import { IconButton, Grid, Button, Stack } from "@mui/material";
 import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState, forwardRef, useEffect } from "react";
+import React, { useState, forwardRef, useEffect, useReducer, useCallback, useMemo } from "react";
 import { InputUnstyled } from "@mui/base";
 import Item from "../Misc/Surface";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
@@ -162,21 +162,22 @@ export const HomeSearchForm = (props) => {
     setInfo({ ...info, type: e.target.value })
   }
   
-  useEffect(()=>{
-     const getData = async ()=>{
-      const data = await getDocs(listingsRef);
-      setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
-      console.log(data);
-     }
-     getData();
+  const getData = useCallback(async()=>{
+    const data = await getDocs(listingsRef);
+    setListings(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
+    console.log(data);
   }, []);
+
+  useEffect(()=>{
+    getData();
+  }, [getData])
 
  const handleFilter =(e) =>{
   const searchWord = e.target.value;
   const seachFilter = listings.filter((listing)=>{
-    return listing.city.toLowerCase().includes(searchWord) ||
-    listing.city.toUpperCase().includes(searchWord) ||
-    listing.city.includes(searchWord)
+    return listing.city.toLowerCase().startsWith(searchWord) ||
+    listing.city.toUpperCase().startsWith(searchWord) ||
+    listing.city.startsWith(searchWord)
   
   });
   if (searchWord === ""){
@@ -218,6 +219,19 @@ export const HomeSearchForm = (props) => {
         sx={{ width: "100%", flexDirection: "row", display: "flex", 
         alignItems: "center", justifyContent: "center"}}>
         <UseButtonGroup
+        /*
+        This button group is responible for changing the directory
+        but it doesn't work because I am calling firebase asynchronously
+        The initial idea was to have the collection called like this
+        const listingsRef = collection(firestore, `listings/${info.type}/properties`);
+        and changed it through the buttons using useState. But it doesn't work. What 
+        i think should be done it to switch the collection based on if the user click Buy, 
+        it would point to const listingsRef = collection(firestore, 'listings/forSale/properties');
+        and then have the useEffect could be called again. 
+        This is an idea i have but i doubt it will work. One task you can guys can do 
+        is to figure out a solution where a user can search based on Buy, Rent, Sold and 
+        the directories switch.
+        */ 
         aria-label="listing-type"
         onChange={(e) => setInfo({ ...info, type: e.target.value })}
         name="type"

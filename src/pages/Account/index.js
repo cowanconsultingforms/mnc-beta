@@ -4,9 +4,8 @@ import { Box, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
-
 import SignOutBox from "../../components/Account/SignOutBox";
-//import NavBar from "../../components/Misc/NavBar";
+
 import {ProfileChange} from "../../components/Account/ProfileChange";
 import ChangePassword from "../../components/Account/ChangePassword";
 import { useFirestore,useUser } from "reactfire";

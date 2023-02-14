@@ -11,7 +11,13 @@ import { MNCLogo,MNCLogoGray } from "./MNCLogo";
 const logoutButton = document.getElementById('logout');
 const loginButton = document.getElementById('login-page');
 const adminButton = document.getElementById('admin-page');
+/*
+Task here to finish up the navbar and have it hide Admin, Logout, Login based on the user
+This is Stack Overflow link on how a possible answer to 
+get this done. 
 
+https://stackoverflow.com/questions/69999324/how-do-i-render-components-with-different-layouts-elements-using-react-router-do
+*/ 
 
 export const buttonHider = (userState) =>{
   if(userState.loggedIn === true && userState.role !== "Administrator"){

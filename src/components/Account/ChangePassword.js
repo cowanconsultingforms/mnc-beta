@@ -1,8 +1,5 @@
 import TextField from "@mui/material/TextField";
-//import { ProfileButton } from "../../components/Buttons";
 import { Alert, Box, Button, Typography } from "@mui/material";
-//import { auth } from "../../firebase";
-//import { useAuthState, useUpdateEmail } from "react-firebase-hooks/auth";
 import { query, getDoc } from "firebase/firestore";
 import React, { useState, useEffect, Fragment } from "react";
 import {
@@ -18,7 +15,7 @@ import {
 import { useUser } from "reactfire";
 
 export const ChangePassword = () => {
-  //const [useUpdatePassword] = useState("");
+
   const { data: user } = useUser();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

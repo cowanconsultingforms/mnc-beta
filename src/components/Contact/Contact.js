@@ -5,6 +5,12 @@ import { MNCLogo } from "../Misc/MNCLogo";
 import { ContactForm } from "./ContactForm";
 import { Footer } from "../Misc/Footer";
 
+/*
+This was Adam's design.
+ I made the contact form and followed the instructions 
+in this video to get up and running. https://www.youtube.com/watch?v=NgWGllOjkbs 
+*/
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,

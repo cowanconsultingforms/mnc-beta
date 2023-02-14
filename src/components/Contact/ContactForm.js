@@ -23,6 +23,13 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 // needs an email service handler
 
+/* 
+I made the contact form and followed the instructions 
+in this video to get up and running. https://www.youtube.com/watch?v=NgWGllOjkbs  
+
+You can test this 
+*/
+
 export const ContactForm = ({ ref }) => {
   const handleSubmit = (e) => {
     e.preventDefault();

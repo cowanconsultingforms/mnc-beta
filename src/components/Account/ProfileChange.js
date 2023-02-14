@@ -22,6 +22,7 @@ import {
   collection,
   where,
   addDoc,
+  getDocs
 } from "firebase/firestore";
 import { Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -37,14 +38,44 @@ const Item2 = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+
+/*
+Jose: I had changed ProfileChange. 
+In this version displays the user information but it doesn't navigate 
+ useparams will take 
+navigate the user but this isn't 
+
+*/
+
+
+
+
 export const ProfileChange = (props) => {
-  const { role, email } = props;
-  const { data: user } = useUser();
+ /* 
+ const{ role, email } = props;
+  const{ data: user } = useUser()
+ */
   const firestore = useFirestore();
   const navigate = useNavigate();
   const formRef = useRef();
   const [isSubmit, setIsSubmit] = useState(false);
-  const { status, data: signInCheckResult } = useSigninCheck();
+  const {uid} = useParams();
+  const [users, setUsers] = useState([]);
+  const usersRef = collection(firestore, "users");
+  
+  useEffect(()=>{
+    const getData = async ()=>{
+     const data = await getDocs(usersRef);
+     setUsers(data.docs.map((doc)=> ({...doc.data(), id: doc.id})));
+     console.log(data);
+    }
+    getData();
+ }, []);
+
+  //const { status, data: signInCheckResult } = useSigninCheck();
+
+/*
+
   const logAction = async (e) => {
     e.preventDefault();
     const auditForm = new FormData();
@@ -62,7 +93,7 @@ export const ProfileChange = (props) => {
       console.log(error);
     }
   };
-  //const navigate = useNavigate();
+
   const [formValue, setFormValue] = useState({
     email: "",
     userName: "",
@@ -70,12 +101,7 @@ export const ProfileChange = (props) => {
     min: "",
     max: "",
   });
-  const userDoc = [
-    { email: "", id: "email" },
-    { userName: "", id: "userName" },
-    { role: "", id: "role" },
-    { userID: "", id: "userID" },
-  ];
+
   useEffect(() => {
     const userCheck = async () => {
       if (status === "loading") {
@@ -103,9 +129,10 @@ export const ProfileChange = (props) => {
             currentUser.email,
           ]);
           await getDoc(docRef).then((onSnapshot) => {
-            console.log(onSnapshot);
             const userRole = onSnapshot.get("role");
             const userEmail = onSnapshot.get("email");
+            console.log(onSnapshot);
+            
           });
         }
       }
@@ -129,9 +156,16 @@ export const ProfileChange = (props) => {
       });
     }
   };
-
+*/
   return (
-    <Stack
+
+    <div className="">
+      {
+        users
+          .filter((user) => user.uid === uid)
+          .map((user, index) => (
+            <div className="full-card" key={ index }>
+             <Stack
       component="form"
       ref={formRef}
       sx={{
@@ -143,7 +177,7 @@ export const ProfileChange = (props) => {
         fontFamily: "Garamond",
       }}
       noValidate
-      onSubmit={handleSubmit}
+      //onSubmit={handleSubmit}
     >
       <Typography
         variant="h4"
@@ -162,22 +196,23 @@ export const ProfileChange = (props) => {
         required
         label="UserName: "
         autoComplete="email"
-        value={formValue.userName}
+        value={user.userName}
         sx={{
           backgroundColor: "white",
           border: 1,
           borderColor: "gray",
           borderRadius: "5px",
           width:'80%',
-          justifyContent:'left'
+          justifyContent:'left',
         }}
+        
       />
 
       <TextField
         required
-        label="Required"
+        label="Required Email"
         autoComplete="email"
-        value={formValue.email}
+        value={user.email}
         sx={{
           backgroundColor: "white",
           border: 1,
@@ -190,7 +225,7 @@ export const ProfileChange = (props) => {
         disabled
         id="outlined-disabled"
         label="UserID: "
-        value={formValue.userName}
+        value={user.uid}
         sx={{
           backgroundColor: "white",
           border: 1,
@@ -203,7 +238,7 @@ export const ProfileChange = (props) => {
         disabled
         label="Role Change Disabled"
         defaultValue="Role"
-        value={formValue.role}
+        value={user.role}
         sx={{
           backgroundColor: "white",
           border: 1,
@@ -212,7 +247,7 @@ export const ProfileChange = (props) => {
         }}
       />
       <TextField
-        value={formValue.min}
+        value={user.portfolioMin}
         label=" Portfolio Min:"
         type="number"
         InputLabelProps={{
@@ -227,7 +262,7 @@ export const ProfileChange = (props) => {
       />
 
       <TextField
-        value={formValue.max}
+        value={user.portfolioMax}
         label=" Portfolio Max:"
         type="number"
         InputLabelProps={{
@@ -242,10 +277,13 @@ export const ProfileChange = (props) => {
       />
       <Button
         variant="contained" 
-        onClick={handleSubmit}
+        //onClick={handleSubmit}
       >
         Submit
       </Button>
     </Stack>
+            </div>
+          ))}
+    </div>
   );
 };

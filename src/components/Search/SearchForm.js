@@ -98,7 +98,7 @@ export const SearchForm = () => {
     setIsHover3(false);
   };
 
-  //const [data, setData] = useState("");
+ 
   const [info, setInfo] = useState(initialValues);
   const [listings, setListings] = useState([]);
   const navigate = useNavigate();
@@ -127,21 +127,30 @@ export const SearchForm = () => {
   }, []);
 
   const handleFilter = (e) => {
+
+    /*
+    What i initially did for the search bar is having the search filter through includes. 
+    So if i type 8 in the search bar, the includes will find any instance of 8. 
+    This was problem, so i tried to figure out how to have it search at the beginning of the string. 
+    And I finally found the forum that shows how to filter a string and it works. 
+    Instead of includes, it is now with startsWith. 
+
+    */ 
     const searchWord = e.target.value;
     const searchFilter = listings.filter((listing) => {
       return (
-        listing.bathrooms.includes(searchWord) ||
-        listing.bedrooms.includes(searchWord) ||
-        listing.street.toLowerCase().includes(searchWord) ||
-        listing.street.toUpperCase().includes(searchWord) ||
-        listing.zip.includes(searchWord) ||
-        listing.price.includes(searchWord) ||
-        listing.description.toLowerCase().includes(searchWord) ||
-        listing.description.toUpperCase().includes(searchWord) ||
-        listing.city.toLowerCase().includes(searchWord) ||
-        listing.city.toUpperCase().includes(searchWord) ||
-        listing.state.toLowerCase().includes(searchWord) ||
-        listing.state.toUpperCase().includes(searchWord)
+        listing.bathrooms.startsWith(searchWord) ||
+        listing.bedrooms.startsWith(searchWord) ||
+        listing.street.toLowerCase().startsWith(searchWord) ||
+        listing.street.toUpperCase().startsWith(searchWord) ||
+        listing.zip.startsWith(searchWord) ||
+        listing.price.startsWith(searchWord) ||
+        listing.description.toLowerCase().startsWith(searchWord) ||
+        listing.description.toUpperCase().startsWith(searchWord) ||
+        listing.city.toLowerCase().startsWith(searchWord) ||
+        listing.city.toUpperCase().startsWith(searchWord) ||
+        listing.state.toLowerCase().startsWith(searchWord) ||
+        listing.state.toUpperCase().startsWith(searchWord)
       );
     });
     if (searchWord === "") {

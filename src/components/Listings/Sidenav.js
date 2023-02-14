@@ -12,6 +12,10 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import StarBorder from "@mui/icons-material/StarBorder";
 
+
+//Old Design for sidenav, scraped concept
+
+
 export default function NestedList() {
   const [open, setOpen] = React.useState(true);
 

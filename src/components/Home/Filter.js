@@ -6,6 +6,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useUser, useFirestore, useSigninCheck } from "reactfire";
 import { doc, getDoc } from "firebase/firestore";
+
+/*// Old Designs for filtering search information, this uses a select */ 
+
+
 export default function FilterBox() {
   const [listing, setListing] = useState('');
   const [neighborhood, setNeighborhood] = useState('');

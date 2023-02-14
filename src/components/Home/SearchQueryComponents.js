@@ -12,6 +12,11 @@ import {
 
 export const Item = styled(Paper)({});
 
+/* 
+This is based on the AddListings.js, currently this file
+ isn't connected to anything currently. 
+ */
+
 export const RadioButtonsGroup = ({ onChange }) => {
   return (
     <FormControl>

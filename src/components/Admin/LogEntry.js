@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useAuth,useFirestore,useFirestoreCollectionData } from "reactfire";
 import { Box, Card, CardContent, CardHeader, Grid } from "@mui/material";
 import { collection, getDocs, query,where } from "firebase/firestore";
-import { useFirestore, useFirestoreCollectionData } from "reactfire";
 import { useForm, Controller } from "react-hook-form";
 
 const LogEntries = ({children}) => {

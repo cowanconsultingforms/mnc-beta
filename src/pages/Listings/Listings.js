@@ -8,7 +8,6 @@ import { useAuth } from "reactfire";
 import "./listingsStyles.css";
 import * as ReactDOM from "react-dom";
 import BasicTable from "./Table";
-
 import {
   query,
   getDocs,
@@ -19,6 +18,7 @@ import {useCollectionData} from "react-firebase-hooks/firestore";
 import { Container,Header,Content,Footer,} from "rsuite";
 
 // primary container for Listing Page data
+// Old listings Design
 
 const initialListingData = {
   type:['forSale','forRent','sold'],

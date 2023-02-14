@@ -29,7 +29,7 @@ documentId,
 setDoc,
 writeBatch,
 } from "firebase/firestore";
-
+import { useParams } from "react-router-dom";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -57,7 +57,7 @@ const initialValues = {
   listed_by: "",
   created_at: "",
 };
-export const CarouselImagePull = () => {
+export const CarouselImagePull = ({}) => {
   /*Let me explain what is going on here, 
    When you use import * as React from 'react';, 
    it imports every react hooks. 
@@ -83,13 +83,14 @@ export const CarouselImagePull = () => {
   const [description, setDescription] = useState("");
   */
 };
-export function CarouselImage() {
+export function CarouselImage({listings}) {
   const firestore = useFirestore();
 //const storage = useStorage();
 const batch = writeBatch(firestore);
 const formRef = useRef();
 const [data, setData] = useState(initialValues);
 const [docID, setDocID] = useState("");
+const {listing_ID} = useParams();
 //const newDoc = doc(firestore, `$listings/${data.type}/properties/${docID}`);
 const collectionRef = collection(
   firestore,
@@ -109,13 +110,13 @@ const docData = {
   
 const [setDocData] = useState({ ...collectionRef});
 
-const [index, setIndex] = useState(0);
+const [index1, setIndex] = useState(0);
 
 const handleSelect = (selectedIndex, e) => {
   setIndex(selectedIndex);
 };
 
-
+/*
 useEffect(() => {
   const fetchDoc = async () => {
     getDoc(collectionRef).then((onSnapshot) => {
@@ -126,6 +127,7 @@ useEffect(() => {
   fetchDoc(docData);
 });
 
+*/
 
 
   const storage = useStorage();
@@ -154,17 +156,24 @@ useEffect(() => {
   if (status3 === "loading") {
     return <span>loading...</span>;
   }
+  
   return (
-    <Carousel fade activeIndex={index} onSelect={handleSelect}>
+    <div>
+       {
+            listings
+              .filter((listing) => listing.listing_ID === listing_ID)
+              .map((listing, index) => (
+                <div className="full-card" key={ index }>
+    <Carousel activeIndex={index1} onSelect={handleSelect} fade>
       <Carousel.Item>
-        <img className="carousel" src={url1} alt="First slide" />
+        <img className="carousel" src={listing.images.image1} alt="First slide" />
         <Carousel.Caption>
           <h3>First slide label</h3>
           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
-        <img className="carousel" src={url2} alt="Second slide" />
+        <img className="carousel" src={listing.images.image2} alt="Second slide" />
 
         <Carousel.Caption>
           <h3>Second slide label</h3>
@@ -172,7 +181,7 @@ useEffect(() => {
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
-        <img className="carousel" src={url3} alt="Third slide" />
+        <img className="carousel" src={listing.images.image3} alt="Third slide" />
 
         <Carousel.Caption>
           <h3>Third slide label</h3>
@@ -182,6 +191,10 @@ useEffect(() => {
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>
+                </div>
+              ))}
+    </div>
+   
   );
 }
 

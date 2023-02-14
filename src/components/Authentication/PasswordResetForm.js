@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { useAuth, useSigninCheck, useUser } from "reactfire";
 import { getRedirectResult } from "firebase/auth";
 import { Outlet } from "react-router-dom";
+import { Alert } from "react-bootstrap";
+
+
+
+//Pasword redirect error
+
 export const PasswordRessetForm = () => {
   const { status, data: signInCheckResult } = useSigninCheck();
   const { user } = useUser();

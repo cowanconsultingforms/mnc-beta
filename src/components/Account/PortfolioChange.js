@@ -21,7 +21,13 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
-//import { useFirestore, useFirestoreDocData, useUser } from "reactfire";
+
+/*
+Old Design for Portifolio change, I moved it to the profile change and merged it with the 
+changing profile. I was having trouble having the Portifolio below the profile, I spoke with Adam and 
+Mr. Cowan about the design and I decided to merge them together. 
+*/
+
 
 export const PortfolioChange = forwardRef((props, ref) => {
   const [isSubmit, setIsSubmit] = useState(false);

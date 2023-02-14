@@ -40,11 +40,17 @@ import {
   useStorageDownloadURL,
   useStorageTask,
 } from "reactfire";
+
+//This is the current 
+
+
 //Actions Needed to Complete Listing Page
 // 1. Get Listing Data
 // 2. Get Listing Images
 // 3. Display them in appropriate containers
 // 4. come up with a system of navigation to cycle through images + also listings
+
+//Actions completed
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -68,7 +74,9 @@ const initialValues = {
   bathrooms:"",
   created_at: "",
 };
-/*  <p style={{display:"none"}}>{listing_ID}</p> inside the topography and it causes invaild dom nesting */
+/*  
+<p style={{display:"none"}}>{listing_ID}</p> inside the topography and it causes invaild dom nesting 
+*/
 export const ListingPage = ({chiildren}) => {
   const {listing_ID} = useParams();
   const firestore = useFirestore();
