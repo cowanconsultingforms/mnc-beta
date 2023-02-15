@@ -177,3 +177,16 @@ export const RegisterForm = ({ title }) => {
 };
 
 export default RegisterForm
+
+/*Breif: Exports a React component called RegisterForm that displays a form for user registration.
+
+It uses various hooks from the reactfire library to manage Firebase authentication and Firestore database operations.
+
+The form takes in user input for email, password, and confirm password, and on submission,
+it creates a new user account with Firebase Authentication,
+and then adds the user's email, admin status, and login time to a users collection in the Firestore database.
+
+The form also includes error handling for when passwords do not match or when there is an error creating the user.
+The useLocation and useNavigate hooks from react-router-dom are used to manage navigation between different pages in the application.
+
+The file also imports various components and functions from Material UI and Firebase libraries to manage UI and database operations. */

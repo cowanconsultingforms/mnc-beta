@@ -91,3 +91,16 @@ export const ManageUsers = () => {
     </Box>
   );
 };
+
+/*Breif: React component that allows for managing users in a Firestore database.
+
+Here are some of the key things this file does:
+
+a. Imports necessary libraries such as React, reactfire, and MUI (Material UI).
+b. Creates a collectionRef using useFirestore and the collection function.
+c. Queries the collection using query and orderBy to get the documents in ascending order of userName.
+d. Uses useFirestoreCollection to listen to changes in the collection and get the status and data of the query.
+e. Uses useState to set the columns and rows of the DataGrid which will be used to display the users.
+f. Sets up a useForm hook to handle form data submitted by the user.
+g. Renders a table with rows of user data returned from Firestore using the DataGrid component.
+h. Uses useEffect to update the user data when the status and docs change. */

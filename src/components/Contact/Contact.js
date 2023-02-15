@@ -49,3 +49,11 @@ export default Contact;
     sendEmail(data.name, data.email, data.phone, data.message);
     navigate("/");
   }; */
+
+  /*Breif: Defines a React functional component called Contact, which returns a ContactForm component wrapped in a styled Paper component. 
+  The ContactForm component is a form used to collect contact information and a message from the user, which can be submitted to send an email.
+  
+  The useState hook is used to manage the form data, and the useNavigate hook from the react-router-dom library is used to navigate 
+  to a different page after the form is submitted. The useRef hook is used to reference the form element.*/
+
+  //Issue: Code for sending the email has been commented out and is not currently functional. 2-15-23

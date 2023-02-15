@@ -174,3 +174,15 @@ export const ContactForm = ({ ref }) => {
 };
 
 export default ContactForm;
+
+/*Breif:JS File that exports a React component called ContactForm.
+
+The component renders a contact form that allows a user to enter their name, email address, phone number, and message. 
+When the user submits the form, the component uses the emailjs library to send an email to a specified email address.
+
+The component also uses the useNavigate hook from the react-router-dom library to navigate to the home page of the application
+when the user clicks the "Home" button.
+
+The component uses various Material UI components such as Box, Typography, Button, TextField, ButtonGroup, TextareaAutosize, Divider,
+Paper, and Stack to create the UI of the contact form. The component also uses the styled function from the Material UI library to
+create a custom styled Paper component called Item. */

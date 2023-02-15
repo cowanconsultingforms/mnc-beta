@@ -299,3 +299,21 @@ export const AddListingForm = () => {
 };
 
 export default AddListingForm;
+
+/*Breif: JS File contains a React component: AddListingForm. 
+This component is a form that allows users to add a new real estate listing to a Firebase Firestore database.
+
+The component imports various Material UI components, as well as Firebase and ReactFire hooks and functions for
+ interacting with Firestore and Firebase Storage. The component also imports a custom radio button component called UseRadioGroup.
+
+The initialValues object contains default values for the form fields, 
+including docId, type, street, city, state, zip, price, bedrooms, bathrooms, sqft, description, images, and imageCount.
+
+The component defines state variables using the useState hook, including data, docID, progress, and file.
+
+The component contains event handlers for submitting the form and handling changes to form fields and file uploads.
+
+The JSX code in the component renders a Material UI form with various fields for entering real estate listing details,
+ as well as a file upload button. 
+ When the user submits the form, the component uses Firebase Firestore and Storage functions 
+ to add the new listing to the database and upload the associated images. */
