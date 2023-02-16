@@ -70,6 +70,19 @@ import {
     );
   }
 
+/*Breif: Defines a React component called ContactButton.
+
+Imports various UI components and libraries such as Box, Typography, Button, TextField, TextareaAutosize, Divider, Paper, Stack, styled, and emailjs.
+
+ContactButton component is used to render a button with the text "Contact an agent about this listing".
+When the button is clicked, it invokes the handleSubmit function which sends an email using emailjs library with the information from the form.
+
+The isHover5 state and the handleMouseEnter5 and handleMouseLeave5 functions are used to handle changes 
+to the button's color and text when the mouse hovers over it.
+
+The formRef is a reference to the form input element.
+The handleSubmit function uses this reference to get the form data and send an email using emailjs.
+ContactButton component can be used in the React application to provide a button for users to contact an agent about a particular listing. */
 
 
 

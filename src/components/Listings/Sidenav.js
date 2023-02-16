@@ -67,3 +67,16 @@ export default function NestedList() {
     </List>
   );
 }
+
+/*Breif: Eexports a React component called NestedList.
+
+The component renders a nested list with some default items in the root level, 
+including "Sent mail", "Drafts", and "Inbox". When "Inbox" is clicked, it expands a nested sub-list, 
+which in this case contains only one item, "Starred". 2-15-23
+
+The useState hook is used to toggle the visibility of the sub-list when the "Inbox" item is clicked.
+handleClick is the event handler that toggles the open state variable between true and false.
+
+The component makes use of various MUI (Material-UI) components to create a visually appealing
+nested list, including List, ListSubheader, ListItemButton, ListItemIcon, ListItemText, Collapse, 
+and several icons like InboxIcon, DraftsIcon, SendIcon, ExpandLess, and ExpandMore.*/

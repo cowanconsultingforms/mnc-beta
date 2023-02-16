@@ -151,3 +151,21 @@ export default function PersistentDrawerLeft() {
     </Box>
   );
 }
+
+/*Breif: React component that renders a persistent drawer on the left side of the screen using the Material UI library. 
+The drawer contains two lists of items with icons, and it can be opened and closed by clicking on the menu icon on the app bar.
+
+Component starts by importing various components and utilities from the Material UI library. 
+Then defines the width of the drawer and some styled components using the styled function from Material UI.
+The styled components include a Main component that represents the main content of the page, 
+an AppBar component that represents the top app bar, and a DrawerHeader component that represents the header of the drawer.
+
+The PersistentDrawerLeft function is the main React component that renders the app.
+Uses the useTheme hook to get the current theme, and the useState hook to manage the open/closed state of the drawer. 
+The handleDrawerOpen and handleDrawerClose functions are event handlers that update the open state when the user clicks on the menu icon or the chevron icon.
+
+The component returns a Box component that wraps the entire app, 
+and renders several child components including CssBaseline, AppBar, Drawer, DrawerHeader, Divider, List, ListItem, ListItemButton, ListItemIcon, 
+and ListItemText. 
+The AppBar and Main components use the open state to control their positioning when the drawer is opened or closed.
+ The Drawer component is the main content of the drawer, and it contains two lists of items with icons.*/

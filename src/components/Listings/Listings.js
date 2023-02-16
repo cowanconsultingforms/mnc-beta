@@ -73,3 +73,16 @@ export const Listing = (props) => {
 
   return <Box className="Listing" component="div"></Box>;
 };
+
+/*Breif: Imports various components and functions from external libraries such as React, MUI, and Firebase, 
+and exports a React component called Listing. 
+
+a.Defines an initial state object and a reducer function to update the state.
+b.Sets up a connection to Firestore using the useFirestore hook from reactfire.
+c.Defines a Firestore collection that will be queried later.
+d.Defines a React component called Listing that takes in props including the type of the listing
+ (forSale or forRent), id, address, city, state, zip, price, description, images, listed_by, and created_at.
+e.Uses the useFirestoreCollection and useFirestoreDocDataOnce hooks from reactfire to fetch data from Firestore and
+ store it in local state using useState.
+f.Sets up an useEffect hook that fetches data from Firestore and updates the local state whenever the component mounts.
+g.Returns a Box component that renders a listing, but at the moment the component doesn't display any content other than the empty box.*/

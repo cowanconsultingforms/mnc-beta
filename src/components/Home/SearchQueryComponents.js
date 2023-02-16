@@ -87,3 +87,20 @@ export const UseRadioGroup = ({ onChange }) => {
     </RadioGroup>
   );
 };
+
+/*Breif: Imports various modules and components from the Material-UI library &
+defines four React components: Item, RadioButtonsGroup, MyFormControlLabel, and UseRadioGroup.
+
+The Item component creates a styled Paper component using the styled function from Material-UI.
+
+The RadioButtonsGroup component is a form control that displays a group of radio buttons allowing the user to 
+select one of three listing types. 
+When the user selects a radio button, the onChange function passed as a prop is called with the selected value.
+
+The MyFormControlLabel component is a custom implementation of the FormControlLabel component from Material-UI. 
+It uses the useRadioGroup hook to get the current value of the radio group and sets the checked prop of the 
+FormControlLabel based on whether the current value matches the value of the component.
+
+The UseRadioGroup component is a more generic version of the RadioButtonsGroup component that can be used with any group of radio buttons. 
+Uses the MyFormControlLabel component to render each radio button.
+When the user selects a radio button, the onChange function passed as a prop is called with the selected value.*/

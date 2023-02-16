@@ -187,3 +187,17 @@ const BasicTable =({Data})=>{
   )
 }
 export default BasicTable
+
+/*Breif: React component that renders a table of property listings data based on the type of listing passed as a prop (Data).
+ Uses the Firebase Firestore and Storage services to fetch and manage the data. 
+ The component also includes a form to contact an agent about a specific property listing, and uses the EmailJS service to send the form data 
+ to an email address.
+
+Libraries used:
+
+Firebase Firestore: A cloud-hosted NoSQL database used to store and manage the property listings data.
+Firebase Storage: A cloud storage service used to store the images associated with each property listing.
+React: A JavaScript library used for building user interfaces.
+Reactfire: A library that provides hooks to access Firebase services from a React component.
+MUI: A popular React UI framework that provides pre-built React components to quickly create user interfaces.
+EmailJS: A service that provides a way to send emails directly from client-side JavaScript code.*/

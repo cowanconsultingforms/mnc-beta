@@ -179,3 +179,19 @@ export const UseButtonGroup = ({ onChange }) => {
   );
 };
 
+/*Breif: JS code block that imports various modules and defines React components for a user interface.
+
+
+Imports several modules from Firebase, Material UI, and React.
+
+Defines a component called Item using the styled function from Material UI.
+This component is a styled version of the Paper component.
+
+Defines a custom component called MyFormControlLabel. 
+This component is used to display a button with a label, and it is used in conjunction with UseButtonGroup.
+
+Defines a custom component called UseButtonGroup. 
+This component is used to display a group of buttons that represent different types of real estate listings, 
+such as "for sale", "rentals", and "sold".
+The component uses the useReducer hook to manage the state of the selected button. 
+It also defines three helper functions to handle button click events, and three more functions to handle mouse hover events.*/

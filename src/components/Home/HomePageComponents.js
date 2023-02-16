@@ -169,3 +169,12 @@ export const UseButtonGroup = ({ onChange }) => {
   );
 };
 
+/*Breif: Imports several libraries and components from those libraries, including Firebase Firestore, Material-UI, and React.
+Defines several custom components, including Item, RadioButtonsGroup, MyFormControlLabel, and UseButtonGroup, 
+which can be used to render various UI elements in a web application.
+
+The RadioButtonsGroup component renders a set of radio buttons for selecting a listing type, 
+and the MyFormControlLabel component is a custom component that is used to render each radio button.
+
+The UseButtonGroup component is a custom component that renders a group of buttons, including "Buy", "Rent", and "Sold" buttons,
+and responds to user hover and click events.*/

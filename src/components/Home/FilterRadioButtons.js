@@ -49,3 +49,10 @@ export default function FilterRadioButtons() {
     </FormControl>
   );
 }
+/*Breif: Defines a React component called FilterRadioButtons
+that renders a set of radio buttons with different values, such as "Neighborhood", "City", "State", "Address", "Zip", and "Listing ID".
+When a user selects one of these values, the handleChange function is called to set the listing state to the selected value.
+
+The component uses Material UI components such as Radio, FormControl, FormLabel, and FormControlLabel to style and position the radio buttons.
+
+This component can be used as a filter to search for listings on a real estate website, for example.*/

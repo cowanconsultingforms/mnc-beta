@@ -283,5 +283,18 @@ sx={{flexDirection: "column", display: "flex" }}>
 export default HomeSearchForm;
 
 
+/*Breif: Defines a search form used in a home search website. 
+The form consists of an input field that allows users to search by location or point of interest.
+The form is defined as a functional component HomeSearchForm and it uses various
+MUI (Material UI) components like IconButton, Grid, Button, Stack, InputUnstyled, Spinner, AppBar, Box, Toolbar, Typography, MenuIcon, and LocationOnIcon.
+Utilizes other external libraries like react-bootstrap, react-router-dom, firebase, and reactfire.
 
+Initializes various states that are used to handle mouse events and store form data. 
+Initializes a firestore object that is used to interact with Firebase Firestore, and sets up a reference to a collection of listings in the database.
+The useEffect hook is used to fetch data from the listings collection and store it in the listings state. 
+The useState hook is also used to handle changes to the info and searchQuery state objects.
+
+The CustomInput component is used to create a styled input field that is used for the search.
+The goListings function is used to navigate to a different page when the user submits the search form. 
+The handleType function is used to handle changes to the type state property when the user selects a different search type. */
 

@@ -186,3 +186,18 @@ useEffect(() => {
 }
 
 export default CarouselImage;
+
+/*Breif: JavaScript/React file that contains several import statements of necessary packages, 
+- as firebase, react, react-router-dom, react-bootstrap, reactfire, and @mui/material,
+
+Declares two components: CarouselImagePull and CarouselImage. 
+
+CarouselImage, on the other hand, contains several hooks such as useState, useEffect, useRef, and useNavigate. 
+Ccontains constants and variables, including initialValues, formRef, data, docID, collectionRef, docData, setDocData, index, 
+handleSelect, storage, imageRef1, imageRef2, imageRef3, url1, url2, and url3.
+
+CarouselImage implements a carousel that displays images from a Firebase storage bucket, 
+based on the url constants obtained from useStorageDownloadURL. 
+Retrieves data from a Firestore database and populates the docData object with that data.*/
+
+//Issue:  CarouselImagePull does not contain any logic or implementation, so it is effectively empty and does nothing. - 2-15-23
