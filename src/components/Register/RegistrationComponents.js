@@ -28,9 +28,10 @@ export const RegistrationInput = ({}) => {
   } = useForm();
   const { fields, append } = useFieldArray();
   const onSubmit = (data) => console.log(data);
-  //The component then returns a Controller component from react-hook-form, 
-  //which renders a TextField component from @mui/material. 
-  //The Controller component is used to manage the input field's state and validation in a controlled way. 
+  /*The component then returns a Controller component from react-hook-form, 
+  which renders a TextField component from @mui/material. 
+  The Controller component is used to manage the input field's state 
+  and validation in a controlled way.*/
   return (
     <Controller
       onChange={(e) => e.target.value}
@@ -43,8 +44,10 @@ export const RegistrationInput = ({}) => {
   );
 };
 
-/*The NestedInput function is a separate functional component that is used in the form to construct nested input fields. 
-It retrieves all of the hook methods from the parent useForm hook using the useFormContext hook from react-hook-form and
+/*The NestedInput function is a separate functional component 
+that is used in the form to construct nested input fields. 
+It retrieves all of the hook methods 
+from the parent useForm hook using the useFormContext hook from react-hook-form and
  returns an input field with a register function that connects the field to the useForm hook.*/
 function NestedInput() {
   const { register } = useFormContext(); // retrieve all hook methods
