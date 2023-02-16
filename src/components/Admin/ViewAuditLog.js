@@ -24,3 +24,10 @@ export const ViewAuditLog = () => {
 };
 
 export default ViewAuditLog;
+
+/*Breif: Defines a React component named ViewAuditLog.
+ It imports various components and functions from different libraries such as React, firebase/firestore, and @mui/material. 
+ The component returns a button that has an onClick handler named handleClick. 
+ However, the handleClick function is currently empty, and there is no implementation provided for displaying Firestore data in a table. 
+ The component also uses the useNavigate hook from react-router-dom to enable navigation to other routes within the application.
+ */

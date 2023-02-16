@@ -93,3 +93,14 @@ export const SearchUser = ({ children }) => {
 };
 
 export default SearchUser;
+
+
+/*Breif: Exports a component called SearchUser which is a form that allows users to search for user data in a Firestore collection.
+ It uses the useFirestoreCollectionData and useFirestore hooks from reactfire to interact with Firestore.
+
+When the form is submitted, it queries the Firestore collection "users" using the where method to filter on non-null "email" fields.
+It then retrieves the data using the getDocs method and sets the retrieved data to the dataGrid state using the setDataGrid method.
+
+The component renders a form with a search input field and a submit button. When the form is submitted, the retrieved data is displayed
+in a DataGrid component from @mui/x-data-grid. 
+The DataGrid is initially rendered with an empty set of rows and the retrieved data is added using the setDataGrid method. */

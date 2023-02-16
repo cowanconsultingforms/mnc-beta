@@ -12,7 +12,7 @@ const LogEntries = ({children}) => {
   const {useForm} = useForm({})
   const auditLog = collection(firestore, "auditLogs");
   const q = query(auditLog, where('docId', "!=", null));
-  const {data:documentData} = useFirestoreCollectionData(query(auditLog,where(docId,'!=',null)),initialData:{})
+  const {data:documentData} = useFirestoreCollectionData(query(auditLog,where(docId,'!=',null)),initialData,{})
   const pullLogs = async (e) => {
     e.preventDefault();
     try {
@@ -49,3 +49,17 @@ const LogEntries = ({children}) => {
 };
 
 export default LogEntry;
+
+/*Breif: Defines a component called LogEntries.
+This component receives some props related to a log entry and then uses some React hooks to retrieve and display the audit logs.
+Specifically, the component uses useAuth and useFirestore hooks from the reactfire library to authenticate the user and access
+Firestore, respectively. It also uses the useForm hook from the react-hook-form library.
+
+The component creates a Firestore collection called auditLogs and creates a query to retrieve all the documents that have a non-null docId.
+The component also uses useFirestoreCollectionData hook to retrieve the collection data and stores the data in documentData.
+
+The component defines a function called pullLogs that uses the getDocs function to retrieve the query data and then pushes
+the result into the documentData array. Finally, the component renders a Box component with a Card inside that displays the action 
+and timestamp props received by the component, as well as the documentData.*/
+
+//the useEffect hook is incomplete, and it's not clear what it is intended to do.  - Need to Review Code 2-15-23

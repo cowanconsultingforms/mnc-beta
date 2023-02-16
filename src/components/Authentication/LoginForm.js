@@ -159,3 +159,16 @@ export const LoginForm = () => {
 };
 
 export default LoginForm;
+
+/*Breif: Exports a React component named LoginForm.
+It imports various libraries such as React, @mui/material, firebase/auth, react-router-dom, and reactfire. 
+The component has a form for logging in that accepts an email and password, 
+and it handles authentication using Firebase's authentication service. 
+When the user submits the form, it calls the signInWithEmailAndPassword function from the Firebase authentication library to authenticate the user.
+
+The component also imports useForm from react-hook-form to manage the form data, 
+and uses hooks like useState, useEffect, and useCallback to manage the component's state.
+
+The LoginForm component renders a box containing the login form with two buttons: "Login" and "Register."
+When the user clicks the "Register" button, the component navigates to the registration page. 
+The component also checks whether the user is already logged in and displays a message if they are. */
