@@ -375,3 +375,22 @@ sx={{flexDirection: "row", display: "flex" }}>
 };
 
 export default SearchContainer;
+
+
+/*Imports various libraries such as React, Firebase, MUI, and Bootstrap, among others. It also defines some constants for colors.
+
+The SearchContainer component is defined, which is exported.
+Defines state variables such as isHover, isHover2, isHover3, info, and listings. 
+Defines functions for handling mouse hover events for three different elements.
+
+The CustomInput component is defined using the InputUnstyled component from MUI. 
+Uses a styled input element with custom styling for its appearance.
+
+goListings function is defined, which navigates the user to the listings page when called.
+
+Defines several MUI components, such as IconButton, Grid, Button, Stack, Box, Toolbar, Typography, and Select. 
+It also imports several MUI icons, such as SearchTwoToneIcon, CloseIcon, and MenuIcon.
+
+The SearchForm and BasicTable components are imported.
+
+Exports the SearchContainer component.*/

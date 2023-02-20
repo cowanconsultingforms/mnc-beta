@@ -166,3 +166,18 @@ export function CarouselSearchImage() {
 }
 
 export default CarouselSearchImage;
+
+
+/*Defines a React component CarouselSearchImage that renders a Bootstrap carousel displaying images of property listings
+filtered by a city parameter received through React Router. The component uses Firebase for storing and retrieving data and images.
+
+The component imports various modules and components from React, React Router, Firebase, and Material UI. 
+The useEffect hook is used to fetch the property listings from Firebase Firestore and store them in the listings state variable.
+
+The component then creates references to three images stored in Firebase Storage, retrieves their download URLs using the useStorageDownloadURL 
+hook, and renders them as carousel items using the Carousel component from React Bootstrap.
+
+The listing.images1, listing.images2, and listing.images3 properties referenced in the src attributes of the img tags correspond to the 
+download URLs retrieved from Firebase Storage.
+
+The component returns the rendered carousel wrapped in a div element.*/

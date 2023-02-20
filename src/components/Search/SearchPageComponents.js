@@ -222,3 +222,13 @@ export const UseButtonGroup = ({ onChange }) => {
     </ButtonGroup>
   );
 };
+
+/*Imports various components and libraries from different packages such as firebase, MUI (Material-UI), and React.
+
+Ddefines some constants such as colors and styled components.
+
+CustomInput component is a custom input field with some specific styles.
+
+RadioTypeGroup component is a radio button group for selecting a listing type.
+
+UseButtonGroup component is a button group for choosing listing types (Buy, Rent, Sold).*/

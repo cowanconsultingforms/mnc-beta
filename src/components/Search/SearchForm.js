@@ -324,3 +324,19 @@ export const SearchForm = () => {
 };
 
 export default SearchForm;
+
+/*Defines a React component called SearchForm that renders a search form for real estate listings. 
+The form includes various input fields for the type of property, address, price, number of bedrooms/bathrooms, and square footage, 
+as well as a search bar for filtering the listings.
+
+The component imports various dependencies from the Material-UI library, as well as from Firebase and React Router. 
+
+Functionality: Component initializes some state variables, including info which represents the values of the input fields, 
+listings which is an array of the real estate listings, and searchQuery which holds the filtered listings based on the user's search.
+
+When the component is mounted, it queries the Firestore database for the real estate listings and sets the listings state variable to the 
+retrieved data. 
+The handleFilter function is used to filter the listings based on the user's input in the search bar.
+
+The component renders a Material-UI AppBar component with a search icon and the search bar as its children. 
+The rest of the form inputs are rendered inside a Grid2 component.*/
