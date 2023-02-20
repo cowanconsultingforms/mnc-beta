@@ -165,3 +165,33 @@ export const NavBar = () => {
   );
 };
 export default NavBar;
+
+/* This code defines a NavBar component that renders a navigation bar with a logo 
+and links to different pages of a website. The component uses several hooks from 
+the reactfire and react-router-dom packages to interact with the Firebase 
+authentication and Firestore database, and to handle the navigation between pages.
+
+The component imports several functions and components from different packages, 
+including useState, useEffect, startTransition, Suspense, useCallback, useMemo 
+from the react package, useNavigate from the react-router-dom package, and 
+onAuthStateChanged, signOut from the firebase/auth package, and others.
+
+The NavBar component defines a set of pages that the user can navigate to, 
+and renders buttons for each of these pages. The buttons call a function that uses
+ the useNavigate hook to change the URL and navigate to the corresponding page. 
+ The component also uses the useUser hook from reactfire to get the current user, 
+ and displays a "Login/Register" button or a "Logout" button depending on whether 
+ the user is logged in or not.
+
+The component also uses a buttonHider function to display or hide certain buttons 
+depending on the user's role, and uses the useEffect hook to call this function 
+when the component mounts or updates. The useFirestore hook is used to get a 
+reference to the Firestore database, and the useFirestoreDocData hook is used to 
+get the data from a specific document in the database.
+
+The NavBar component exports NavBar as the default export, and buttonHider as a 
+named export.
+*/
+
+
+

@@ -189,3 +189,33 @@ export const Footer = () => {
   );
 };
 export default Footer;
+
+/* This code defines a React component for a footer section of a web page. 
+It uses the reactfire library to fetch images stored in Firebase Storage and 
+displays them. The footer section also includes several text lines that provide 
+company information and contact details.
+
+There are three components defined in this code for displaying images: 
+FooterImage1, FooterImage2, and FooterImage3. Each of these components fetches 
+an image from a specific URL in Firebase Storage and renders it in a styled img 
+element.
+
+The Footer component is the main component that renders the footer section. 
+It uses the Box, Grid, Stack, and Paper components from the @mui/material library 
+for styling. The Footer component includes the three image components and several 
+Box components that render the text lines.
+
+The useStorage hook is used to get a reference to the Firebase Storage instance. 
+The ref function is used to get a reference to a specific file in Firebase Storage.
+ The useStorageDownloadURL hook is used to get the download URL of the file, 
+ which is used as the src attribute of the img element. The status variable is 
+ used to track the state of the download operation, and the loading... text 
+ is displayed until the download completes.
+
+ */
+
+
+
+
+
+
