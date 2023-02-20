@@ -37,4 +37,5 @@ Inside the NavBarButton component, the useAuth hook from reactfire is called to 
  
 The useState hook is also called to set the profile state to null.
 
-Current Issue: The useEffect hook is currently empty, which means that it doesn't perform any side effects when the component is mounted or updated.*/
+Current Issue: The useEffect hook is currently empty, which means that it doesn't
+ perform any side effects when the component is mounted or updated.*/

@@ -101,3 +101,27 @@ export const BasicTextFields =({title,setPassword,setEmail,handleAction}) => {
     );
 }
 export default TextField;
+
+/* This is a JavaScript code file that defines a set of React components and 
+exports them.
+
+The first line imports the React library, which is used to create React 
+components. The next few lines import several libraries and components from MUI 
+(Material UI), a popular UI library for React.
+
+The code then defines several React components using the styled function from MUI.
+ The TextLabel and TextInput components are styled labels and input fields, 
+ respectively, while the ReadOnlyTextBox and StyledTextArea components are 
+ read-only text boxes and styled text areas.
+
+ The TextField and TextArea components use the above mentioned styled components 
+ to render text fields and text areas respectively. The TextFieldLogin component 
+ is a form control for login credentials that uses the Form component from rsuite.
+
+
+ Finally, the BasicTextFields component renders a form that uses the TextField 
+ component to render email and password text fields and the Button component to 
+ render a button. The title, setPassword, setEmail, and handleAction props are 
+ used to customize the component.
+
+ */
