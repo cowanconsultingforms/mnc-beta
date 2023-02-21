@@ -78,34 +78,20 @@ export const states = [
   "WY",
 ];
 
-/* This Block of code imports several functions and modules from Firebase, 
-MUI, and React libraries.
+/*Breif: Imports various modules and components from different libraries, including Firebase/Firestore, Material-UI (specifically, 
+  the Alert component), and React.
 
-The serverTimestamp, collection, and addDoc are imported from firebase/firestore. 
-These are functions that are used to interact with Firestore database.
+The TextInput component is a forwardRef that simply renders an HTML input element with the classname "TextInput" and 
+forwards any props to the input element.
 
-The Alert component is imported from the @mui/material library, 
-which is used to render a user-friendly alert component to display 
-messages to the user.
+The AuditLogger component takes in several props (action, username, userDoc, and targetid) and returns an object with those props and a timestamp
+value generated from the serverTimestamp function from Firebase/Firestore. 
 
-The useState, forwardRef, and useReducer hooks are imported from the React library. 
-These are used to manage and update the state of the component, as well as to
- pass a reference to a child component.
+Depending on the value of the action prop, the returned object will have different values for its action key.
 
+Finally, the states array simply contains a list of US state abbreviations.
 
-The TextInput component is a forwardRef component that renders an input element 
-with the classname TextInput. It takes in props and a reference to the input 
-element.
-
-
-The AuditLogger component is a function that takes in four props - action, 
-username, userDoc, and targetid. It returns an object with these four props and 
-a timestamp prop that is set to the server timestamp using the serverTimestamp() 
-function from Firebase.
-
-
-The states array is a list of US states' abbreviations.
-*/
+Issue: Un clear from this code whether or how this array is used elsewhere in the application.*/
 
 
 

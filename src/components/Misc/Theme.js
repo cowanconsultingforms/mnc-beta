@@ -19,21 +19,14 @@ theme = createTheme(theme, {
   },
 });
 
-/* This code imports the createTheme function from the @mui/material/styles 
-module, which is a function used to create and customize a Material-UI theme.
+/*Breif: Creates a MUI (Material-UI) theme using the createTheme function imported from the @mui/material/styles module.
 
+Theme variable is assigned an object with a palette property that defines two color schemes, primary and secondary, with their corresponding colors.
 
-A theme object is created using the createTheme function, which has two properties
- for the palette: primary and secondary. The primary property defines the main 
- color of the application, while the secondary property defines a secondary color.
-The main property of each color specifies the main color value.
+CreateTheme function is called again with two arguments: the first argument is the theme object, and the second argument
+ is another object that overrides the info color in the palette.
 
-Then, the theme object is updated by calling the createTheme function again, 
-but this time with the previous theme object as the first argument. This creates 
-a new theme object that extends the original theme. The new object adds a new 
-color to the palette object, called info, which uses the main value from the 
-secondary color of the original theme.
+The info color is set to the same color as the secondary color in the original palette, by using theme.palette.secondary.main.
 
-To end with, the code creates and customizes a Material-UI theme using the 
-createTheme function.
-*/
+The resulting theme object has three color schemes: primary, secondary, and info. The info color is derived from the secondary color 
+in the original palette. This theme can then be used to style MUI components in a React application.*/

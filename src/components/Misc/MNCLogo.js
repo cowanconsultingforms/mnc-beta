@@ -50,24 +50,15 @@ export const MNCLogoGray = () => {
 };
 export default {MNCLogo,MNCLogoGray};
 
-/* This code exports two React components, MNCLogo and MNCLogoGray, which render 
-the MNC Development logo with different styles.
+/* Breif: Defines two React functional components MNCLogo and MNCLogoGray that render an image logo on a webpage. 
+The logos are retrieved from a Firebase storage bucket using useStorage() and useStorageDownloadURL() hooks from the reactfire library.
 
-Both components use the Firebase useStorage() and useStorageDownloadURL() hooks 
-to get the download URL for the logo image file stored in a Firebase Storage
- bucket. The download URL is then used as the src attribute for an <img> tag that 
- displays the logo image.
+The MNCLogo component renders a full-color logo image while the MNCLogoGray component renders a grayscale logo image. 
+Both components display a "loading..." message while the image is being retrieved from the Firebase storage.
 
-The MNCLogo component displays the logo with a full-color style, while the 
-MNCLogoGray component displays a grayscale version of the logo using the grayStyle 
-object.
+The style and grayStyle objects define some styling for the logos, such as centering them and setting their padding.
 
-In both components, if the download URL is still loading, the component displays 
-the text "loading...".
-
-Finally, the code exports an object with the two components as properties.
-
-*/
+Components are exported using export statements, and are also exported as the default export of the module using export default.*/
 
 
 

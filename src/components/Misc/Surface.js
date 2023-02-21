@@ -14,26 +14,15 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default Item;
 
-/* This is a JavaScript code snippet that defines a React component that renders a
- styled Paper component from the Material UI library.
 
-The first line imports the entire React library and assigns it to the variable 
-React.
+/*Breif: Imports various components and utilities from the MUI (Material UI) library, including the Paper and Stack components, and the styled 
+utility function.
 
-The next three lines import three components from the Material UI library: Paper, 
-Stack, and styled. The styled function is used to create a new, styled version of 
-the Paper component.
+The code then defines a new component called Item using the styled function to create a customized version of the Paper component with
+additional styles applied to it. 
 
-The Item variable is defined as the result of calling the styled function with 
-the Paper component as an argument. The argument to the styled function is an 
-arrow function that takes a theme argument and returns an object that describes 
-the styling for the Paper component. This styling includes setting the background 
-color to a dark color if the current theme is dark, setting the padding and text 
-alignment, and setting the text color based on the theme.
+The Item component takes advantage of the MUI theme to change its background color based on whether the current theme mode is dark or light, 
+and sets other properties such as padding, text alignment, and color.
 
-Finally, the Item component is exported as the default export of the module. 
-This means that other modules can import this module and use the Item component 
-directly.
-
-*/
+Item component is exported as the default export of the module, which means it can be imported and used in other parts of the application.*/
 

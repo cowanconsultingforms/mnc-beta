@@ -22,28 +22,15 @@ export const Input = (props) => {
 };
 export default { Input };
 
-/* This code defines a React component called Input, which renders an <input> 
-element and provides a two-way binding between the input value and the component's
- state.
+/* Breif: Exports a custom component called Input which is a wrapper around the HTML input element. 
+The component takes in props such as name, value, and onChange to customize the behavior of the input field.
 
-The component takes in several props, including a name prop, a value prop, and an 
-optional onChange callback function. The value prop is used to set the initial 
-value of the input, and is also used to update the input's value whenever the 
-prop changes.
+The useState hook is used to create a value state variable and the initial value is either the value passed in the props or an empty string. 
+The useEffect hook is used to update the state variable when the props.value changes.
 
-The useState hook is used to define a local state variable value, 
-which holds the current value of the input. The useEffect hook is used to update 
-the state variable value whenever the props.value changes.
+The Input component renders an input element with the name and value props passed in. 
+The onChange prop is used to update the state variable value with the current input value and then the props.
+onChange callback function is called with the current input value as an argument (if it exists).
 
-The component returns an <input> element, which is bound to the local value state 
-variable using the value prop. When the input value changes, the onChange callback 
-function is called (if it exists), which updates the local value state variable 
-using the setValue function. The onChange function is also called with the new 
-value of the input as an argument, allowing parent components to respond to 
-changes in the input's value.
-
-Finally, the component is exported as both a named export (Input) and a default 
-export ({ Input }).
-
-*/
+The component is exported as an object with the key Input using ES6 shorthand syntax.*/
 

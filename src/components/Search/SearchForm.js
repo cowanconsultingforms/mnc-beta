@@ -325,7 +325,7 @@ export const SearchForm = () => {
 
 export default SearchForm;
 
-/*Defines a React component called SearchForm that renders a search form for real estate listings. 
+/*Breif: Defines a React component called SearchForm that renders a search form for real estate listings. 
 The form includes various input fields for the type of property, address, price, number of bedrooms/bathrooms, and square footage, 
 as well as a search bar for filtering the listings.
 

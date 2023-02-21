@@ -102,26 +102,22 @@ export const BasicTextFields =({title,setPassword,setEmail,handleAction}) => {
 }
 export default TextField;
 
-/* This is a JavaScript code file that defines a set of React components and 
-exports them.
+/*Breif: Defines several React components related to form fields, buttons, and a form.
 
-The first line imports the React library, which is used to create React 
-components. The next few lines import several libraries and components from MUI 
-(Material UI), a popular UI library for React.
+TextFieldLogin is a form input component that uses rsuite library.
 
-The code then defines several React components using the styled function from MUI.
- The TextLabel and TextInput components are styled labels and input fields, 
- respectively, while the ReadOnlyTextBox and StyledTextArea components are 
- read-only text boxes and styled text areas.
+TextLabel is a styled label element.
 
- The TextField and TextArea components use the above mentioned styled components 
- to render text fields and text areas respectively. The TextFieldLogin component 
- is a form control for login credentials that uses the Form component from rsuite.
+TextInput is a styled input element.
 
+ReadOnlyTextBox is a styled input element that is read-only.
 
- Finally, the BasicTextFields component renders a form that uses the TextField 
- component to render email and password text fields and the Button component to 
- render a button. The title, setPassword, setEmail, and handleAction props are 
- used to customize the component.
+StyledTextArea is a styled textarea element.
 
- */
+TextArea is a functional component that renders a label and a StyledTextArea.
+
+TextField is a functional component that renders a label and either a TextInput or a ReadOnlyTextBox, depending on whether the 
+field is editable or not.
+
+BasicTextFields is a React component that renders a form with two TextField components and a Button component. It takes a title prop, 
+setPassword function, setEmail function, and handleAction function as props.*/

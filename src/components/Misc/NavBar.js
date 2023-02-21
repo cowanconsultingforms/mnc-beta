@@ -166,32 +166,23 @@ export const NavBar = () => {
 };
 export default NavBar;
 
-/* This code defines a NavBar component that renders a navigation bar with a logo 
-and links to different pages of a website. The component uses several hooks from 
-the reactfire and react-router-dom packages to interact with the Firebase 
-authentication and Firestore database, and to handle the navigation between pages.
+/*Breig: This is a React component named NavBar. 
 
-The component imports several functions and components from different packages, 
-including useState, useEffect, startTransition, Suspense, useCallback, useMemo 
-from the react package, useNavigate from the react-router-dom package, and 
-onAuthStateChanged, signOut from the firebase/auth package, and others.
+Imports various modules from React and Firebase, as well as other custom hooks and components.
 
-The NavBar component defines a set of pages that the user can navigate to, 
-and renders buttons for each of these pages. The buttons call a function that uses
- the useNavigate hook to change the URL and navigate to the corresponding page. 
- The component also uses the useUser hook from reactfire to get the current user, 
- and displays a "Login/Register" button or a "Logout" button depending on whether 
- the user is logged in or not.
+The component contains a function called buttonHider, which takes in the userState and modifies the visibility of the logoutButton, 
+loginButton, and adminButton elements based on the user's login status and role.
 
-The component also uses a buttonHider function to display or hide certain buttons 
-depending on the user's role, and uses the useEffect hook to call this function 
-when the component mounts or updates. The useFirestore hook is used to get a 
-reference to the Firestore database, and the useFirestoreDocData hook is used to 
-get the data from a specific document in the database.
+Inside the component, there are several hooks being used: useUser, useFirestore, useNavigate, useSigninCheck, useFirestoreDocData, and
+useFirestoreCollection. 
 
-The NavBar component exports NavBar as the default export, and buttonHider as a 
-named export.
-*/
+These hooks provide data and methods for interacting with Firebase and the current user's authentication status.
 
+The component also contains an array of objects called pages, each representing a navigation button with text, an onClick function, and an
+id. These buttons are rendered in the component's render() method.
+
+The component also includes a useEffect hook, which runs some code after the component is mounted. 
+This code retrieves data from Firebase, updates the visibility of the buttons based on the user's authentication status, 
+and enables auto-refresh of Firebase app tokens.*/
 
 

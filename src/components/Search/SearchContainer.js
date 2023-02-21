@@ -377,7 +377,7 @@ sx={{flexDirection: "row", display: "flex" }}>
 export default SearchContainer;
 
 
-/*Imports various libraries such as React, Firebase, MUI, and Bootstrap, among others. It also defines some constants for colors.
+/*Breif: Imports various libraries such as React, Firebase, MUI, and Bootstrap, among others. It also defines some constants for colors.
 
 The SearchContainer component is defined, which is exported.
 Defines state variables such as isHover, isHover2, isHover3, info, and listings. 

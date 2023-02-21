@@ -168,7 +168,7 @@ export function CarouselSearchImage() {
 export default CarouselSearchImage;
 
 
-/*Defines a React component CarouselSearchImage that renders a Bootstrap carousel displaying images of property listings
+/*Breif: Defines a React component CarouselSearchImage that renders a Bootstrap carousel displaying images of property listings
 filtered by a city parameter received through React Router. The component uses Firebase for storing and retrieving data and images.
 
 The component imports various modules and components from React, React Router, Firebase, and Material UI. 

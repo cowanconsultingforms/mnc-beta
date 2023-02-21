@@ -223,7 +223,7 @@ export const UseButtonGroup = ({ onChange }) => {
   );
 };
 
-/*Imports various components and libraries from different packages such as firebase, MUI (Material-UI), and React.
+/*Breif: Imports various components and libraries from different packages such as firebase, MUI (Material-UI), and React.
 
 Ddefines some constants such as colors and styled components.
 

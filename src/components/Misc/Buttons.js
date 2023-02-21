@@ -23,9 +23,9 @@ export const NavBarButton = ({ handleAction,page,text,idx}) => {
 
 export default NavBarButton; 
 
-/* Exports a React functional component called NavBarButton using the default export syntax. It imports several libraries and modules at the beginning of the code, 
-including styled, React, Button from @mui/material, Nav from react-bootstrap, Link from react-router-dom, useAuth and onAuthStateChanged from reactfire, 
-and uuidv4 from @firebase/util.
+/* Exports a React functional component called NavBarButton using the default export syntax. It imports several libraries and modules at the beginning
+of the code, including styled, React, Button from @mui/material, Nav from react-bootstrap, Link from react-router-dom, useAuth and 
+onAuthStateChanged from reactfire, and uuidv4 from @firebase/util.
 
 The NavBarButton component takes four props, namely handleAction, page, text, and idx, and returns a styled Material UI button with a link to a 
 specified page.
