@@ -273,6 +273,8 @@ div#rs-btn-toolbar {
 @media (max-width: 576px) {
   .navigation-bar {
     height: auto;
+    width:fit-content;
+    font-size: 30px;
   }
   .navigation-bar-left {
     margin-bottom: 10px;
