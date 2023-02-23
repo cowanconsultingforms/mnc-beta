@@ -3,6 +3,9 @@
 }
 body {
   font-family: "Garamond";
+  @media screen and (min-width:500px) {
+    
+  }
 }
 .login-page {
   background-color: rgb(196, 196, 196);
@@ -193,6 +196,7 @@ div#rs-btn-toolbar {
   box-shadow: 0px 5px 10px 2px #888888;
   text-decoration: none;
   overflow: hidden;
+
 }
 .navigation-bar :hover {
   opacity: 0.8;
@@ -265,6 +269,33 @@ div#rs-btn-toolbar {
   color: white;
 }
 
+/* For screens up to 768px wide */
+@media (max-width: 768px) {
+  .navigation-bar {
+    flex-direction: column;
+    height: auto;
+  }
+  .navigation-bar-left {
+    margin-bottom: 10px;
+  }
+  .navigation-bar-right {
+    margin-top: 10px;
+  }
+}
+
+/* For screens between 768px and 1024px wide */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .navigation-bar {
+    height: 50px;
+  }
+}
+
+/* For screens wider than 1024px */
+@media (min-width: 1024px) {
+  .navigation-bar {
+    height: 60px;
+  }
+}
 
 
 
