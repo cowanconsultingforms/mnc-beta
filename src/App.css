@@ -62,69 +62,6 @@ div#rs-btn-toolbar {
   }
 }
 
-/***************************** CSS to match modal with different screen sizes   *****************************/
-[class*="col-"] {
-  width: 100%;
-}
-
-@media only screen and (min-width: 768px) {
-  /* For desktop: */
-  .col-1 {
-    width: 8.33%;
-  }
-  .col-2 {
-    width: 16.66%;
-  }
-  .col-3 {
-    width: 25%;
-  }
-  .col-4 {
-    width: 33.33%;
-  }
-  .col-5 {
-    width: 41.66%;
-  }
-  .col-6 {
-    width: 50%;
-  }
-  .col-7 {
-    width: 58.33%;
-  }
-  .col-8 {
-    width: 66.66%;
-  }
-  .col-9 {
-    width: 75%;
-  }
-  .col-10 {
-    width: 83.33%;
-  }
-  .col-11 {
-    width: 91.66%;
-  }
-  .col-12 {
-    width: 100%;
-  }
-}
-
-@media only screen and (max-width: 1639px) {
-  .modal-content {
-    width: 400px;
-  }
-}
-
-@media only screen and (max-width: 1229px) {
-  .modal-content {
-    width: 450px;
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  .modal-content {
-    width: 90%;
-  }
-}
-
 .docs-main {
   text-align: center;
 }
@@ -270,10 +207,10 @@ div#rs-btn-toolbar {
 }
 
 /* For screens up to 576px wide */
-@media (max-width: 576px) {
+@media (max-width: 400px) {
   .navigation-bar {
     height: auto;
-    width:fit-content;
+    width:auto;
     font-size: 30px;
   }
   .navigation-bar-left {
@@ -288,16 +225,21 @@ div#rs-btn-toolbar {
 }
 
 /* For screens between 576px and 768px wide */
-@media (min-width: 576px) and (max-width: 768px) {
+@media (min-width: 400px) and (max-width: 768px) {
   .navigation-bar {
     flex-direction: column;
     height: auto;
+    width:auto;n
   }
   .navigation-bar-left {
     margin-bottom: 10px;
+    flex-direction: column;
+    height: auto;
   }
   .navigation-bar-right {
     margin-top: 10px;
+    flex-direction: column;
+    height: auto;
   }
 }
 
