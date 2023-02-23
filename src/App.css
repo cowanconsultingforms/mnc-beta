@@ -1,7 +1,7 @@
 * {
   font-family: "Garamond";
 }
-*body {
+body {
   font-family: "Garamond";
 }
 .login-page {
@@ -28,7 +28,7 @@ button#login-page {
   text-decoration: none;
   text-align: left;
 }
-button#login-page :hover {
+button#login-page:hover {
   opacity: 0.8;
 }
 div#rs-btn-toolbar {
@@ -264,6 +264,14 @@ div#rs-btn-toolbar {
   background-color: black;
   color: white;
 }
+
+
+
+
+
+
+
+
 /*CSS for App.js 
 The CSS sets default font-family to "Garamond",
 sets styles for the "login-page" class,

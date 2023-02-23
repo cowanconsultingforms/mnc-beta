@@ -122,4 +122,7 @@ div#rs-btn-toolbar {
   margin-left: 10px;
 }
 
+@media all and (max-width:500px){
+  
+}
 /*CSS Defined for Home Page */
