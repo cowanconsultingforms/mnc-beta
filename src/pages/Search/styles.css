@@ -149,3 +149,37 @@ background-color: lightgrey;
 }
 
 /*CSS for search page*/
+
+
+/* For screens up to 576px wide */
+@media (max-width: 576px) {
+  .searchStyle {
+    font-size: 20px;
+    width: 100%;
+  }
+}
+
+/* For screens between 576px and 768px wide */
+@media (min-width: 576px) and (max-width: 768px) {
+  .searchStyle {
+    font-size: 22px;
+    width: 70%;
+  }
+}
+
+/* For screens between 768px and 1024px wide */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .searchStyle {
+    font-size: 23px;
+    width: 50%;
+  }
+}
+
+/* For screens wider than 1024px */
+@media (min-width: 1024px) {
+  .searchStyle {
+    font-size: 25px;
+    width: 30rem;
+  }
+}
+

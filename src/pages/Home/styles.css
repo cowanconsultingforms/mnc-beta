@@ -125,4 +125,130 @@ div#rs-btn-toolbar {
 @media all and (max-width:500px){
   
 }
+
+
+
+/* For screens up to 576px wide */
+@media screen and (max-width: 200px) {
+  .navigation-bar {
+    height: auto;
+    width:auto;
+    font-size: 30px;
+  }
+  .navigation-bar-left {
+    margin-bottom: 10px;
+  }
+  .navigation-bar-right {
+    margin-top: 10px;
+  }
+  .nav-btn {
+    padding: 15px 16px;
+  }
+  .home-search-bar {
+    display: flex;
+    flex-direction: row;
+    font-size: 17px;
+    float: left;
+    width: auto;
+    border: none;
+    height: 55px;
+    background: white;
+    border-radius: 0;
+    padding: 2px;
+  }
+  .search-icon {
+    height: 55px;
+    background-color: black;
+    color: white;
+    width: 55px;
+  }
+}
+
+/* For screens between 576px and 768px wide */
+@media screen and (min-width: 400px) and (max-width: 768px) {
+  .navigation-bar {
+    flex-direction: column;
+    height: auto;
+    width:auto;
+  }
+  .navigation-bar-left {
+    margin-bottom: 10px;
+    flex-direction: column;
+    height: auto;
+  }
+  .navigation-bar-right {
+    margin-top: 10px;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .home-search-bar {
+    display: flex;
+    flex-direction: row;
+    font-size: 17px;
+    float: left;
+    width: 100%;
+    border: none;
+    height: 55px;
+    background: white;
+    border-radius: 0;
+    padding: 2px;
+  }
+  .search-icon {
+    height: 55px;
+    background-color: black;
+    color: white;
+    width: 55px;
+  }
+}
+
+/* For screens between 768px and 1024px wide */
+@media screen and (min-width: 768px) and (max-width: 1250px) {
+  .navigation-bar {
+    height: 50px;
+  }
+  .home-search-bar {
+    display: flex;
+    flex-direction: row;
+    font-size: 17px;
+    float: left;
+    width: 50%;
+    border: none;
+    height: 55px;
+    background: white;
+    border-radius: 0;
+    padding: 2px;
+  }
+  .search-icon {
+    height: 55px;
+    background-color: black;
+    color: white;
+    width: 55px;
+  }
+}
+
+/* For screens wider than 1024px */
+@media screen and (min-width: 1024px) {
+  .navigation-bar {
+    height: 60px;
+  }
+  .home-search-bar {
+    display: flex;
+    flex-direction: row;
+    font-size: 17px;
+    float: left;
+    width: 30%;
+    border: none;
+    height: 55px;
+    background: white;
+    border-radius: 0;
+    padding: 2px;
+  }
+  .search-icon {
+    height: 55px;
+    background-color: black;
+    color: white;
+    width: 55px;
+  }
+}
 /*CSS Defined for Home Page */

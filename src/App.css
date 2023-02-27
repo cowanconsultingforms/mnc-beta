@@ -222,6 +222,20 @@ div#rs-btn-toolbar {
   .nav-btn {
     padding: 15px 16px;
   }
+ 
+    .search-box {
+      height: 200px;
+      width: 100%;
+      font-size: 14px;
+    }
+    .searchStyle {
+      font-size: 20px;
+      width: 100%;
+    }
+
+    .MuiOutlinedInput-root {
+      width: 100%;
+    }
 }
 
 /* For screens between 576px and 768px wide */
@@ -241,6 +255,20 @@ div#rs-btn-toolbar {
     flex-direction: column;
     height: auto;
   }
+
+  .search-box {
+    height: 250px;
+    width: 70% ;
+    display:block;
+  }
+  .searchStyle {
+    font-size: 22px;
+    width: 50%;
+  }
+
+  .MuiOutlinedInput-root {
+    width: 80%;
+  }
 }
 
 /* For screens between 768px and 1024px wide */
@@ -248,12 +276,40 @@ div#rs-btn-toolbar {
   .navigation-bar {
     height: 50px;
   }
+  .search-box {
+    height: 300px;
+    width: 40%;
+  }
+  .searchStyle {
+    font-size: 23px;
+    width: 30%;
+  }
+
+  .MuiOutlinedInput-root {
+    width: 70%;
+  }
 }
 
 /* For screens wider than 1024px */
 @media (min-width: 1024px) {
   .navigation-bar {
     height: 60px;
+  }
+  .searchStyle {
+    font-size: 25px;
+    width: 30rem;
+  }
+
+  .MuiOutlinedInput-root {
+    width: 550px;
+  }
+  .search-box {
+    height: 300px;
+    width: 25%;
+  }
+  .searchStyle {
+    font-size: 23px;
+    width: 20%;
   }
 }
 
