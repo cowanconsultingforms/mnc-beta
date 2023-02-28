@@ -8,22 +8,26 @@ button#login-page {
   text-decoration: none;
   text-align: left;
 }
-button#login-page :hover {
+
+button#login-page:hover {
   opacity: 0.8;
 }
 
 .nav-bar {
   min-width: 100%;
 }
+
 .input {
   width: 50%;
   color: white;
 }
+
 a:hover {
   opacity: 0.8;
 }
+
 .auth-page {
-  display: "flex";
+  display: flex;
   color: white;
   padding: 14px 20px;
   width: 100%;
@@ -35,10 +39,12 @@ a:hover {
   align-items: center;
   font-family: "Garamond";
 }
+
 div#rs-btn-toolbar {
   display: flex;
   width: auto;
 }
+
 .footer-bottom {
   font-size: 14px;
   align-items: center;
@@ -49,7 +55,7 @@ div#rs-btn-toolbar {
   justify-content: center;
 }
 
-.footer-bottom ::before {
+.footer-bottom::before {
   position: absolute;
   left: 50%;
   bottom: 0;
@@ -72,16 +78,19 @@ div#rs-btn-toolbar {
   border-radius: 0;
   padding: 2px;
 }
+
 .search-icon {
   height: 55px;
   background-color: black;
   color: white;
   width: 55px;
 }
+
 .search-icon:hover {
   opacity: 0.8;
   background-color: #686868;
 }
+
 .box {
   text-align: left;
   border: black ridge 1px;
@@ -93,6 +102,7 @@ div#rs-btn-toolbar {
   
   color:black;
 }
+
 .dataResult {
   margin-top: 3px;
   width: 600px;
@@ -114,141 +124,26 @@ div#rs-btn-toolbar {
   align-items: center;
   color: black;
   font-weight: bold;
-  font-size:25px;
-  font-family:"Garamond";
+  font-size: 25px;
+  font-family: "Garamond";
 }
 
 .dataItem p {
   margin-left: 10px;
 }
 
-@media all and (max-width:500px){
-  
-}
-
-
-
-/* For screens up to 576px wide */
-@media screen and (max-width: 200px) {
-  .navigation-bar {
-    height: auto;
-    width:auto;
-    font-size: 30px;
-  }
-  .navigation-bar-left {
-    margin-bottom: 10px;
-  }
-  .navigation-bar-right {
-    margin-top: 10px;
-  }
-  .nav-btn {
-    padding: 15px 16px;
-  }
+/* For screens up to 500px wide */
+@media screen and (max-width: 500px) {
   .home-search-bar {
-    display: flex;
-    flex-direction: row;
-    font-size: 17px;
-    float: left;
-    width: auto;
-    border: none;
-    height: 55px;
-    background: white;
-    border-radius: 0;
-    padding: 2px;
-  }
-  .search-icon {
-    height: 55px;
-    background-color: black;
-    color: white;
-    width: 55px;
-  }
-}
-
-/* For screens between 576px and 768px wide */
-@media screen and (min-width: 400px) and (max-width: 768px) {
-  .navigation-bar {
-    flex-direction: column;
-    height: auto;
-    width:auto;
-  }
-  .navigation-bar-left {
-    margin-bottom: 10px;
-    flex-direction: column;
-    height: auto;
-  }
-  .navigation-bar-right {
-    margin-top: 10px;
-    flex-direction: column;
-    height: auto;
-  }
-
-  .home-search-bar {
-    display: flex;
-    flex-direction: row;
-    font-size: 17px;
-    float: left;
     width: 100%;
-    border: none;
-    height: 55px;
-    background: white;
-    border-radius: 0;
-    padding: 2px;
   }
-  .search-icon {
-    height: 55px;
-    background-color: black;
-    color: white;
-    width: 55px;
-  }
-}
 
-/* For screens between 768px and 1024px wide */
-@media screen and (min-width: 768px) and (max-width: 1250px) {
-  .navigation-bar {
-    height: 50px;
-  }
-  .home-search-bar {
-    display: flex;
-    flex-direction: row;
-    font-size: 17px;
-    float: left;
-    width: 50%;
-    border: none;
-    height: 55px;
-    background: white;
-    border-radius: 0;
-    padding: 2px;
-  }
   .search-icon {
-    height: 55px;
-    background-color: black;
-    color: white;
-    width: 55px;
+    width: 10%;
+    font-size: 20px;
   }
-}
 
-/* For screens wider than 1024px */
-@media screen and (min-width: 1024px) {
-  .navigation-bar {
-    height: 60px;
-  }
-  .home-search-bar {
-    display: flex;
-    flex-direction: row;
-    font-size: 17px;
-    float: left;
-    width: 30%;
-    border: none;
-    height: 55px;
-    background: white;
-    border-radius: 0;
-    padding: 2px;
-  }
-  .search-icon {
-    height: 55px;
-    background-color: black;
-    color: white;
-    width: 55px;
+  .dataItem {
+    height:
   }
 }
-/*CSS Defined for Home Page */

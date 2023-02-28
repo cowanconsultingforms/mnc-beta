@@ -57,10 +57,10 @@ const grey = {
 };
 const StyledInputElement = styled("input")(
   ({ theme }) => `
-  width: 550px;
+  width: 100%;
   height: 50px;
   font-family: Garamond;
-  fontSize: 75px;
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.5;
   padding: 12px;
@@ -82,6 +82,29 @@ const StyledInputElement = styled("input")(
       theme.palette.mode === "dark" ? blue[500] : blue[200]
     };
   }
+
+  @media (min-width: 390px) {
+    font-size: 18px;
+    width: 90%;
+  }
+
+  @media (min-width: 550px) {
+    font-size: 22px;
+    width: 88%;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 25px;
+    width: 85%;
+    height:20px;
+  }
+
+  /* centering */
+  display: flex;
+  justify-content: center;
+);
+
+
 `
 );
 const CustomInput = forwardRef(function CustomInput(props, ref) {
@@ -238,7 +261,7 @@ export const HomeSearchForm = (props) => {
           disableFocusRipple
           sx={{
             height: 35,
-            width: 35,
+            width: 2,
             top: 6,
           }}
           onClick={goListings}

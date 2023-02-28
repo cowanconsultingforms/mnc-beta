@@ -1,4 +1,39 @@
-/*button#login-page {
+/* General styles */
+
+body {
+  font-family: "Garamond";
+  margin: 0;
+  padding: 0;
+  color: black;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  color: black;
+  background-color: lightgrey;
+}
+
+/* Header styles */
+
+.nav-bar {
+  min-width: 100%;
+}
+
+input.search-bar {
+  width: 100%;
+  font-size: 17px;
+  height: 55px;
+  border: none;
+  background: white;
+  border-radius: 0;
+  padding: 2px;
+}
+
+button#login-page {
   border: none;
   background-color: rgb(196, 196, 196);
   cursor: pointer;
@@ -8,48 +43,26 @@
   text-decoration: none;
   text-align: left;
 }
-button#login-page :hover {
+
+button#login-page:hover {
   opacity: 0.8;
 }
 
-.nav-bar {
-  min-width: 100%;
-}
-.input {
-  width: 50%;
-  color: white;
-}
-a:hover {
-  opacity: 0.8;
-}
-.auth-page {
-  display: "flex";
-  color: white;
-  padding: 14px 20px;
-  width: 100%;
-  height: 100%;
-  margin: 8px 0;
-  border: none;
-  background-color: #ffffff;
-  justify-content: center;
-  align-items: center;
-  font-family: "Garamond";
-}
-div#rs-btn-toolbar {
-  display: flex;
-  width: auto;
-}
+/* Footer styles */
+
 .footer-bottom {
   font-size: 14px;
-  align-items: center;
   display: flex;
   flex-direction: column-reverse;
   justify-content: center;
   text-justify: auto;
-  justify-content: center;
+  position: relative;
+  margin-top: 50px;
+  padding-bottom: 10px;
 }
 
-.footer-bottom ::before {
+.footer-bottom::before {
+  content: "";
   position: absolute;
   left: 50%;
   bottom: 0;
@@ -60,126 +73,77 @@ div#rs-btn-toolbar {
   background-color: #818d86;
 }
 
-.home-search-bar {
-  display: flex;
-  flex-direction: row;
-  font-size: 17px;
-  float: left;
-  width: 80%;
-  border: none;
-  height: 55px;
-  background: white;
-  border-radius: 0;
-  padding: 2px;
-}
-.search-icon {
-  height: 55px;
-  background-color: black;
-  color: white;
-  width: 55px;
-}
-.search-icon:hover {
-  opacity: 0.8;
-  background-color: #686868;
-}
-.boxStyles {
+/* Search page styles */
+
+.searchStyle {
   text-align: left;
   border: black ridge 1px;
   border-radius: 10px;
   margin: 3px;
-  width: 25rem;
   padding-left: 10px;
   font-size: 25px;
   font-weight: bold;
-  color:black;
-}
-a {
-  text-decoration: none;
   color: black;
-}
-a:hover {
-  color: black;
-  background-color: lightgrey;
-}
-*/
-.searchStyle{
-  text-align: left;
-  border: black ridge 1px;
-  border-radius: 10px;
-  margin: 3px;
-  width: 30rem;
-  padding-left: 10px;
-  font-size: 25px;
-  font-weight: bold;
-  color:black;
-}
-.CarouselImage {
-  width: 850px;
-  height: 400px;
-  margin: auto;
-  justify-items: stretch;
+  width: 100%;
+  max-width: 30rem;
 }
 
-.Sidebar{
-  height:100%;
-  width:250px;
+/* Sidebar styles */
+
+.Sidebar {
+  height: 100%;
+  width: 250px;
   background-color: grey;
 }
-/*
-@media (max-width: 100px), (max-height:100px) {
-  .carousel {
-    width:auto;
-    height:auto;
 
-  }
-}
-*/
+/* Carousel styles */
+
 .carousel {
-width:1200px;
-height:620px;
-margin: auto;
-}
-a {
-text-decoration: none;
-color: black;
-}
-a:hover {
-color: black;
-background-color: lightgrey;
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+  margin: auto;
 }
 
-/*CSS for search page*/
+.CarouselImage {
+  width: 100%;
+  height: auto;
+  margin: auto;
+}
 
+/* Media queries */
 
-/* For screens up to 576px wide */
-@media (max-width: 576px) {
-  .searchStyle {
-    font-size: 20px;
-    width: 100%;
+@media (min-width: 576px) {
+  /* For screens between 576px and 768px wide */
+  input.search-bar {
+    font-size: 22px;
   }
-}
-
-/* For screens between 576px and 768px wide */
-@media (min-width: 576px) and (max-width: 768px) {
+  
   .searchStyle {
     font-size: 22px;
     width: 70%;
   }
 }
 
-/* For screens between 768px and 1024px wide */
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 768px) {
+  /* For screens between 768px and 1024px wide */
+  input.search-bar {
+    font-size: 23px;
+  }
+  
   .searchStyle {
     font-size: 23px;
     width: 50%;
   }
 }
 
-/* For screens wider than 1024px */
 @media (min-width: 1024px) {
-  .searchStyle {
+  /* For screens wider than 1024px */
+  input.search-bar {
     font-size: 25px;
-    width: 30rem;
+  }
+  
+  .searchStyle {
+    font-size: 
   }
 }
-
