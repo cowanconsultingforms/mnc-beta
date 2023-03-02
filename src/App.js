@@ -10,6 +10,7 @@ import { collection, query, where } from 'firebase/firestore';
 import { errorPrefix } from '@firebase/util';
 import { getIdTokenResult } from 'firebase/auth';
 import { List } from '@mui/material';
+import { LoginForm } from './components/Authentication/LoginForm'
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -92,7 +93,7 @@ export const App = ({ children }) => {
 
         <Route exact path="/reset-password" element={<ResetPasswordPage />} />
 
-        <Route exact path="/login" element={<AuthPage title={'Login'} />} />
+        <Route exact path="/login" element={< LoginForm/>} />
         <Route
           exact
           path="/register"

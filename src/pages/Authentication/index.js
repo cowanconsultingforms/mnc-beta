@@ -10,12 +10,13 @@ import { useUser,useAuth } from "reactfire";
 
 //CSS needs work, auth needs to be passed up to the parent component
 export const AuthPage = ({ title }) => {
+  console.log(title)
   const auth = useAuth();
   const {status,data:user} = useUser()
   const navigate = useNavigate();
   const handleFormRender = (title) => {
     if (title === "Login") {
-      return <LoginForm title={title} />;
+      return <LoginForm />;
     }
     if (title === "Register") {
       return <RegisterForm title={title} />;

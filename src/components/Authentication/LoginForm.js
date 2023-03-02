@@ -1,24 +1,22 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, TextField, Alert } from "@mui/material";
+import { Box, TextField, Alert, Grid, Typography } from "@mui/material";
 import {
   beforeAuthStateChanged,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigate, Outlet, useOutlet } from "react-router-dom";
 import { ButtonGroup, Button } from "@mui/material";
-import { setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { useAuth, useFirestore, useUser } from "reactfire";
+//import { setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { useAuth, useUser } from "reactfire";
 import { useForm } from "react-hook-form";
 
 export const LoginForm = () => {
-  const firestore = useFirestore();
 
   const auth = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(null);
-  const [userInfo, setUserInfo] = useCallback();
   const { status, data: signInCheckResult } = useUser();
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -65,42 +63,19 @@ export const LoginForm = () => {
     }
     if (location === "/login" && loggedIn === false) return <LoginForm />;
   };
-  const onSubmit = async (e) => {
-    e.preventDefault();
 
-    await signInWithEmailAndPassword(auth, email, password).then((response) => {
-      if (
-        status === "success" &&
-        signInCheckResult === true &&
-        response.user.uid
-      ) {
-        setDoc(
-          updateDoc(firestore, `users/${user.uid}`, {
-            lastSignedIn: serverTimestamp(),
-          })
-        );
-        setTimeout(() => 2000);
-        navigate("/");
-      }
-    });
-  };
 
-  useEffect(() => {
-    if (signInCheckResult.signedIn === true) {
-      return (
-        <Alert type="warning">
-          Already Signed in as {() => setUserInfo(user.email)}
-        </Alert>
-      );
-    } else {
-      return (
-        <React.Fragment>
-          <LoginForm />
-        </React.Fragment>
-      );
-    }
-  }, []);
   return (
+    <Grid 
+      container 
+      alignItems="center" 
+      direction="column"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "20px",
+        paddding: "20px",
+      }}>
     <Box
       className="login-form-box"
       component="form"
@@ -111,9 +86,10 @@ export const LoginForm = () => {
         flexDirection: "column",
         marginTop: "20px",
         paddding: "20px",
-      }}
-    >
-      <h1>Login Form</h1>
+      }}>
+      <Grid xs display="flex" justifyContent="center" alignItems="center">
+        <h1>Login Form</h1>
+      </Grid>
       <TextField
         className="form-text-field"
         id="email"
@@ -139,7 +115,8 @@ export const LoginForm = () => {
         type="password"
         value={password}
       />
-      <ButtonGroup sx={{ m: 5, alignItems: "center" }}>
+      </Box>
+      <br/>
         <Button
           key="Login"
           variant="contained"
@@ -149,16 +126,19 @@ export const LoginForm = () => {
         >
           Login
         </Button>
-        <Button key="Register" onClick={handleNavigate} variant="contained">
-          Register
-        </Button>
-        <Button></Button>
-      </ButtonGroup>
-    </Box>
+        <p>Don't have an account? <a href="/register" style={{"color": "#4444A6"}}>Sign up</a></p>
+    </Grid>
   );
 };
 
 export default LoginForm;
+
+/*UPDATE
+
+There's a problem with the handleRender() function which was causing this page to not load.
+Currently it's not being using, so the page will load. In order to actually login users
+we have to fix it
+*/
 
 /*Breif: Exports a React component named LoginForm.
 It imports various libraries such as React, @mui/material, firebase/auth, react-router-dom, and reactfire. 
