@@ -1,5 +1,4 @@
-import {
-  Alert,Box,Button,ButtonGroup,TextField,} from '@mui/material';
+import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
 import {createUserWithEmailAndPassword,reauthenticateWithCredential,} from 'firebase/auth';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
@@ -97,9 +96,6 @@ export const RegisterForm = ({ title }) => {
       };
     }
   }  
-        
-    
-  
 
   useEffect(() => {
     if (status === "error") {
@@ -109,7 +105,16 @@ export const RegisterForm = ({ title }) => {
       
   return (
     <div className="register-form">
-      <h1>{title} Form</h1>
+      <Grid 
+      container 
+      alignItems="center" 
+      direction="column"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "20px",
+        paddding: "20px",
+      }}>
       <Box
         component="form"
         autoComplete
@@ -118,23 +123,31 @@ export const RegisterForm = ({ title }) => {
         onSubmit={handleSubmit}
         onChange={handleChange}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          marginTop: '20px',
-          paddding: '20px',
-        }}
-      >
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "20px",
+          paddding: "20px",
+          alignItems: "center",
+          borderRadius: "20px",
+          backgroundColor: "#eeeeee",
+          marginBottom: "30px",
+          marginTop: "30px",
+          width: "300px",
+        }}>
+        <h1>Sign Up</h1>
+        <FormControl sx={{ width: '25ch'}}>
         <TextField
           id="email"
           label="Email :"
           variant="outlined"
           autocomplete="username"
           value={email}
+          fullWidth={true}
+          margin="normal"
           onChange={(e) => setEmail(e.target.value)}
           sx={{
             backgroundColor: 'whitesmoke',
-            fontFamily: 'Garamond',
-            margin: '5%',
+            fontFamily: 'Garamond'
           }}
         />
         <TextField
@@ -143,12 +156,13 @@ export const RegisterForm = ({ title }) => {
           variant="outlined"
           type="password"
           value={password}
+          fullWidth={true}
           autoComplete="new-password"
+          margin="normal"
           onChange={(e) => setPassword(e.target.value)}
           sx={{
             backgroundColor: 'whitesmoke',
-            fontFamily: 'Garamond',
-            margin: '5%',
+            fontFamily: 'Garamond'
           }}
         />
         <TextField
@@ -157,21 +171,27 @@ export const RegisterForm = ({ title }) => {
           variant="outlined"
           type="password"
           value={confirmPassword}
+          fullWidth={true}
           autoComplete="new-password"
+          margin="normal"
           onChange={(e) => setConfirmPassword(e.target.value)}
           sx={{
             backgroundColor: 'whitesmoke',
-            fontFamily: 'Garamond',
-            margin: '5%',
-          }}
-        />
-        <ButtonGroup>
-          <Button type="submit" onClick={handleSubmit}>
-            Register
-          </Button>
-          <Button onClick={resetPassword}>Forgot Password?</Button>
-        </ButtonGroup>
+            fontFamily: 'Garamond'
+          }}/>
+        </FormControl>
+        <br/>
+        <Button
+          key="Login"
+          variant="contained"
+          type="submit"
+          sx={{ backgroundColor: "gray"}}
+          onClick={handleSubmit}>
+          Register
+        </Button>
+        <p style={{padding:10}}>Already have an account? <a href="#" onClick={() => navigate("/login")} style={{"color": "#4444A6"}}>Login</a></p>
       </Box>
+      </Grid>
     </div>
   );
 };

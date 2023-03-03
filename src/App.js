@@ -11,6 +11,7 @@ import { errorPrefix } from '@firebase/util';
 import { getIdTokenResult } from 'firebase/auth';
 import { List } from '@mui/material';
 import { LoginForm } from './components/Authentication/LoginForm'
+import { RegisterForm } from "./components/Authentication/RegisterForm"
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -97,7 +98,7 @@ export const App = ({ children }) => {
         <Route
           exact
           path="/register"
-          element={<AuthPage title={'register'} />}
+          element={< RegisterForm/>}
         />
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />

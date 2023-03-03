@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, TextField, Alert, Grid, Typography } from "@mui/material";
+import { Box, TextField, Alert, Grid, FormControl } from "@mui/material";
 import {
   beforeAuthStateChanged,
   signInWithEmailAndPassword,
@@ -10,6 +10,7 @@ import { ButtonGroup, Button } from "@mui/material";
 //import { setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useAuth, useUser } from "reactfire";
 import { useForm } from "react-hook-form";
+//import { FormControl } from "react-bootstrap";
 
 export const LoginForm = () => {
 
@@ -86,10 +87,17 @@ export const LoginForm = () => {
         flexDirection: "column",
         marginTop: "20px",
         paddding: "20px",
+        alignItems: "center",
+        borderRadius: "20px",
+        backgroundColor: "#eeeeee",
+        marginBottom: "30px",
+        marginTop: "30px",
+        width: "300px",
       }}>
       <Grid xs display="flex" justifyContent="center" alignItems="center">
-        <h1>Login Form</h1>
+        <h1>Login</h1>
       </Grid>
+      <FormControl sx={{ width: '25ch'}}>
       <TextField
         className="form-text-field"
         id="email"
@@ -97,11 +105,13 @@ export const LoginForm = () => {
         variant="outlined"
         onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
-        autoFocus
         fullWidth={true}
         required
         margin="normal"
         value={email}
+        sx = {{
+          backgroundColor: 'whitesmoke'
+        }}
       />
       <TextField
         id="password"
@@ -114,19 +124,24 @@ export const LoginForm = () => {
         margin="normal"
         type="password"
         value={password}
+        sx = {{
+          backgroundColor: 'whitesmoke'
+        }}
       />
-      </Box>
+      </FormControl>
       <br/>
         <Button
           key="Login"
           variant="contained"
           type="submit"
-          sx={{ backgroundColor: "gray" }}
-          onClick={handleSubmit}
-        >
+          sx={{ backgroundColor: "gray"}}
+          onClick={handleSubmit}>
           Login
         </Button>
-        <p>Don't have an account? <a href="/register" style={{"color": "#4444A6"}}>Sign up</a></p>
+        <p style={{padding:10}}>Don't have an account? <a href="#" onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
+        <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
+        </Box>
+        
     </Grid>
   );
 };
