@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 //This method is used to initialize a Firebase app instance, which is required before any other Firebase services, such as authentication and database, 
 //can be used in the app.
-
 import React from "react";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -42,10 +41,9 @@ export const GlobalFirebaseProvider = ({ children }) => {
       <AuthProvider sdk={auth}>
         <FirestoreProvider sdk={db}>
           <StorageProvider sdk={storage}>
-      
-
-            <App />
-         
+            
+              <App />
+  
           </StorageProvider>
         </FirestoreProvider>
       </AuthProvider>

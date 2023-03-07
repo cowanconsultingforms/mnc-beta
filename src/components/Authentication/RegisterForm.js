@@ -2,106 +2,38 @@ import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/m
 import {createUserWithEmailAndPassword,reauthenticateWithCredential,} from 'firebase/auth';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import {useAuth,useFirestore,useUser} from 'reactfire';
+import { useNavigate } from 'react-router-dom';
+import { auth } from "../../firebase.js"
 
 export const RegisterForm = ({ title }) => {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState({});
   const navigate = useNavigate();
-  const formRef = useRef();
-  const userID = useId();
-  const { status,data: user } = useUser();
-  const firestore = useFirestore();
-  const collectionRef = collection(firestore, 'users');
-  const auth = useAuth();
-  /* const createUserInFirestore = async (e) => {
-  e.preventDefault()
-  createUserWithEmailAndPassword(auth, email, password).then((user) => {
-    user = user;
-  })
 
-}*/
-    const resetPassword = ({data:user}) => {
-    navigate('/reset-password');
-  };
-  const getCurrentLocation = async (e) => {
-    e.preventDefault();
-    if (location.pathname === '/register') {
-      return (
-        <Button>
-          <Link></Link>
-        </Button>
+  const warning = () => {
+    if (password != confirmPassword){
+      Alert("Your passwords do not match")
+      return true
+    }
+    return false
+  }
+
+  const register = async () => {
+    if (warning){
+      return 
+    }
+    try {
+      const user = await createUserWithEmailAndPassword( //creates a user
+        auth,
+        email,
+        password
       );
+    } catch (error) {
+      console.log(error.message);
     }
   };
-  const listErrors = (ref) => {
-    formRef.current = ref;
-    const errors = {};
-    Object.keys(error).forEach((key) => {
-      errors[key] = error[key].message;
-    });
-    return errors;
-  };
-  const handleChange = (e) => e.target.value;
 
-  const validatePassword = () => {
-    let isValid = true;
-    if (password !== '' && confirmPassword !== '') {
-      if (password !== confirmPassword) {
-        isValid = false;
-        setError('Passwords does not match');
-      }
-    }
-    return isValid;
-  };
-  const handleSubmit = async (e,) => {
-    const id =userID
-    e.preventDefault();
-    setLoading(true);
-    if (!validatePassword()) {
-      listErrors();
-      return <Alert severity="error">Passwords dont match</Alert>;
-    } else {
-      try {
-        await createUserWithEmailAndPassword(auth, email, password).then(
-          (userCred) => {
-            const email = userCred.user.email;
-            const admin = false;
-            const loggedIn = serverTimestamp()
-            const uuid = userCred.user.uid
-            setDoc(collectionRef, doc(firestore, `users/${userID}`, { email, admin, loggedIn, uuid }).then((res) => {
-              if (!res.error) {
-                return (
-                  (<Alert severity="success"> New User  created</Alert>),
-                  setLoading(false),
-                  navigate('/')
-                );
-              } else {
-                setLoading(false)
-                return <Alert severity="error"> Problem Creating User</Alert>;
-              }
-            })
-            )
-          }
-        
-    
-        )
-      } catch (error) {
-        console.log(error.message);
-      };
-    }
-  }  
-
-  useEffect(() => {
-    if (status === "error") {
-     <Alert severity='error'>Problem Loading page - contact Server Admin</Alert>
-   }
-  });
       
   return (
     <div className="register-form">
@@ -118,10 +50,6 @@ export const RegisterForm = ({ title }) => {
       <Box
         component="form"
         autoComplete
-        noValidate
-        ref={formRef}
-        onSubmit={handleSubmit}
-        onChange={handleChange}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -186,10 +114,10 @@ export const RegisterForm = ({ title }) => {
           variant="contained"
           type="submit"
           sx={{ backgroundColor: "gray"}}
-          onClick={handleSubmit}>
+          onClick={register}>
           Register
         </Button>
-        <p style={{padding:10}}>Already have an account? <a href="#" onClick={() => navigate("/login")} style={{"color": "#4444A6"}}>Login</a></p>
+        <p style={{padding:10}}>Already have an account? <a href="./login" onClick={() => navigate("/login")} style={{"color": "#4444A6"}}>Login</a></p>
       </Box>
       </Grid>
     </div>

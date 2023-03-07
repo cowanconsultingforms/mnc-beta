@@ -12,6 +12,7 @@ import { getIdTokenResult } from 'firebase/auth';
 import { List } from '@mui/material';
 import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
+import { auth } from "./firebase.js"
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -82,7 +83,7 @@ export const App = ({ children }) => {
 
   return (
     <div className="App">
-      <NavBar />
+      <NavBar/>
       <Suspense fallback={<h1>loading....</h1>}>
       <Routes>
         <Route exact path="/" element={<HomePage />} />

@@ -1,69 +1,44 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, u} from "react";
+import { auth } from "../../firebase.js"
 import { Box, TextField, Alert, Grid, FormControl } from "@mui/material";
+//import { AuthContext } from "./AuthContext.js";
+import { useNavigate, } from "react-router-dom";
+import { Button } from "@mui/material";
 import {
-  beforeAuthStateChanged,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import { useNavigate, Outlet, useOutlet } from "react-router-dom";
-import { ButtonGroup, Button } from "@mui/material";
-//import { setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { useAuth, useUser } from "reactfire";
-import { useForm } from "react-hook-form";
-//import { FormControl } from "react-bootstrap";
+  setPersistence,
+  browserLocalPersistence,
+  onAuthStateChanged
+} from "firebase/auth"
 
 export const LoginForm = () => {
 
-  const auth = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loggedIn, setLoggedIn] = useState(null);
-  const { status, data: signInCheckResult } = useUser();
-  const { data: user } = useUser();
-  const navigate = useNavigate();
-  const { handleSubmit, register, resetField } = useForm({
-    defaultValues: {
-      email: "",
-      user: null,
-    },
+  const [user, setUser] = useState()
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
+
+  onAuthStateChanged(auth, (currentUser) => { //Should be updating the user, not sure if it ever gets called
+    setUser(currentUser)
   });
-
-  const handleNavigate = () => {
-    beforeAuthStateChanged(
-      auth,
-      user ? setLoggedIn(true) : setLoggedIn(false),
-      () =>
-        user.email === true ? (
-          navigate("/")
-        ) : (
-          <Alert severity="warning">Logged in , Navigating Home</Alert>
-        )
-    );
-  };
-  const handleRedirect = () => {
-    if (status === "success") {
-      setTimeout(() => <Alert type="success"> Already Logged in </Alert>);
+  
+  const login = async () => {
+    try{
+        if(signInWithEmailAndPassword(auth, email, password)){ //signs in user
+          setLoggedIn(true)
+        }
+    } catch (error) {
+      console.log(error.message);
     }
-    navigate("/");
   };
 
-  const navToRegister = () => {
-    if (status !== "loading" && status !== "sucess") {
-      setTimeout(
-        () => (
-          (<Alert type="warning"> No Account - Register using Link </Alert>),
-          2000
-        )
-      );
+  useEffect(() => { //redirects to front page after logging in
+    if (loggedIn) {
       navigate("/");
     }
-  };
-  const handleRender = (location, signInCheckResult) => {
-    if (signInCheckResult.signedIn === true) {
-      setLoggedIn(true).then();
-    }
-    if (location === "/login" && loggedIn === false) return <LoginForm />;
-  };
+  }, [loggedIn]);
 
 
   return (
@@ -94,7 +69,7 @@ export const LoginForm = () => {
         marginTop: "30px",
         width: "300px",
       }}>
-      <Grid xs display="flex" justifyContent="center" alignItems="center">
+      <Grid display="flex" justifyContent="center" alignItems="center">
         <h1>Login</h1>
       </Grid>
       <FormControl sx={{ width: '25ch'}}>
@@ -135,10 +110,11 @@ export const LoginForm = () => {
           variant="contained"
           type="submit"
           sx={{ backgroundColor: "gray"}}
-          onClick={handleSubmit}>
+          onClick={login}
+          >
           Login
         </Button>
-        <p style={{padding:10}}>Don't have an account? <a href="#" onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
+        <p style={{padding:10}}>Don't have an account? <a href='/register' style={{"color": "#4444A6"}}>Sign up</a></p>
         <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
         </Box>
         
