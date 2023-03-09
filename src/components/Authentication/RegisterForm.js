@@ -11,24 +11,14 @@ export const RegisterForm = ({ title }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
-  const warning = () => {
-    if (password != confirmPassword){
-      Alert("Your passwords do not match")
-      return true
-    }
-    return false
-  }
-
   const register = async () => {
-    if (warning){
-      return 
-    }
     try {
-      const user = await createUserWithEmailAndPassword( //creates a user
+      const user = await createUserWithEmailAndPassword( 
         auth,
         email,
         password
       );
+      navigate('/login')
     } catch (error) {
       console.log(error.message);
     }

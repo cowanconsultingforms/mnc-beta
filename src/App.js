@@ -4,6 +4,7 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import { preloadUser, useFirestore, useUser } from 'reactfire';
 import NavBar from './components/Misc/NavBar';
+import AppBar from '@mui/material/AppBar';
 import { getDoc } from 'firebase/firestore';
 import ResetPasswordPage from './pages/ResetPassword';
 import { collection, query, where } from 'firebase/firestore';
@@ -96,10 +97,7 @@ export const App = ({ children }) => {
         <Route exact path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route exact path="/login" element={< LoginForm/>} />
-        <Route
-          exact
-          path="/register"
-          element={< RegisterForm/>}
+        <Route exact path="/register" element={< RegisterForm/>}
         />
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
