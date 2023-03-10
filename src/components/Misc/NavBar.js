@@ -3,7 +3,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut, getInstance } from "firebase/auth";
 import { LogoutOutlined } from "@mui/icons-material";
-import app, { auth } from "../../firebase";
+import { auth } from "../../firebase";
 import { useUser, useFirestore, useSigninCheck} from "reactfire";
 import { MNCLogo,MNCLogoGray } from "./MNCLogo";
 const logoutButton = document.getElementById('logout');
@@ -72,6 +72,7 @@ export const NavBar = () => {
     onClickFunc: () => navigate("/login"),
     id: "login-page",
   }
+
 
   if (auth.currentUser != null){
     pages.push(logOut)

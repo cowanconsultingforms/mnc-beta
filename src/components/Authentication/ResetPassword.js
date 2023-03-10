@@ -1,36 +1,102 @@
 import React, { useState, useRef, Fragment } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { Box, TextField, Button } from "@mui/material";
 import { useAuth,useInitAuth } from "reactfire";
-const ResetPassword = ({ title }) => {
-  const [ email, setEmail ] = useState("");
-  const auth = useAuth();
-  const pwRef = useRef({email})
+import { useNavigate } from 'react-router-dom';
+import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
+
+export const ResetPassword = () => {
+  const [email, setEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('');
+  const navigate = useNavigate('');
+
+
+      
   return (
-    <Fragment>
+    <div className="reset-form">
+      <Grid 
+      container 
+      alignItems="center" 
+      direction="column"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "20px",
+        paddding: "20px",
+      }}>
       <Box
         component="form"
-        className="password-reset"
+        autoComplete
         sx={{
           display: "flex",
-          width: "100%",
           flexDirection: "column",
-          marginTop: "5%",
-          fontFamily: "Garamond",
-        }}
-        ref={pwRef}
-      >
-       
-        <TextField value="email" onChange={(e) => setEmail(e.target.value)} ref={pwRef} />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => sendPasswordResetEmail(email)}
-          type="submit"
-          ref={pwRef}
+          marginTop: "20px",
+          paddding: "20px",
+          alignItems: "center",
+          borderRadius: "20px",
+          backgroundColor: "#eeeeee",
+          marginBottom: "30px",
+          marginTop: "30px",
+          width: "300px",
+        }}>
+        <h1>Reset Password</h1>
+        <FormControl sx={{ width: '25ch'}}>
+        <TextField
+          id="email"
+          label="Email :"
+          variant="outlined"
+          autocomplete="username"
+          value={email}
+          fullWidth={true}
+          margin="normal"
+          onChange={(e) => setEmail(e.target.value)}
+          sx={{
+            backgroundColor: 'whitesmoke',
+            fontFamily: 'Garamond'
+          }}
         />
+        <TextField
+          id="password"
+          label="Old Password"
+          variant="outlined"
+          type="password"
+          value={oldPassword}
+          fullWidth={true}
+          autoComplete="new-password"
+          margin="normal"
+          onChange={(e) => setOldPassword(e.target.value)}
+          sx={{
+            backgroundColor: 'whitesmoke',
+            fontFamily: 'Garamond'
+          }}
+        />
+        <TextField
+          id="confirmPassword"
+          label="New Password :"
+          variant="outlined"
+          type="password"
+          value={newPassword}
+          fullWidth={true}
+          autoComplete="new-password"
+          margin="normal"
+          onChange={(e) => setNewPassword(e.target.value)}
+          sx={{
+            backgroundColor: 'whitesmoke',
+            fontFamily: 'Garamond'
+          }}/>
+        </FormControl>
+        <br/>
+        <Button
+          key="Login"
+          variant="contained"
+          type="submit"
+          sx={{ backgroundColor: "gray"}}
+          onClick={""}>
+          Reset password
+        </Button>
       </Box>
-    </Fragment>
+      </Grid>
+    </div>
   );
 };
 
