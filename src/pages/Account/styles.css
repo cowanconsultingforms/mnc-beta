@@ -2,27 +2,33 @@
   height: 100%;
   display: flex;
   position: relative;
-  text-align: left;
-  background-color: rgb(238, 238, 238);
-  color: rgb(128, 128, 128);
-  font-size: 20px;
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+  font-size: 2px;
   width: 90%;
   left: 5%;
   position: relative;
+  justify-content: center;
+  margin: auto;
 }
 .account-page-container {
-  padding-top: 100px;
+  padding-top: 50px;
   display: flex;
   width: 75%;
   height: 100%;
+  padding: 15px;
+  margin: 0 auto;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 .account-page-container h1 {
-  font-size: 30px;
+  justify-content: center;
+  font-size: 10px;
+  margin: auto;
+  padding: 15px;
 }
-.SignOutBox {
+/* .SignOutBox {
   display: flex;
   flex-direction: row;
   height: 100%;
@@ -31,11 +37,12 @@
   color: rgb(128, 128, 128);
   font-size: 20px;
   width: 50%;
-}
+} */
 .delete-profile {
   height: 100%;
   grid-column: 3;
   grid-row: 5 / span 2;
+  justify-content: center;
   position: relative;
   text-align: left;
   background-color: #eeeeee;
@@ -43,6 +50,13 @@
   font-size: 20px;
   width: 100%;
 }
+
+.Grid{
+  justify-content: center;
+  align-items: center;
+}
+
+
 
 
 /*CSS for Account.js 

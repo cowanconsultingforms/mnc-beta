@@ -11,10 +11,10 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 
-import SignOutBox from "../../components/Account/SignOutBox"; //imports SignOutBox Component - allow the user to sign out
+// import SignOutBox from "../../components/Account/SignOutBox"; //imports SignOutBox Component - allow the user to sign out
 //import NavBar from "../../components/Misc/NavBar";
 import {ProfileChange} from "../../components/Account/ProfileChange";
-import ChangePassword from "../../components/Account/ChangePassword";
+// import ChangePassword from "../../components/Account/ChangePassword";
 import { useFirestore,useUser } from "reactfire";
 import { useAuth } from "reactfire";
 //This is white
@@ -54,41 +54,43 @@ export const AccountPage = (props) => {
     }
   })
 
+ 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={0.001}>
-        <Grid item xs={9}>
-          <Item sx={{ height: 120, width: 1444 }}>
+    
+   
+        <Grid item xs={10}>
+          <Item sx={{ height: 120  }}>
+
             <Typography
               variant="h1"
               sx={{
                 fontFamily: "Garamond",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "50px",
+                fontSize: "75px",
               }}
             >
               Edit Profile
             </Typography>
           </Item>
-        </Grid>
-        <Grid item xs={12}>
-          <Item sx={{ height: 540, width: 1444 }}>
-            <Grid container spacing={5}>
-              <Grid item xs={6}>
+        
+        <Grid item xs={1}>
+          {/* <Item sx={{ height: 400, width: 2000 }}> */}
+            <Grid container spacing={0}>
+              <Grid item xs={9}>
                   <ProfileChange role={props.role} userName={props.userName} email={props.email}></ProfileChange>
                 
               </Grid>
-              <Grid item xs={4}>
-                <SignOutBox></SignOutBox>
-                <ChangePassword></ChangePassword>
+              {/* <Grid item xs={4}> */}
+                {/* <SignOutBox></SignOutBox>
+                <ChangePassword></ChangePassword> */}
                 
-              </Grid>
+              {/* </Grid> */}
             </Grid>
-          </Item>
+          {/* </Item> */}
         </Grid>
-      </Grid>
-    </Box>
+       </Grid>
+    
   );
 };
 
