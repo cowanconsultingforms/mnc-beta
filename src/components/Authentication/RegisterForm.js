@@ -1,9 +1,9 @@
 import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
-import {createUserWithEmailAndPassword,reauthenticateWithCredential,} from 'firebase/auth';
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from "../../firebase.js"
+import { auth } from "../../firebase"
 
 export const RegisterForm = ({ title }) => {
   const [email, setEmail] = useState('');
@@ -11,26 +11,19 @@ export const RegisterForm = ({ title }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
-  const warning = () => {
-    if (password != confirmPassword){
-      Alert("Your passwords do not match")
-      return true
-    }
-    return false
-  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const register = async () => {
-    if (warning){
-      return 
+  const register = () => {
+    if (!emailRegex.test(email)){
+      alert("Please enter a valid email")
+    } 
+    else if (password.length < 6){
+      alert("Password too short, must be 6 characters minimum")
+    } else if (password != confirmPassword){
+      alert("Passwords don't match")
     }
-    try {
-      const user = await createUserWithEmailAndPassword( //creates a user
-        auth,
-        email,
-        password
-      );
-    } catch (error) {
-      console.log(error.message);
+    else{
+        createUserWithEmailAndPassword(auth, email, password);
     }
   };
 
