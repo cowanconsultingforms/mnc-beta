@@ -3,16 +3,20 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut, getInstance } from "firebase/auth";
 import { LogoutOutlined } from "@mui/icons-material";
-import { auth } from "../../firebase";
-import { useUser, useFirestore, useSigninCheck} from "reactfire";
+import { useUser, useFirestore, useSigninCheck, useAuth, useFirestoreCollection, useFirestoreCollectionData} from "reactfire";
 import { MNCLogo,MNCLogoGray } from "./MNCLogo";
+import 'firebase/firestore';
+import app from '../../firebase.js';
 const logoutButton = document.getElementById('logout');
 const loginButton = document.getElementById('login-page');
 const adminButton = document.getElementById('admin-page');
 
 export const NavBar = () => {
  
+  const auth = useAuth();
   const navigate = useNavigate();
+
+  const admins = ["anik@gmail.com"]
 
   try{
     console.log(auth.currentUser.email)
@@ -21,13 +25,6 @@ export const NavBar = () => {
   }
 
   const pages = [
-    {
-      page: "/admin",
-      text: "Administrator",
-      onClickFunc: () => navigate("/admin"),
-      id: "admin-page",
-      
-    },
     {
       page:"/search",
       text:"Search Narrowly!",
@@ -73,12 +70,25 @@ export const NavBar = () => {
     id: "login-page",
   }
 
+  const admin = {
+    page: "/admin",
+    text: "Administrator",
+    onClickFunc: () => navigate("/admin"),
+    id: "admin-page",
+    
+  }
+
 
   if (auth.currentUser != null){
     pages.push(logOut)
+    const userEmail = auth.currentUser.email
+    if (admins.includes(userEmail)){
+      pages.unshift(admin)
+    }
   } else{
     pages.push(logIn)
   }
+
   
   return (
     <header>

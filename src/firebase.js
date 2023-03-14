@@ -6,10 +6,11 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import {
+  FirebaseAppProvider,
   StorageProvider,
   AuthProvider,
   useFirebaseApp,
-  FirestoreProvider,useInitAuth,useInitFirestore,useInitStorage, AppCheckProvider
+  FirestoreProvider,useInitAuth,useInitFirestore,useInitStorage, AppCheckProvider,
 } from "reactfire";
 //This code imports the Firebase Authentication, Firestore and Storage modules from the firebase library.
 
@@ -36,15 +37,17 @@ const storage = getStorage(app);
 
 export const GlobalFirebaseProvider = ({ children }) => {
   return (
-    <BrowserRouter>
-      <AuthProvider sdk={auth}>
-        <FirestoreProvider sdk={db}>
-          <StorageProvider sdk={storage}>
-            <App />
-          </StorageProvider>
-        </FirestoreProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <FirebaseAppProvider firebaseConfig={firebaseConfig} firebaseApp={app}>
+      <BrowserRouter>
+        <AuthProvider sdk={auth}>
+          <FirestoreProvider sdk={db}>
+            <StorageProvider sdk={storage}>
+              <App />
+            </StorageProvider>
+          </FirestoreProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </FirebaseAppProvider>
   );
 };
 

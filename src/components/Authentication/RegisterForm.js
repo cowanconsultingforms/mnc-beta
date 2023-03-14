@@ -3,13 +3,15 @@ import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'fireba
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from "../../firebase"
+import { useAuth } from 'reactfire';
 
 export const RegisterForm = ({ title }) => {
+  const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

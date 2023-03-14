@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, u} from "react";
-import { auth } from "../../firebase.js"
 import { Box, TextField, Alert, Grid, FormControl } from "@mui/material";
 //import { AuthContext } from "./AuthContext.js";
 import { useNavigate, } from "react-router-dom";
@@ -12,8 +11,11 @@ import {
   onAuthStateChanged
 } from "firebase/auth"
 
+import { useAuth } from "reactfire";
+
 export const LoginForm = () => {
 
+  const auth = useAuth()
   const [user, setUser] = useState()
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("")
