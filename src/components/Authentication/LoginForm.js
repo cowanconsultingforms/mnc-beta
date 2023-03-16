@@ -10,8 +10,9 @@ import {
   browserLocalPersistence,
   onAuthStateChanged
 } from "firebase/auth"
+import { getDocs, collection } from "firebase/firestore";
 
-import { useAuth } from "reactfire";
+import { useAuth, useFirestore } from "reactfire";
 
 export const LoginForm = () => {
 
@@ -25,9 +26,9 @@ export const LoginForm = () => {
   
   const login = async () => {
     try{
-        if(signInWithEmailAndPassword(auth, email, password)){ //signs in user
-          setLoggedIn(true)
-        }
+        signInWithEmailAndPassword(auth, email, password).then(()=> {
+          setLoggedIn(true);
+        })
     } catch (e) {
       alert("Incorrect email or password, try again")
     }
@@ -39,6 +40,19 @@ export const LoginForm = () => {
     }
   }, [loggedIn]);
 
+  //testing
+  /*
+  const firestore = useFirestore();
+  const usersRef = collection(firestore,'users')
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const users = await getDocs(usersRef).then(() =>{
+        console.log(users.docs)
+      })
+    }
+  },[])
+  */
 
   return (
     <Grid 

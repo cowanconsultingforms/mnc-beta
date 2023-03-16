@@ -5,8 +5,7 @@ import { onAuthStateChanged, signOut, getInstance } from "firebase/auth";
 import { LogoutOutlined } from "@mui/icons-material";
 import { useUser, useFirestore, useSigninCheck, useAuth, useFirestoreCollection, useFirestoreCollectionData} from "reactfire";
 import { MNCLogo,MNCLogoGray } from "./MNCLogo";
-import 'firebase/firestore';
-import app from '../../firebase.js';
+import { collection, getDocs } from "firebase/firestore";
 const logoutButton = document.getElementById('logout');
 const loginButton = document.getElementById('login-page');
 const adminButton = document.getElementById('admin-page');
@@ -18,31 +17,28 @@ export const NavBar = () => {
 
   const admins = ["anik@gmail.com"]
 
-  try{
-    console.log(auth.currentUser.email)
-  } catch {
-
-  }
-
   const pages = [
-    {
+      /*
       page:"/search",
       text:"Search Narrowly!",
       onClickFunc: () =>navigate('/search',{}),
       id:"search-page",
     },
+    */
     {
       page: "/contact",
       text: "Contact",
       onClickFunc: () => navigate("/contact"),
       id: "contact-page",
     },
+    /*
     {
       page: "/listings",
       text: "Listings",
       onClickFunc: () => navigate("/listings"),
       id: "listing-page",
     },
+    */
     {
       page: "/account",
       text: "Profile",
@@ -88,6 +84,11 @@ export const NavBar = () => {
   } else{
     pages.push(logIn)
   }
+
+  const firestore = useFirestore()
+  const coll = collection(firestore, 'admins/')
+  const data = getDocs(coll)
+  console.log(data.docs)
 
   
   return (

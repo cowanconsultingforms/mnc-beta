@@ -99,9 +99,11 @@ export const App = ({ children }) => {
         <Route exact path="/reset-password" element={<ResetPassword/>}/>
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
+        
         <Route path="/listings/" element={<ListingPage />} />
         <Route path="/listings/:listing_ID" element={<ListingPage />} />
         <Route path="/listings/:state" element={<ListingPage />} />
+        /*
         <Route path="/search/:city" element={<SearchPage />} />
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
