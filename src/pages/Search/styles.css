@@ -30,7 +30,10 @@ input.search-bar {
   border: none;
   background: white;
   border-radius: 0;
-  padding: 2px;
+  padding: 2px 45px 2px 10px; /* added padding for icon */
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: auto 50%; /* adjust size of icon */
 }
 
 button#login-page {
@@ -141,9 +144,5 @@ button#login-page:hover {
   /* For screens wider than 1024px */
   input.search-bar {
     font-size: 25px;
-  }
-  
-  .searchStyle {
-    font-size: 
-  }
+    }
 }
