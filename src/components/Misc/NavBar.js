@@ -3,9 +3,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut, getInstance } from "firebase/auth";
 import { LogoutOutlined } from "@mui/icons-material";
-import { useUser, useFirestore, useSigninCheck, useAuth, useFirestoreCollection, useFirestoreCollectionData} from "reactfire";
+import { useUser, useFirestore, useSigninCheck, useAuth} from "reactfire";
 import { MNCLogo,MNCLogoGray } from "./MNCLogo";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 const logoutButton = document.getElementById('logout');
 const loginButton = document.getElementById('login-page');
 const adminButton = document.getElementById('admin-page');
@@ -15,7 +15,27 @@ export const NavBar = () => {
   const auth = useAuth();
   const navigate = useNavigate();
 
-  const admins = ["anik@gmail.com"]
+  const firestore = useFirestore()
+  const usersRef = collection(firestore,'/users')
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    const getUsers = async() => {
+      const data = await getDocs(usersRef)
+      setUsers(data.docs.map((doc) => ({...doc.data()})))
+    }
+    getUsers()
+  },[])
+
+  const checkAdmin = (arr, email) => {
+    for (let i=0; i < arr.length; i++){
+      if (arr[i].Email == email && arr[i].Role == "admin"){
+        return true
+      }
+    }
+    return false
+  }
+
 
   const pages = [
       /*
@@ -78,17 +98,12 @@ export const NavBar = () => {
   if (auth.currentUser != null){
     pages.push(logOut)
     const userEmail = auth.currentUser.email
-    if (admins.includes(userEmail)){
+    if (checkAdmin(users, userEmail)){
       pages.unshift(admin)
     }
   } else{
     pages.push(logIn)
   }
-
-  const firestore = useFirestore()
-  const coll = collection(firestore, 'admins/')
-  const data = getDocs(coll)
-  console.log(data.docs)
 
   
   return (

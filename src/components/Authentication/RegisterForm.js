@@ -1,19 +1,47 @@
+import { AddAlert } from '@mui/icons-material';
 import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc, getDocs} from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'reactfire';
+import { useAuth, useFirestore } from 'reactfire';
+import { db } from "./../../firebase.js"
 
 export const RegisterForm = ({ title }) => {
   const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [users, setUsers] = useState([])
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const navigate = useNavigate();
 
+  const firestore = useFirestore();
+  const usersRef = collection(firestore,'/users')
+  
+  useEffect(() => {
+    const getUsers = async() => {
+      const data = await getDocs(usersRef)
+      setUsers(data.docs.map((doc) => ({...doc.data()})))
+    }
+    getUsers()
+  },[])
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  console.log(users)
+
+  const checkIfEmailExists = (e) => {
+    for (let i = 0; i < users.length; i++){
+      let registerEmail = users[i].Email
+      if (e == registerEmail){
+        return true
+      }
+    }
+    return false
+  }
+
+  const createUser = async () => {
+    await addDoc(usersRef, {Email:email, Password:password, Role:"user"})
+  }
 
   const register = () => {
     if (!emailRegex.test(email)){
@@ -23,9 +51,14 @@ export const RegisterForm = ({ title }) => {
       alert("Password too short, must be 6 characters minimum")
     } else if (password != confirmPassword){
       alert("Passwords don't match")
-    }
-    else{
-        createUserWithEmailAndPassword(auth, email, password);
+      navigate('/register')
+    } else if (checkIfEmailExists(email)){
+      alert("This email was already used to register an account")
+      navigate('/register')
+    } else{
+        createUser()
+        createUserWithEmailAndPassword(auth, email, password)
+        
     }
   };
 

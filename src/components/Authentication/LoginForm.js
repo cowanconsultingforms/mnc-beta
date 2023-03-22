@@ -11,26 +11,23 @@ import {
   onAuthStateChanged
 } from "firebase/auth"
 import { getDocs, collection } from "firebase/firestore";
-
 import { useAuth, useFirestore } from "reactfire";
 
 export const LoginForm = () => {
 
   const auth = useAuth()
-  const [user, setUser] = useState()
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const navigate = useNavigate()
   
-  const login = async () => {
+  const login = () => {
     try{
-        signInWithEmailAndPassword(auth, email, password).then(()=> {
-          setLoggedIn(true);
-        })
-    } catch (e) {
-      alert("Incorrect email or password, try again")
+        signInWithEmailAndPassword(auth, email, password)
+        setLoggedIn(true)
+    } catch {
+      alert("Incorrect username or password")
     }
   };
 
@@ -39,20 +36,6 @@ export const LoginForm = () => {
       navigate("/");
     }
   }, [loggedIn]);
-
-  //testing
-  /*
-  const firestore = useFirestore();
-  const usersRef = collection(firestore,'users')
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const users = await getDocs(usersRef).then(() =>{
-        console.log(users.docs)
-      })
-    }
-  },[])
-  */
 
   return (
     <Grid 
