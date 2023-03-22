@@ -1,6 +1,6 @@
 import { IconButton, Grid, Button, Stack } from "@mui/material";
 import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useState, forwardRef, useEffect, useReducer, useCallback, useMemo } from "react";
 import { InputUnstyled } from "@mui/base";
 import Item from "../Misc/Surface";
@@ -289,6 +289,7 @@ function reducer(state, action){
                }}
              />
            </IconButton>
+           {/*
       <FormControl required sx={{ m: 1, minWidth: 160, backgroundColor:"white", color:"black",justifyContent: "center",
           alignItems: "center"}}>
         <InputLabel id="demo-simple-select-required-label" sx={{color:"black"}}>Please Select a Type</InputLabel>
@@ -321,7 +322,7 @@ function reducer(state, action){
           >Rent</MenuItem>
         </Select>
       </FormControl>
-  
+              */}
       
         </Toolbar>
       </AppBar>
