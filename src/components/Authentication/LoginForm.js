@@ -22,18 +22,21 @@ export const LoginForm = () => {
   const [error, setError] = useState("")
   const navigate = useNavigate()
   
-  const login = () => {
+  const login = async(e) => {
+    e.preventDefault()
     try{
-        signInWithEmailAndPassword(auth, email, password)
-        setLoggedIn(true)
-    } catch {
-      alert("Incorrect username or password")
+        const user = await signInWithEmailAndPassword(auth, email, password)
+        if (user != null){
+          setLoggedIn(true)
+        }
+    } catch (error) {
+      alert("You have entered an incorrect email or password")
     }
   };
 
   useEffect(() => { //redirects to front page after logging in
     if (loggedIn) {
-      navigate("/");
+      return navigate("/", {exact: true});
     }
   }, [loggedIn]);
 
@@ -110,7 +113,7 @@ export const LoginForm = () => {
           >
           Login
         </Button>
-        <p style={{padding:10}}>Don't have an account? <a href='/register' style={{"color": "#4444A6"}}>Sign up</a></p>
+        <p style={{padding:10}}>Don't have an account? <a onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
         <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
         </Box>
     </Grid>

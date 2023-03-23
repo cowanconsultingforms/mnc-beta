@@ -43,7 +43,8 @@ export const RegisterForm = ({ title }) => {
     await addDoc(usersRef, {Email:email, Password:password, Role:"user"})
   }
 
-  const register = () => {
+  const register = (e) => {
+    e.preventDefault()
     if (!emailRegex.test(email)){
       alert("Please enter a valid email")
     } 
@@ -51,14 +52,13 @@ export const RegisterForm = ({ title }) => {
       alert("Password too short, must be 6 characters minimum")
     } else if (password != confirmPassword){
       alert("Passwords don't match")
-      navigate('/register')
     } else if (checkIfEmailExists(email)){
       alert("This email was already used to register an account")
-      navigate('/register')
     } else{
         createUser()
         createUserWithEmailAndPassword(auth, email, password)
-        
+        alert("You have successfully signed up")
+        navigate('/')
     }
   };
 
