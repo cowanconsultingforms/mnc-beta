@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, u} from "react";
-import { auth } from "../../firebase.js"
 import { Box, TextField, Alert, Grid, FormControl } from "@mui/material";
 //import { AuthContext } from "./AuthContext.js";
 import { useNavigate, } from "react-router-dom";
@@ -11,35 +10,35 @@ import {
   browserLocalPersistence,
   onAuthStateChanged
 } from "firebase/auth"
+import { getDocs, collection } from "firebase/firestore";
+import { useAuth, useFirestore } from "reactfire";
 
 export const LoginForm = () => {
 
-  const [user, setUser] = useState()
+  const auth = useAuth()
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const navigate = useNavigate()
-
-  onAuthStateChanged(auth, (currentUser) => { //Should be updating the user, not sure if it ever gets called
-    setUser(currentUser)
-  });
   
-  const login = async () => {
+  const login = async(e) => {
+    e.preventDefault()
     try{
-        if(signInWithEmailAndPassword(auth, email, password)){ //signs in user
+        const user = await signInWithEmailAndPassword(auth, email, password)
+        if (user != null){
           setLoggedIn(true)
         }
     } catch (error) {
-      console.log(error.message);
+      alert("You have entered an incorrect email or password")
     }
   };
 
   useEffect(() => { //redirects to front page after logging in
     if (loggedIn) {
-      navigate("/");
+      return navigate("/", {exact: true});
     }
   }, [loggedIn]);
-
 
   return (
     <Grid 
@@ -114,10 +113,9 @@ export const LoginForm = () => {
           >
           Login
         </Button>
-        <p style={{padding:10}}>Don't have an account? <a href='/register' style={{"color": "#4444A6"}}>Sign up</a></p>
+        <p style={{padding:10}}>Don't have an account? <a onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
         <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
         </Box>
-        
     </Grid>
   );
 };

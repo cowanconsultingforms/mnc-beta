@@ -1,36 +1,64 @@
+import { AddAlert } from '@mui/icons-material';
 import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
-import {createUserWithEmailAndPassword,reauthenticateWithCredential,} from 'firebase/auth';
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
+import { addDoc, collection, doc, serverTimestamp, setDoc, getDocs} from 'firebase/firestore';
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from "../../firebase.js"
+import { useAuth, useFirestore } from 'reactfire';
+import { db } from "./../../firebase.js"
 
 export const RegisterForm = ({ title }) => {
+  const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [users, setUsers] = useState([])
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const navigate = useNavigate();
 
-  const warning = () => {
-    if (password != confirmPassword){
-      Alert("Your passwords do not match")
-      return true
+  const firestore = useFirestore();
+  const usersRef = collection(firestore,'/users')
+  
+  useEffect(() => {
+    const getUsers = async() => {
+      const data = await getDocs(usersRef)
+      setUsers(data.docs.map((doc) => ({...doc.data()})))
+    }
+    getUsers()
+  },[])
+
+  console.log(users)
+
+  const checkIfEmailExists = (e) => {
+    for (let i = 0; i < users.length; i++){
+      let registerEmail = users[i].Email
+      if (e == registerEmail){
+        return true
+      }
     }
     return false
   }
 
-  const register = async () => {
-    if (warning){
-      return 
-    }
-    try {
-      const user = await createUserWithEmailAndPassword( //creates a user
-        auth,
-        email,
-        password
-      );
-    } catch (error) {
-      console.log(error.message);
+  const createUser = async () => {
+    await addDoc(usersRef, {Email:email, Password:password, Role:"user"})
+  }
+
+  const register = (e) => {
+    e.preventDefault()
+    if (!emailRegex.test(email)){
+      alert("Please enter a valid email")
+    } 
+    else if (password.length < 6){
+      alert("Password too short, must be 6 characters minimum")
+    } else if (password != confirmPassword){
+      alert("Passwords don't match")
+    } else if (checkIfEmailExists(email)){
+      alert("This email was already used to register an account")
+    } else{
+        createUser()
+        createUserWithEmailAndPassword(auth, email, password)
+        alert("You have successfully signed up")
+        navigate('/')
     }
   };
 

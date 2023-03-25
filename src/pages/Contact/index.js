@@ -26,22 +26,7 @@ const ContactPage = () => {
   return (
         
     //Stack component from @mui/material library
-    <Stack
-      className="contact-container"
-      component="div"
-     
-      sx={{
-        marginTop: "5%",
-        marginLeft: "10%",
-        width: "80%",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <MNCLogo />
       <ContactForm />
-      <Footer />
-    </Stack>
   );
 };
 export default ContactPage;

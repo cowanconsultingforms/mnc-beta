@@ -6,10 +6,11 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import {
+  FirebaseAppProvider,
   StorageProvider,
   AuthProvider,
   useFirebaseApp,
-  FirestoreProvider,useInitAuth,useInitFirestore,useInitStorage, AppCheckProvider
+  FirestoreProvider,useInitAuth,useInitFirestore,useInitStorage, AppCheckProvider,
 } from "reactfire";
 //This code imports the Firebase Authentication, Firestore and Storage modules from the firebase library.
 
@@ -28,28 +29,29 @@ export const firebaseConfig = {
   appId: "1:963609543814:web:3b15ab14993c1f49d17d07",
   measurementId: "G-E3FYEFLBKE",
 };
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 export const GlobalFirebaseProvider = ({ children }) => {
-  const app = useFirebaseApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
   return (
-    <BrowserRouter>
-      <AuthProvider sdk={auth}>
-        <FirestoreProvider sdk={db}>
-          <StorageProvider sdk={storage}>
-            
+    <FirebaseAppProvider firebaseConfig={firebaseConfig} firebaseApp={app}>
+      <BrowserRouter>
+        <AuthProvider sdk={auth}>
+          <FirestoreProvider sdk={db}>
+            <StorageProvider sdk={storage}>
               <App />
-  
-          </StorageProvider>
-        </FirestoreProvider>
-      </AuthProvider>
-    </BrowserRouter>
+            </StorageProvider>
+          </FirestoreProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </FirebaseAppProvider>
   );
 };
+
+export { app, auth, db, storage };
 /*This code exports a React component GlobalFirebaseProvider that uses the useFirebaseApp hook to get the initialized 
 Firebase app, then uses getAuth, getFirestore, and getStorage functions to get the Firebase Authentication, Firestore, 
 and Storage services, respectively. The component returns a component tree with the BrowserRouter component and three 

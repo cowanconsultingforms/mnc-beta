@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
+import { Grid } from "@mui/material";
 import emailjs from "@emailjs/browser";
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor:
@@ -48,63 +49,50 @@ export const ContactForm = ({ ref }) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const [zip, setZip] = useState("");
 
   return (
-    <Stack
-      className="contact-form"
-      component="div"
+    <Grid 
+      className = "contact-form"
+      container 
+      alignItems="center" 
       direction="column"
-      sx={{ alignItems: "center", justifyContent: "center",fontFamily:'Garamond' }}
-    >
-      <Item sx={{ border: "1px solid black", borderBottom: "none" }}>
-        <Typography
-          variant="h4"
-          sx={{
-            fontFamily: "Garamond",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 200,
-          }}
-        >
-          Contact Form
-        </Typography>
-        <Divider />
-        <Typography
-          variant="h6"
-          sx={{ fontFamily: "Garamond", fontWeight: "bold" }}
-        >
-          Send a Message to Us!{" "}
-        </Typography>
-      </Item>
-
-      <Item
-        className="contact-form"
-        component="form"
-        autoComplete="true"
-        noValidate
-        ref={formRef}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "20px",
-          border: "2px solid black",
-          borderRadius: "5px",
-          width: 500,
-          fontFamily: "Garamond",
-          height: "fit-content",
-        }}
-      >
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "20px",
+      }}>
+      <Box
+      className="contact-form-box"
+      component="form"
+      autoComplete="true"
+      noValidate
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "20px",
+        alignItems: "center",
+        borderRadius: "20px",
+        backgroundColor: "#eeeeee",
+        marginBottom: "30px",
+        marginTop: "30px",
+        width: "525px"
+      }}>
+      <Grid display="flex" justifyContent="center" alignItems="center">
+        <h1>Contact Us</h1>
+      </Grid>
+      <Stack
+        direction="row"
+        spacing={5}>
         <TextField
           name="name"
           label="Name"
+          variant="outlined"
+          fullWidth
           sx={{
             fontFamily: "Garamond",
-            background: "white",
-            width: "95%",
-            border: "2px solid gray",
-            borderRadius: "5px;",
+            width: "50%",
+            backgroundColor: 'whitesmoke'
           }}
           onChange={(e) => setName(e.target.value)}
         />
@@ -115,12 +103,15 @@ export const ContactForm = ({ ref }) => {
           fullWidth
           sx={{
             fontFamily: "Garamond",
-            background: "white",
-            width: "95%",
-            border: "2px solid gray",
-            borderRadius: "10px;",
+            width: "50%",
+            backgroundColor: 'whitesmoke'
           }}
         />
+        </Stack>
+        <br/>
+        <Stack
+        direction="row"
+        spacing={5}>
         <TextField
           name="phone"
           label="Phone"
@@ -128,48 +119,41 @@ export const ContactForm = ({ ref }) => {
           fullWidth
           sx={{
             fontFamily: "Garamond",
-            background: "white",
-            width: "95%",
-            border: "2px solid gray",
-            borderRadius: "10px",
+            width: "50%",
+            backgroundColor: 'whitesmoke'
           }}
         />
+        <TextField
+          name="zip"
+          label="Zip"
+          onChange={(e) => setZip(e.target.value)}
+          fullWidth
+          sx={{
+            fontFamily: "Garamond",
+            width: "50%",
+            backgroundColor: 'whitesmoke'
+          }}
+        />
+        </Stack>
+        <br/>
         <TextareaAutosize
           name="message"
           label="Message"
           onChange={(e) => setMessage(e.target.value)}
-          style={{ width: 430, border: "2px solid gray", height: 180 }}
-        />
-        <ButtonGroup sx={{ marginTop: "10px", border: "2px solid gray" }}>
+          style={{ width: 430, border: "2px solid gray", height: 180,backgroundColor: 'whitesmoke' }}
+          />
+          <br/>
           <Button
-            onClick={handleSubmit}
-            sx={{
-              fontFamily: "Garamond",
-              background: "gray",
-              width: "100%",
-              border: "2px solid white",
-              borderRadius: "10px;",
-              color: "white",
-            }}
-          >
-            Send Message
-          </Button>
-          <Button
-            sx={{
-              fontFamily: "Garamond",
-              background: "gray",
-              width: "100%",
-              border: "2px solid white",
-              borderRadius: "10px;",
-              color: "white",
-            }}
-            onClick={() => navigate("/")}
-          >
-            Home
-          </Button>
-        </ButtonGroup>
-      </Item>
-    </Stack>
+          key="Submit"
+          variant="contained"
+          type="submit"
+          sx={{ backgroundColor: "gray"}}
+          onClick={handleSubmit}>
+          Send Message
+        </Button>
+        <br/>
+      </Box>
+    </Grid>
   );
 };
 

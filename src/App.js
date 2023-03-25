@@ -4,6 +4,7 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import { preloadUser, useFirestore, useUser } from 'reactfire';
 import NavBar from './components/Misc/NavBar';
+import AppBar from '@mui/material/AppBar';
 import { getDoc } from 'firebase/firestore';
 import ResetPasswordPage from './pages/ResetPassword';
 import { collection, query, where } from 'firebase/firestore';
@@ -12,6 +13,7 @@ import { getIdTokenResult } from 'firebase/auth';
 import { List } from '@mui/material';
 import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
+import { ResetPassword }  from "./components/Authentication/ResetPassword"
 import { auth } from "./firebase.js"
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
@@ -77,9 +79,7 @@ export const App = ({ children }) => {
       });
     }
   };
-  useEffect(() => {
-    roleCheck();
-  });
+  
 
   return (
     <div className="App">
@@ -93,19 +93,17 @@ export const App = ({ children }) => {
 
         <Route exact path="/admin" element={<AdminDashboard />} />
 
-        <Route exact path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route exact path="/login" element={< LoginForm/>} />
-        <Route
-          exact
-          path="/register"
-          element={< RegisterForm/>}
-        />
+        <Route exact path="/register" element={< RegisterForm/>}/>
+        <Route exact path="/reset-password" element={<ResetPassword/>}/>
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
+        
         <Route path="/listings/" element={<ListingPage />} />
         <Route path="/listings/:listing_ID" element={<ListingPage />} />
         <Route path="/listings/:state" element={<ListingPage />} />
+        /*
         <Route path="/search/:city" element={<SearchPage />} />
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />

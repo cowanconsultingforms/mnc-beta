@@ -11,7 +11,18 @@ import { HomeSearchForm } from "../../components/Home/HomeSearchForm";
 //actions needed to finish HomePage
 //needs to be styled and modularized into a logo and search bar , and a footer underneath
 
+
+
+
 export const HomePage = (props) => {
+
+  <div class="home-search-bar">
+  <input type="text" placeholder="Search" class="box">
+  <button class="search-icon">
+    <i class="fa fa-search"></i>
+  </button>
+  </input>
+</div>
 
     //useLocation hook to get current location object from the react-router-dom library
   const location = useLocation();
@@ -23,6 +34,8 @@ export const HomePage = (props) => {
   const handleSearch = async (e) => {
     e.preventDefault();
   };
+
+  
   const [loggedIn, setLoggedIn] = useState(null);
   return (
     <Box component="div" direction="column" className="home__page">

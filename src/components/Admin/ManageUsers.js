@@ -1,12 +1,6 @@
 import React from "react";
 import { useFirestore, useFirestoreCollection } from "reactfire";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -15,43 +9,17 @@ import {
   Paper,
   TableContainer,
   TableRow,
-  Box,
 } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
-import {
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-  useGridApiContext,
-  useGridApiMethod,
-} from "@mui/x-data-grid";
-import { useForm } from "react-hook-form";
-const columnHeaders = [
-  "uid",
-  "userName",
-  "role",
-  "portfolioMin",
-  "portfolioMax",
-  "email",
-];
+
 export const ManageUsers = () => {
-  const methods = useForm();
-  const onSubmit = (data) => console.log(data);
   const firestore = useFirestore();
   const collectionRef = collection(firestore, "users");
   const q = query(collectionRef, orderBy("userName", "asc"));
   const { status, data: docs } = useFirestoreCollection(q);
-  const [columns, setColumns] = useState(columnHeaders);
-  const [rows, setRows] = useState([]);
-  const [userData, setUserData] = useState({
-    email: "",
-    role: "",
-    registerDate: "",
-    dissplayName: "",
-  });
+  const [users, setUsers] = useState([]);
   const displayUsers = async (e) => {
-    const users = userData;
     e.preventDefault();
     try {
       if (users !== null) {
@@ -64,43 +32,34 @@ export const ManageUsers = () => {
     }
   };
   useEffect(() => {
-    if (status === "success" && status !== "error") {
-      setUserData(...docs);
-      setColumns(...docs.docs.keys());
+    if (status === "success") {
+      setUsers(docs);
     }
     if (docs !== null) {
       console.log(docs);
     }
   }, [status, docs]);
   return (
-    <Box component={Paper}>
-      <DataGrid
-        aria-label="User Table"
-        rows={rows}
-        columns={columns}
-        loading=""
-      >
-        <TableRow>
-          {userData
-            ? null && status === "success"
-            : docs.forEach((data) => {
-                data.get("Username");
-              })}
-        </TableRow>
-      </DataGrid>
-    </Box>
+    <TableContainer component={Paper}>
+      <Table aria-label="User Table">
+        <TableHead>
+          <TableRow>
+            <TableCell>UserName</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>RegisterDate</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            {users
+              ? null && status === "success"
+              : docs.forEach((data) => {
+                  data.get("Username");
+                })}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
-
-/*Breif: React component that allows for managing users in a Firestore database.
-
-Here are some of the key things this file does:
-
-a. Imports necessary libraries such as React, reactfire, and MUI (Material UI).
-b. Creates a collectionRef using useFirestore and the collection function.
-c. Queries the collection using query and orderBy to get the documents in ascending order of userName.
-d. Uses useFirestoreCollection to listen to changes in the collection and get the status and data of the query.
-e. Uses useState to set the columns and rows of the DataGrid which will be used to display the users.
-f. Sets up a useForm hook to handle form data submitted by the user.
-g. Renders a table with rows of user data returned from Firestore using the DataGrid component.
-h. Uses useEffect to update the user data when the status and docs change. */

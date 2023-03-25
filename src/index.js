@@ -18,13 +18,9 @@ export const firebaseConfig = {
 };
 
 root.render(
-  <FirebaseAppProvider firebaseConfig={firebaseConfig}>
     <GlobalFirebaseProvider>
-      <BrowserRouter>
         <App />
-      </BrowserRouter>
     </GlobalFirebaseProvider>
-  </FirebaseAppProvider>,
 );
 
 
