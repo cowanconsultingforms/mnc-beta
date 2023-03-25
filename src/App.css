@@ -15,7 +15,7 @@ body {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  font-size: 20px;
+  font-size: 22px;
   color: white;
   box-shadow: 0px 5px 10px 2px #888888;
   text-decoration: none;
@@ -173,7 +173,7 @@ div#rs-btn-toolbar {
   display: flex;
   flex-direction: column;
   justify-content: left;
-  align-items: left;
+  align-items: center;
   width: 90%;
   border-bottom: 3px solid rgb(177, 177, 177);
   margin-left: 5%;
@@ -230,7 +230,7 @@ div#rs-btn-toolbar {
   color: white;
 }
 
-/* For screens up to 576px wide */
+/* For screens up to 576px wide/ phones */
 @media (max-width: 400px) {
   .navigation-bar {
     height: auto;
@@ -249,8 +249,9 @@ div#rs-btn-toolbar {
  
     .search-box {
       height: 200px;
-      width: 100%;
+      width: 200%;
       font-size: 14px;
+   
     }
     .searchStyle {
       font-size: 30px;
@@ -262,7 +263,7 @@ div#rs-btn-toolbar {
     }
 }
 
-/* For screens between 576px and 768px wide */
+/* For screens between 576px and 768px wide/tablets */
 @media screen and (min-width: 400px) and (max-width: 768px) {
   .navigation-bar {
     flex-direction: column;
@@ -295,7 +296,7 @@ div#rs-btn-toolbar {
   }
 }
 
-/* For screens between 768px and 1024px wide */
+/* For screens between 768px and 1024px wide/ laptops */
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .navigation-bar {
     height: 50px;
@@ -314,7 +315,7 @@ div#rs-btn-toolbar {
   }
 }
 
-/* For screens wider than 1024px */
+/* For screens wider than 1024px/ extra large desktops */
 @media  screen and (min-width: 1024px) {
   .navigation-bar {
     height: 60px;

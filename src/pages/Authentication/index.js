@@ -14,7 +14,7 @@ export const AuthPage = ({ title }) => {
   const auth = useAuth();
   const {status,data:user} = useUser()
   const navigate = useNavigate();
-  const handleFormRender = (title) => {
+const handleFormRender = (title) => {
     if (title === "Login") {
       return <LoginForm />;
     }
@@ -22,6 +22,28 @@ export const AuthPage = ({ title }) => {
       return <RegisterForm title={title} />;
     }
   };
+
+ /* const handleFormRender = async (location, signInCheckResult) => {
+    if (signInCheckResult.signedIn === true) {
+      await setLoggedIn(true);
+    }
+    if (location === "/login" && loggedIn === false) {
+      return <LoginForm />;
+    }
+    return null;
+  };*/
+  
+
+
+
+
+
+
+
+
+
+
+
   const getUser = () => {
     if (!user) {
       return;
