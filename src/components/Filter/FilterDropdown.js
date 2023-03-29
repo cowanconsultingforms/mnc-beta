@@ -1,26 +1,44 @@
 import React, { useState } from "react";
 import {
-    useFirestore,
-    useStorage,
-    useStorageDownloadURL,
-    useFirestoreCollection,
-    useStorageTask,
-  } from "reactfire";
-  import {
-    getDocs,
-    collection,
-    serverTimestamp,
-    orderBy,
-    onSnapshot,
-    addDoc,
-    doc,
-    getDoc,
-    documentId,
-    setDoc,
-    writeBatch,
-  } from "firebase/firestore";
+  useFirestore,
+  useStorage,
+  useStorageDownloadURL,
+  useFirestoreCollection,
+  useStorageTask,
+} from "reactfire";
+import {
+  getDocs,
+  collection,
+  serverTimestamp,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  doc,
+  getDoc,
+  documentId,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 import "firebase/firestore";
+import "firebase/storage";
 import "./FilterDropdown.css";
+
+// Firebase configuration
+const firebaseConfig = {
+  // Your config values here
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const storage = firebase.storage();
 
 const FilterDropdown = ({ options, onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -104,30 +122,30 @@ const FilterDropdown = ({ options, onFilterChange }) => {
                     type="radio"
                     name="bedrooms"
                     value={num}
-                    checked={bedrooms === num.toString()}
-                    onChange={handleBedroomsChange}
-                  />
-                  {num}
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="FilterSection">
-            <label htmlFor="bathrooms">Bathrooms:</label>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  name="bathrooms"
-                  value="Any"
-                  checked={bathrooms === "Any"}
-                  onChange={handleBathroomsChange}
-                />
-                Any
-              </label>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <label key={num}>
-                  <input
+                    checked={bedrooms === num.toString)}
+onChange={handleBedroomsChange}
+/>
+{num}
+</label>
+))}
+</div>
+</div>
+<div className="FilterSection">
+<label htmlFor="bathrooms">Bathrooms:</label>
+<div>
+<label>
+<input
+type="radio"
+name="bathrooms"
+value="Any"
+checked={bathrooms === "Any"}
+onChange={handleBathroomsChange}
+/>
+Any
+</label>
+{[1, 2, 3, 4, 5].map((num) => (
+<label key={num}>
+<input
 type="radio"
 name="bathrooms"
 value={num}
@@ -139,8 +157,8 @@ onChange={handleBathroomsChange}
 ))}
 </div>
 </div>
-<button className="ApplyButton" onClick={handleFilterChange}>
-Apply Filters
+<button className="FilterButton" onClick={handleFilterChange}>
+Apply
 </button>
 </div>
 )}
@@ -149,39 +167,3 @@ Apply Filters
 };
 
 export default FilterDropdown;
-
-
-const db = firebase.firestore();
-
-const getFilteredProperties = async (minPrice, maxPrice, bedrooms, bathrooms) => {
-  try {
-    let query = db.collection("properties");
-
-    if (minPrice !== 0) {
-      query = query.where("price", ">=", minPrice);
-    }
-
-    if (maxPrice !== 10000000) {
-      query = query.where("price", "<=", maxPrice);
-    }
-
-    if (bedrooms !== "0") {
-      query = query.where("bedrooms", "==", parseInt(bedrooms));
-    }
-
-    if (bathrooms !== "0") {
-      query = query.where("bathrooms", "==", parseInt(bathrooms));
-    }
-
-    const snapshot = await query.get();
-
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    console.error("Error fetching properties: ", error);
-  }
-};
-
-
-
-
-
