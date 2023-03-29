@@ -28,7 +28,7 @@ import "firebase/firestore";
 import "firebase/storage";
 import "./FilterDropdown.css";
 
-// Firebase configuration
+/* // Firebase configuration
 const firebaseConfig = {
   // Your config values here
 };
@@ -37,7 +37,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
-const storage = firebase.storage();
+const storage = firebase.storage(); */
 
 const FilterDropdown = ({ options, onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
