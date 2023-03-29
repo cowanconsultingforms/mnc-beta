@@ -15,7 +15,6 @@ import {
   addDoc,
   doc,
   getDoc,
-  documentId,
   setDoc,
   writeBatch,
 } from "firebase/firestore";
@@ -116,18 +115,58 @@ const FilterDropdown = ({ options, onFilterChange }) => {
                 />
                 Any
               </label>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <label key={num}>
-                  <input
-                    type="radio"
-                    name="bedrooms"
-                    value={num}
-                    checked={bedrooms === num.toString)}
+              <label>
+                <input
+                  type="radio"
+                  name="bedrooms"
+                  value="1"
+                  checked={bedrooms === "1"}
+                  onChange={
+handleBedroomsChange
+}
+/>
+1
+</label>
+<label>
+<input
+type="radio"
+name="bedrooms"
+value="2"
+checked={bedrooms === "2"}
 onChange={handleBedroomsChange}
 />
-{num}
+2
 </label>
-))}
+<label>
+<input
+type="radio"
+name="bedrooms"
+value="3"
+checked={bedrooms === "3"}
+onChange={handleBedroomsChange}
+/>
+3
+</label>
+<label>
+<input
+type="radio"
+name="bedrooms"
+value="4"
+checked={bedrooms === "4"}
+onChange={handleBedroomsChange}
+/>
+4
+</label>
+<label>
+<input
+type="radio"
+name="bedrooms"
+value="5"
+checked={bedrooms === "5"}
+onChange={handleBedroomsChange}
+/>
+5+
+</label>
 </div>
 </div>
 <div className="FilterSection">
@@ -143,23 +182,58 @@ onChange={handleBathroomsChange}
 />
 Any
 </label>
-{[1, 2, 3, 4, 5].map((num) => (
-<label key={num}>
+<label>
 <input
 type="radio"
 name="bathrooms"
-value={num}
-checked={bathrooms === num.toString()}
+value="1"
+checked={bathrooms === "1"}
 onChange={handleBathroomsChange}
 />
-{num}
+1
 </label>
-))}
+<label>
+<input
+type="radio"
+name="bathrooms"
+value="2"
+checked={bathrooms === "2"}
+onChange={handleBathroomsChange}
+/>
+2
+</label>
+<label>
+<input
+type="radio"
+name="bathrooms"
+value="3"
+checked={bathrooms === "3"}
+onChange={handleBathroomsChange}
+/>
+3
+</label>
+<label>
+<input
+type="radio"
+name="bathrooms"
+value="4"
+checked={bathrooms === "4"}
+onChange={handleBathroomsChange}
+/>
+4
+</label>
+<label>
+<input
+type="radio"
+name="bathrooms"
+value="5"
+checked={bathrooms === "5"}
+onChange={handleBathroomsChange}
+/>
+5+
+</label>
 </div>
 </div>
-<button className="FilterButton" onClick={handleFilterChange}>
-Apply
-</button>
 </div>
 )}
 </div>
