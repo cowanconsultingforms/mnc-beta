@@ -15,7 +15,7 @@ import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
 import { ResetPassword }  from "./components/Authentication/ResetPassword"
 import { ChangePassword } from "./components/Authentication/ChangePassword"
-import FilterDropdown from "./components/Filter/FilterDropdown";
+
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -105,11 +105,11 @@ export const App = ({ children }) => {
         <Route path="/listings/" element={<ListingPage />} />
         <Route path="/listings/:listing_ID" element={<ListingPage />} />
         <Route path="/listings/:state" element={<ListingPage />} />
-        /*
+        
         <Route path="/search/:city" element={<SearchPage />} />
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
-        <Route path="/listings/testing" element={<FilterDropdown />} />
+   
       </Routes>
       </Suspense>
     </div>
