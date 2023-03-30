@@ -14,7 +14,8 @@ import { List } from '@mui/material';
 import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
 import { ResetPassword }  from "./components/Authentication/ResetPassword"
-import { auth } from "./firebase.js"
+import { ChangePassword } from "./components/Authentication/ChangePassword"
+import FilterDropdown from "./components/Filter/FilterDropdown";
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -97,6 +98,7 @@ export const App = ({ children }) => {
         <Route exact path="/login" element={< LoginForm/>} />
         <Route exact path="/register" element={< RegisterForm/>}/>
         <Route exact path="/reset-password" element={<ResetPassword/>}/>
+        <Route exact path="/change-password" element={<ChangePassword/>}/>
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
         
@@ -107,6 +109,7 @@ export const App = ({ children }) => {
         <Route path="/search/:city" element={<SearchPage />} />
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
+        <Route path="/listings/testing" element={<FilterDropdown />} />
       </Routes>
       </Suspense>
     </div>
