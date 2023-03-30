@@ -14,7 +14,7 @@ import { List } from '@mui/material';
 import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
 import { ResetPassword }  from "./components/Authentication/ResetPassword"
-import { auth } from "./firebase.js"
+import { ChangePassword } from "./components/Authentication/ChangePassword"
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -97,6 +97,7 @@ export const App = ({ children }) => {
         <Route exact path="/login" element={< LoginForm/>} />
         <Route exact path="/register" element={< RegisterForm/>}/>
         <Route exact path="/reset-password" element={<ResetPassword/>}/>
+        <Route exact path="/change-password" element={<ChangePassword/>}/>
 
         <Route exact path="/admin/auditlog" element={<AuditLog />} />
         

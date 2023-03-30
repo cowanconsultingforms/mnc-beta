@@ -10,8 +10,10 @@ import {
   browserLocalPersistence,
   onAuthStateChanged
 } from "firebase/auth"
+import { FirebaseStorage, ref } from "firebase/storage";
 import { getDocs, collection } from "firebase/firestore";
-import { useAuth, useFirestore } from "reactfire";
+import { useAuth, useFirestore, useStorage, useStorageDownloadURL } from "reactfire";
+import background from "./R.jfif"
 
 export const LoginForm = () => {
 
@@ -20,6 +22,11 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  
+  const storage = useStorage()
+  const backgroundImage = ref(storage, "gs://mnc-development.appspot.com/images/R.jfif")
+  const { status, data: url1 } = useStorageDownloadURL(backgroundImage);
+
   const navigate = useNavigate()
   
   const login = async(e) => {
@@ -41,6 +48,8 @@ export const LoginForm = () => {
   }, [loggedIn]);
 
   return (
+    <div style={{ backgroundImage: `url(${url1})`, backgroundAttachment: "fixed",
+                  backgroundRepeat: "no-repeat",float:"down", whiteSpace: "nowrap"}}>
     <Grid 
       container 
       alignItems="center" 
@@ -48,7 +57,7 @@ export const LoginForm = () => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        marginTop: "20px",
+        marginTop: "0px",
         paddding: "20px",
       }}>
     <Box
@@ -116,7 +125,9 @@ export const LoginForm = () => {
         <p style={{padding:10}}>Don't have an account? <a onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
         <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
         </Box>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     </Grid>
+    </div>
   );
 };
 
