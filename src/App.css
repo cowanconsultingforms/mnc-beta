@@ -172,7 +172,7 @@ div#rs-btn-toolbar {
   height: 300px;
   display: flex;
   flex-direction: column;
-  justify-content: left;
+  justify-content: center;  /*left;*/
   align-items: center;
   width: 90%;
   border-bottom: 3px solid rgb(177, 177, 177);
@@ -230,7 +230,7 @@ div#rs-btn-toolbar {
   color: white;
 }
 
-/* For screens up to 576px wide/ phones */
+/* phones */
 @media (max-width: 400px) {
   .navigation-bar {
     height: auto;
@@ -238,19 +238,22 @@ div#rs-btn-toolbar {
     font-size: 30px;
   }
   .navigation-bar-left {
-    margin-bottom: 10px;
+    margin-bottom: 20px; /*changing from 10 to 20 testing*/
   }
-  .navigation-bar-right {
-    margin-top: 10px;
+  .navigation-bar-right {    /*changing from 10 to 20 testing*/
+    margin-top: 20px;
   }
   .nav-btn {
     padding: 15px 16px;
   }
  
     .search-box {
-      height: 200px;
-      width: 200%;
-      font-size: 14px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+     /* height: 200px;
+      width: 200%;*/
+      font-size: 14px; 
    
     }
     .searchStyle {
@@ -282,10 +285,14 @@ div#rs-btn-toolbar {
   }
 
   .search-box {
-    height: 250px;
-    width: 70% ;
+   /* height: 250px;
+    width: 70% ;*/
     display:block;
+    justify-content:center;
+    align-items:center;
+    font-size: 16px;
   }
+
   .searchStyle {
     font-size: 22px;
     width: 50%;
@@ -302,8 +309,11 @@ div#rs-btn-toolbar {
     height: 50px;
   }
   .search-box {
-    height: 250px;
-    width: 70%;
+    justify-content:center;
+    align-items:center;
+   /* height: 250px;
+    width: 70%;*/
+    font-size: 20px;
   }
   .searchStyle {
     font-size: 23px;
@@ -329,8 +339,11 @@ div#rs-btn-toolbar {
     width: 550px;
   }
   .search-box {
-    height: 200%;
-    width: 25%;
+    justify-content:center;
+    align-items:center;
+   /* height: 200%;
+    width: 25%;*/
+    font-size: 22px;
   }
   .searchStyle {
     font-size: 23px;
