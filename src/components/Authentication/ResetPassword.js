@@ -1,6 +1,6 @@
 import React, { useState, useRef, Fragment } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { useAuth,useInitAuth } from "reactfire";
+import { useAuth,useInitAuth, useFirestore } from "reactfire";
 import { useNavigate } from 'react-router-dom';
 import { Alert,Box,Button,ButtonGroup,TextField, Grid, FormControl} from '@mui/material';
 
@@ -10,7 +10,18 @@ export const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const navigate = useNavigate('');
 
+  const firestore = useFirestore()
+  const auth = useAuth()
 
+  const reset = (e) => {
+    e.preventDefault()
+    sendPasswordResetEmail(auth, email).then(() => {
+      alert("Password reset email sent successfully");
+    })
+    .catch((error) => {
+      alert("Error sending password reset email: ", error);
+    });
+  }
       
   return (
     <div className="reset-form">
@@ -55,45 +66,17 @@ export const ResetPassword = () => {
             fontFamily: 'Garamond'
           }}
         />
-        <TextField
-          id="password"
-          label="Old Password"
-          variant="outlined"
-          type="password"
-          value={oldPassword}
-          fullWidth={true}
-          autoComplete="new-password"
-          margin="normal"
-          onChange={(e) => setOldPassword(e.target.value)}
-          sx={{
-            backgroundColor: 'whitesmoke',
-            fontFamily: 'Garamond'
-          }}
-        />
-        <TextField
-          id="confirmPassword"
-          label="New Password :"
-          variant="outlined"
-          type="password"
-          value={newPassword}
-          fullWidth={true}
-          autoComplete="new-password"
-          margin="normal"
-          onChange={(e) => setNewPassword(e.target.value)}
-          sx={{
-            backgroundColor: 'whitesmoke',
-            fontFamily: 'Garamond'
-          }}/>
         </FormControl>
         <br/>
         <Button
-          key="Login"
+          key="Reset"
           variant="contained"
           type="submit"
           sx={{ backgroundColor: "gray"}}
-          onClick={""}>
-          Reset password
+          onClick={reset}>
+          Reset Password
         </Button>
+        <br/>
       </Box>
       </Grid>
     </div>
