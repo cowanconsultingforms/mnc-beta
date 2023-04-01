@@ -65,8 +65,8 @@ export const HomePage = (props) => {
           <MNCLogo />
           <Item
             sx={{
-              alignItems: "center",
-              justifyContent: "center",
+             /* alignItems: "center",
+              justifyContent: "center",*/
               width: "70",
               display: "flex",
             }}

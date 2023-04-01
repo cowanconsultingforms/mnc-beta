@@ -65,9 +65,14 @@ div#rs-btn-toolbar {
   border-radius: 2px;
   background-color: #818d86;
 }
+
+
+/*  justify-content:center;
+align-items:center;*/
 .home-search-bar {
   display: flex;
   flex-direction: row;
+  justify-content:center;
   align-items: center;
   font-size: 17px;
   width: 300px;
@@ -96,10 +101,12 @@ div#rs-btn-toolbar {
   flex: 1;
   text-align: left;
   border: black ridge 1px;
+  justify-content:center;
+  align-items: center;
   border-radius: 10px;
   margin: 3px;
   padding-left: 10px;
-  font-size: 25px;
+  font-size: 20px;
   color: black;
 }
 
@@ -137,6 +144,9 @@ div#rs-btn-toolbar {
 @media screen and (max-width: 500px) {
   .home-search-bar {
     width: 100%;
+    display: flex;
+    justify-content:center;
+    align-items: center;
   }
 
   .search-icon {
