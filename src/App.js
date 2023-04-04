@@ -25,7 +25,6 @@ const HomePage = lazy(()=> import("./pages/Home/index"));
 const AdminDashboard = lazy(()=> import( "./pages/Admin"));
 const AuditLog = lazy(()=> import("./pages/Admin/AuditLog"));
 const SearchPage  = lazy(()=> import("./pages/Search"));
-const BuyPage = lazy(()=> import("./pages/Search/Buy"));
 
 export const App = ({ children }) => {
   const { status, data: user } = useUser();
