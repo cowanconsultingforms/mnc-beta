@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { useFirestore } from 'reactfire';
 import { collection, doc, getDocs } from "firebase/firestore"
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import "./testing.css"
 
 async function getProperties(firestore) {
 
@@ -35,16 +35,49 @@ export const Testing = () => {
     fetchData();
   }, [firestore]);
 
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    centerPadding: "45px",
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />
+  };
+  
+
+  function SampleNextArrow(props) {
+    const { className, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{ display: "block", color: "black" }}
+        onClick={onClick}
+      />
+    );
+  }
+
+  function SamplePrevArrow(props) {
+    const { className, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{ display: "block", color: "black" }}
+        onClick={onClick}
+      />
+    );
+  }
+
   return (
     <div className="container">
       <h1>Properties:</h1>
-      <div className="row">
+      <Slider {...settings}>
         {properties.map((property) => (
-          <div key={property.id} className="col-sm-6 col-md-4 col-lg-3">
-            <Card sx={{ maxWidth: 345, backgroundColor: "#eeeeee" }}>
+          <div key={property.id}>
+            <Card sx={{ maxWidth: 350, backgroundColor: "#eeeeee" }}>
               <CardMedia
                 component="img"
-                height="270"
+                height="180"
                 image={property.images.image1}
                 alt={property.name}
               />
@@ -63,11 +96,10 @@ export const Testing = () => {
                   <p>{property.city}, {property.zip}</p>
                 </Typography>
               </CardContent>
-              
             </Card>
           </div>
         ))}
-      </div>
+      </Slider>
     </div>
   );
 };
