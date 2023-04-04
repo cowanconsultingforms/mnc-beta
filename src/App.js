@@ -15,7 +15,7 @@ import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
 import { ResetPassword }  from "./components/Authentication/ResetPassword"
 import { ChangePassword } from "./components/Authentication/ChangePassword"
-
+import { Testing } from "./pages/Listings/testing";
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -110,6 +110,7 @@ export const App = ({ children }) => {
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
    
+        <Route path="/testing" element={<Testing />} />
       </Routes>
       </Suspense>
     </div>
