@@ -5,7 +5,6 @@ import { addDoc, collection, doc, serverTimestamp, setDoc, getDocs} from 'fireba
 import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useFirestore } from 'reactfire';
-import { db } from "./../../firebase.js"
 
 export const RegisterForm = ({ title }) => {
   const auth = useAuth();
@@ -27,8 +26,6 @@ export const RegisterForm = ({ title }) => {
     getUsers()
   },[])
 
-  console.log(users)
-
   const checkIfEmailExists = (e) => {
     for (let i = 0; i < users.length; i++){
       let registerEmail = users[i].Email
@@ -40,7 +37,7 @@ export const RegisterForm = ({ title }) => {
   }
 
   const createUser = async () => {
-    await addDoc(usersRef, {Email:email, Password:password, Role:"user"})
+    await addDoc(usersRef, {Email:email, Role:"user"})
   }
 
   const register = (e) => {

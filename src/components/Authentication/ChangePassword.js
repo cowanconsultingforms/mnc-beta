@@ -8,7 +8,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 export const ChangePassword = () => {
   const [email, setEmail] = useState('');
   const [oldPassword, setOldPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('')
   const navigate = useNavigate('');
 
   const auth = useAuth()
@@ -25,27 +25,15 @@ export const ChangePassword = () => {
     getUsers()
   },[])
 
-  const getOldPassword = (arr, email) => {
-    for (let i=0; i < arr.length; i++){
-        if (arr[i].Email == email){
-          return arr[i].Password
-        }
-      }
+  const update = () => {
+    auth.currentUser.updatePassword(newPassword)
   }
 
   const reset = (e) =>{
-    e.preventDefault()
-    setOldPassword(getOldPassword(users, email))
-    signInWithEmailAndPassword(auth, email, oldPassword).then(() => {
-        const user = auth.user 
-        console.log(user)
-        return user.updatePassword(newPassword)
-    }).then(() => {
-        alert("Password updated successfully");
-      })
-      .catch((error) => {
-        alert("Error updating password: ", error);
-      });
+      e.preventDefault()
+      signInWithEmailAndPassword(auth, email, oldPassword)
+      update()
+      alert("Password updated successfully!")
   }
 
       
@@ -92,6 +80,20 @@ export const ChangePassword = () => {
             fontFamily: 'Garamond'
           }}
         />
+        <TextField
+          id="confirmPassword"
+          label="Old Password :"
+          variant="outlined"
+          type="password"
+          value={oldPassword}
+          fullWidth={true}
+          autoComplete="new-password"
+          margin="normal"
+          onChange={(e) => setOldPassword(e.target.value)}
+          sx={{
+            backgroundColor: 'whitesmoke',
+            fontFamily: 'Garamond'
+          }}/>
         <TextField
           id="confirmPassword"
           label="New Password :"

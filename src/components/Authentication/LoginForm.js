@@ -13,7 +13,6 @@ import {
 import { FirebaseStorage, ref } from "firebase/storage";
 import { getDocs, collection } from "firebase/firestore";
 import { useAuth, useFirestore, useStorage, useStorageDownloadURL } from "reactfire";
-import background from "./R.jfif"
 
 export const LoginForm = () => {
 
@@ -48,85 +47,91 @@ export const LoginForm = () => {
   }, [loggedIn]);
 
   return (
-    <div style={{ backgroundImage: `url(${url1})`, backgroundAttachment: "fixed",
-                  backgroundRepeat: "no-repeat",float:"down", whiteSpace: "nowrap"}}>
-    <Grid 
-      container 
-      alignItems="center" 
-      direction="column"
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        marginTop: "0px",
-        paddding: "20px",
-      }}>
-    <Box
-      className="login-form-box"
-      component="form"
-      autoComplete="true"
-      noValidate
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        marginTop: "20px",
-        paddding: "20px",
-        alignItems: "center",
-        borderRadius: "20px",
-        backgroundColor: "#eeeeee",
-        marginBottom: "30px",
-        marginTop: "30px",
-        width: "300px",
-      }}>
-      <Grid display="flex" justifyContent="center" alignItems="center">
-        <h1>Login</h1>
+    <div>
+      {status !== "success" ? (
+      <h1>Loading...</h1>
+    ) : (
+      <div style={{ backgroundImage: `url(${url1})`, backgroundAttachment: "fixed",
+                    backgroundRepeat: "no-repeat",float:"down", whiteSpace: "nowrap"}}>
+      <Grid 
+        container 
+        alignItems="center" 
+        direction="column"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "0px",
+          paddding: "20px",
+        }}>
+      <Box
+        className="login-form-box"
+        component="form"
+        autoComplete="true"
+        noValidate
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          marginTop: "20px",
+          paddding: "20px",
+          alignItems: "center",
+          borderRadius: "20px",
+          backgroundColor: "#eeeeee",
+          marginBottom: "30px",
+          marginTop: "30px",
+          width: "300px",
+        }}>
+        <Grid display="flex" justifyContent="center" alignItems="center">
+          <h1>Login</h1>
+        </Grid>
+        <FormControl sx={{ width: '25ch'}}>
+        <TextField
+          className="form-text-field"
+          id="email"
+          label="Email :"
+          variant="outlined"
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          fullWidth={true}
+          required
+          margin="normal"
+          value={email}
+          sx = {{
+            backgroundColor: 'whitesmoke'
+          }}
+        />
+        <TextField
+          id="password"
+          label="Password :"
+          variant="outlined"
+          autoComplete="current-password"
+          onChange={(e) => setPassword(e.target.value)}
+          fullWidth={true}
+          required
+          margin="normal"
+          type="password"
+          value={password}
+          sx = {{
+            backgroundColor: 'whitesmoke'
+          }}
+        />
+        </FormControl>
+        <br/>
+          <Button
+            key="Login"
+            variant="contained"
+            type="submit"
+            sx={{ backgroundColor: "gray"}}
+            onClick={login}
+            >
+            Login
+          </Button>
+          <p style={{padding:10}}>Don't have an account? <a onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
+          <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
+          </Box>
+          <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
       </Grid>
-      <FormControl sx={{ width: '25ch'}}>
-      <TextField
-        className="form-text-field"
-        id="email"
-        label="Email :"
-        variant="outlined"
-        onChange={(e) => setEmail(e.target.value)}
-        autoComplete="email"
-        fullWidth={true}
-        required
-        margin="normal"
-        value={email}
-        sx = {{
-          backgroundColor: 'whitesmoke'
-        }}
-      />
-      <TextField
-        id="password"
-        label="Password :"
-        variant="outlined"
-        autoComplete="current-password"
-        onChange={(e) => setPassword(e.target.value)}
-        fullWidth={true}
-        required
-        margin="normal"
-        type="password"
-        value={password}
-        sx = {{
-          backgroundColor: 'whitesmoke'
-        }}
-      />
-      </FormControl>
-      <br/>
-        <Button
-          key="Login"
-          variant="contained"
-          type="submit"
-          sx={{ backgroundColor: "gray"}}
-          onClick={login}
-          >
-          Login
-        </Button>
-        <p style={{padding:10}}>Don't have an account? <a onClick={() => navigate('/register')} style={{"color": "#4444A6"}}>Sign up</a></p>
-        <Button onClick={() => navigate('/reset-password')}>Forgot Password?</Button>
-        </Box>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-    </Grid>
+      </div>
+      )}
     </div>
   );
 };

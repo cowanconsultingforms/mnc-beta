@@ -15,7 +15,7 @@ import { LoginForm } from './components/Authentication/LoginForm'
 import { RegisterForm } from "./components/Authentication/RegisterForm"
 import { ResetPassword }  from "./components/Authentication/ResetPassword"
 import { ChangePassword } from "./components/Authentication/ChangePassword"
-
+import { Testing } from "./pages/Listings/testing";
 
 const AuthPage = lazy(()=> import("./pages/Authentication"));
 const ListingPage = lazy(()=> import("./pages/Listings/index"));
@@ -25,7 +25,6 @@ const HomePage = lazy(()=> import("./pages/Home/index"));
 const AdminDashboard = lazy(()=> import( "./pages/Admin"));
 const AuditLog = lazy(()=> import("./pages/Admin/AuditLog"));
 const SearchPage  = lazy(()=> import("./pages/Search"));
-
 
 export const App = ({ children }) => {
   const { status, data: user } = useUser();
@@ -110,6 +109,7 @@ export const App = ({ children }) => {
         <Route path="/listings/:address" element={<ListingPage />} />
         <Route path="/listings/:zip" element={<ListingPage />} />
    
+        <Route path="/testing" element={<Testing />} />
       </Routes>
       </Suspense>
     </div>
