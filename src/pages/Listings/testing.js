@@ -70,11 +70,14 @@ export const Testing = () => {
 
   return (
     <div className="container">
-      <h1>Properties:</h1>
+      <Typography variant="h4" align="center" sx={{ fontWeight: 'normal', color: '#4d4d4d' }}>
+      Recommended Properties
+      </Typography>
+      <br/>
       <Slider {...settings}>
         {properties.map((property) => (
           <div key={property.id}>
-            <Card sx={{ maxWidth: 350, backgroundColor: "#eeeeee" }}>
+            <Card  sx={{ maxWidth: 400, maxHeight: 380, backgroundColor: "#eeeeee" }}>
               <CardMedia
                 component="img"
                 height="180"
@@ -82,18 +85,17 @@ export const Testing = () => {
                 alt={property.name}
               />
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
+                <Typography gutterBottom variant="h6" component="div">
                   {property.street}, {property.state}
                   <br/>
-                  Price: ${property.price}
+                  <p>Price: ${property.price}</p>
                 </Typography>
-                <Typography gutterBottom variant="h6" component="div">
+                <Typography variant="h7" component="div" >
                   <p>{property.description}</p>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <p>Bathrooms: {property.bathrooms}</p>
                   <p>Bedrooms: {property.bedrooms}</p>
-                  <p>{property.city}, {property.zip}</p>
                 </Typography>
               </CardContent>
             </Card>
