@@ -6,7 +6,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import "./testing.css"
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 async function getProperties(firestore) {
 
@@ -40,29 +41,29 @@ export const Testing = () => {
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 3,
-    centerPadding: "45px",
+    centerMode: true,
+    centerPadding: "-5px",
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />
   };
-  
 
   function SampleNextArrow(props) {
-    const { className, onClick } = props;
+    const { className, style, onClick } = props;
     return (
       <div
         className={className}
-        style={{ display: "block", color: "black" }}
+        style={{ ...style, display: "block", background: "#000000" }}
         onClick={onClick}
       />
     );
   }
-
+  
   function SamplePrevArrow(props) {
-    const { className, onClick } = props;
+    const { className, style, onClick } = props;
     return (
       <div
         className={className}
-        style={{ display: "block", color: "black" }}
+        style={{ ...style, display: "block", background: "#000000" }}
         onClick={onClick}
       />
     );
@@ -77,7 +78,7 @@ export const Testing = () => {
       <Slider {...settings}>
         {properties.map((property) => (
           <div key={property.id}>
-            <Card  sx={{ maxWidth: 400, maxHeight: 380, backgroundColor: "#eeeeee" }}>
+            <Card  sx={{ maxWidth: 410, maxHeight: 380, backgroundColor: "#eeeeee" }}>
               <CardMedia
                 component="img"
                 height="180"
