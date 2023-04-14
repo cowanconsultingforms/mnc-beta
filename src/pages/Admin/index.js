@@ -23,23 +23,26 @@ const AdminPage = () => {
     const forSaleDocRef = doc(listingsRef, "forSale");
     const propertiesRef = collection(forSaleDocRef, "properties");
     await addDoc(propertiesRef, {
-      zip: setZip,
-      street: street,
-      state: state,
-      price: price,
-      description: description,
-      bathrooms: bathrooms,
-      bedrooms: bedrooms,
+      zip,
+      street,
+      state,
+      price,
+      description,
+      bathrooms,
+      bedrooms,
+      city,
+      images: [image1, image2, image3]
     });
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
-    addListing()
+    await addListing()
+    alert("Listing successfully created")
+    
   };
 
   return (
-    <Box sx={{ width: 950, margin: "0 auto", marginTop: "30px", display: "flex", gap: 4 }}>
     <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px" }}>
       <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
         Add New Listing
@@ -49,7 +52,7 @@ const AdminPage = () => {
           <TextField
             label="Zip"
             value={zip}
-            onChange={(event) => setZip(event.target.zip)}
+            onChange={(event) => setZip(event.target.value)}
             required
             fullWidth
           />
@@ -162,7 +165,6 @@ const AdminPage = () => {
         </Button>
         <br/>
       </Box>
-    </Box>
     </Box>
   );
 };
