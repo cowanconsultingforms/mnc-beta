@@ -1,66 +1,169 @@
-import React, { useEffect, useState } from "react";
-import AddListingForm from "../../components/Admin/AddListing";
-import { Alert, Stack, Typography } from "@mui/material";
-import ViewAuditLog from "../../components/Admin/ViewAuditLog";
-import { ManageUsers } from "../../components/Admin/ManageUsers";
-import { useFirestore, useUser, useSigninCheck } from "reactfire";
-import { Spinner } from "react-bootstrap";
-import { doc, getDoc } from 'firebase/firestore'
-import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia } from "@mui/material";
+import { collection, doc, addDoc } from "firebase/firestore"
+import { useFirestore } from "reactfire";
 
-export const AdminPage = () => {
-  const navigate = useNavigate();
-  const { status, data: user } = useUser();
-  const firestore = useFirestore();
-   const { data: signInCheckResult } = useSigninCheck();
-  useEffect(() => {
-    const userCheck = async () => {
-      if (status === "loading") {
-        return <Spinner />;
-      } if (signInCheckResult.signedIn === true) {
-        const currentUser = signInCheckResult.user;
+const AdminPage = () => {
+  const [zip, setZip] = useState('')
+  const [street, setStreet] = useState('')
+  const [state, setState] = useState('')
+  const [city, setCity] = useState('')
+  const [price, setPrice] = useState('')
+  const [description, setDescription] = useState('')
+  const [bathrooms, setBathrooms] = useState('')
+  const [bedrooms, setBedrooms] = useState('')
+  const [image1, setImage1] = useState('')
+  const [image2, setImage2] = useState('')
+  const [image3, setImage3] = useState('')
+  const firestore = useFirestore()
 
-        if (user !== null) {
-          const docRef = doc(firestore, "users", currentUser.uid);
-          await getDoc(docRef).then((onSnapshot) => {
-            console.log(onSnapshot);
-            const userRole = onSnapshot.get("role");
-            console.log(userRole);
-            if (userRole !== "Administrator") {
-              setTimeout(() => 1000);
-              return <Alert severity="error">Not an Administrator! If this is incorrect, contact the site Admin</Alert>
-            }
-            navigate('/');
-          });
-        }
-      }
-    }
-    userCheck();
-  })
+  async function addListing() {
+    const listingsRef = collection(firestore, "listings");
+    const forSaleDocRef = doc(listingsRef, "forSale");
+    const propertiesRef = collection(forSaleDocRef, "properties");
+    await addDoc(propertiesRef, {
+      zip: setZip,
+      street: street,
+      state: state,
+      price: price,
+      description: description,
+      bathrooms: bathrooms,
+      bedrooms: bedrooms,
+    });
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    addListing()
+  };
+
   return (
-    <Stack
-      className="admin-container"
-      component="div"
-      direction="column"
-      sx={{ justifyContent: "center" }}
-    >
-      <Typography
-        variant="h5"
-        sx={{
-          fontFamily: "Garamond",
-          fontWeight: "bold",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {" "}
+    <Box sx={{ width: 950, margin: "0 auto", marginTop: "30px", display: "flex", gap: 4 }}>
+    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px" }}>
+      <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
         Add New Listing
       </Typography>
-      <AddListingForm />
-      <br></br>
-      <ManageUsers />
-      <ViewAuditLog />
-    </Stack>
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <TextField
+            label="Zip"
+            value={zip}
+            onChange={(event) => setZip(event.target.zip)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Street"
+            value={street}
+            onChange={(event) => setStreet(event.target.value)}
+            required
+            fullWidth
+          />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <TextField
+            label="City"
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="State"
+            value={state}
+            onChange={(event) => setState(event.target.value)}
+            required
+            fullWidth
+          />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <TextField
+            label="Price"
+            value={price}
+            onChange={(event) => setPrice(event.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Bathrooms"
+            type="number"
+            value={bathrooms}
+            onChange={(event) => setBathrooms(event.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Bedrooms"
+            type="number"
+            value={bedrooms}
+            onChange={(event) => setBedrooms(event.target.value)}
+            required
+            fullWidth
+          />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <TextField
+            label="Image 1"
+            value={image1}
+            onChange={(event) => setImage1(event.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Image 2"
+            value={image2}
+            onChange={(event) => setImage2(event.target.value)}
+            required
+            fullWidth
+          />
+          <TextField
+            label="Image 3"
+            value={image3}
+            onChange={(event) => setImage3(event.target.value)}
+            required
+            fullWidth
+          />
+        </Box>
+        <TextField
+          label="Description"
+          multiline
+          rows={4}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          required
+          fullWidth
+        />
+        <Box sx={{margin: "0 auto"}}>
+          <Card  sx={{ minWidth: 410, minHeight: 380, backgroundColor: "#eeeeee" }}>
+            <CardMedia
+              component="img"
+              height="180"
+              image={image1}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h6" component="div">
+                {street}, {state}
+                <br/>
+                <p>Price: ${price}</p>
+              </Typography>
+              <Typography variant="h7" component="div" >
+                <p>{description}</p>
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <p>Bathrooms: {bathrooms}</p>
+                <p>Bedrooms: {bedrooms}</p>
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+        <Button type="submit" variant="contained">
+          Submit
+        </Button>
+        <br/>
+      </Box>
+    </Box>
+    </Box>
   );
 };
 

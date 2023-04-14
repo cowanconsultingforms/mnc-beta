@@ -6,8 +6,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 async function getProperties(firestore) {
 
@@ -77,7 +75,7 @@ export const Testing = () => {
       <br/>
       <Slider {...settings}>
         {properties.map((property) => (
-          <div key={property.id}>
+          <div>
             <Card  sx={{ maxWidth: 410, maxHeight: 380, backgroundColor: "#eeeeee" }}>
               <CardMedia
                 component="img"
