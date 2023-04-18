@@ -30,7 +30,7 @@
     "react-hook-form": "^7.42.1",
     "react-icons": "^4.8.0",
     "react-router-dom": "6.7",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-slick": "^0.29.0",
     "reactfire": "^4.2.2",
     "slick-carousel": "^1.8.1",
