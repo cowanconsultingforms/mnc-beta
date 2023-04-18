@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Card, CardContent, CardMedia } from "@mui/material";
-import { collection, doc, updateDoc, query, getDocs } from "firebase/firestore"
+import { collection, doc, deleteDoc, query, getDocs } from "firebase/firestore"
 import { useFirestore } from "reactfire";
 
-const EditListing = () => {
+const DeleteListing = () => {
   const [listings, setListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
-  const [editedListing, setEditedListing] = useState(null);
   const firestore = useFirestore();
   
   async function fetchListings() {
@@ -17,28 +16,24 @@ const EditListing = () => {
     setListings(listingsData);
   }
 
+  async function deleteListing(id) {
+    await deleteDoc(doc(collection(firestore, "listings", "forSale", "properties"), id));
+    setSelectedListing(null);
+    fetchListings();
+  }
+
   const handleListingChange = (event) => {
     const { value } = event.target;
     setSelectedListing(value === "none" ? null : value);
-    setEditedListing(null);
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setEditedListing(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleEdit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await updateDoc(doc(collection(firestore, "listings", "forSale", "properties"), selectedListing), editedListing);
-      fetchListings();
-      alert("Listing successfully edited");
+      await deleteListing(selectedListing);
+      alert("Listing successfully deleted");
     } catch {
-      alert("Error, listing could not be edited");
+      alert("Error, listing could not be deleted");
     }
   };
 
