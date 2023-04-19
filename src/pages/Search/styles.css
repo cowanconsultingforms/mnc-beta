@@ -120,6 +120,9 @@ button#login-page:hover {
   /* For screens between 576px and 768px wide */
   input.search-bar {
     font-size: 22px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
   }
   
   .searchStyle {
@@ -132,6 +135,9 @@ button#login-page:hover {
   /* For screens between 768px and 1024px wide */
   input.search-bar {
     font-size: 23px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
   }
   
   .searchStyle {
@@ -144,5 +150,8 @@ button#login-page:hover {
   /* For screens wider than 1024px */
   input.search-bar {
     font-size: 25px;
+    display: block;
+    margin: 0 auto;
+    text-align:center;
     }
 }
