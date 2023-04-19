@@ -95,7 +95,9 @@ const handleChangeSeven =() => {
         </div>
  );
     };
-  
+    
+    // eslint-disable-next-line no-use-before-define
+    root.render(PropertyType);
 
     
 
@@ -152,6 +154,8 @@ export function ListingStatus (){
 
     );
 };
+// eslint-disable-next-line no-use-before-define
+root.render(ListingStatus);
 
 export function ListingType () {
     const [checkedListings, setCheckedListings] = React.useState(false);
@@ -204,7 +208,7 @@ export function ListingType () {
         </div>
     )
 }
-
+root.render(ListingType);
 
 
 export function OtherAmenities (){
@@ -316,6 +320,10 @@ export function OtherAmenities (){
 </div>
     );
 }
+root.render(OtherAmenities);
+
+
+
 //Number of Bedrooms Dropdown List//
 export function NumBedrooms (){
     const [numRooms,setNumRooms] = useState("Min Bedrooms");
