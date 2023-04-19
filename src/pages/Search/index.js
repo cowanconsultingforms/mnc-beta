@@ -3,10 +3,11 @@ import Footer from "../../components/Misc/Footer";
 import HomeTop from "../../components/Home/HomeTop";
 import {  Grid, Box } from "@mui/material";
 import { Item } from "../../components/Admin/AdminPageComponents";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { NavBar } from "../../components/Misc/NavBar";
 import { MNCLogoGray,MNCLogo } from "../../components/Misc/MNCLogo";
 import { SearchForm } from "../../components/Search/SearchForm";
+import { Testing } from "../Listings/testing";
 
 
 export const SearchPage = (props) => {
@@ -38,7 +39,7 @@ export const SearchPage = (props) => {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            paddingTop: "150px",
+            paddingTop: "0px",
           }}
         >
  
@@ -54,7 +55,108 @@ export const SearchPage = (props) => {
           </Item>
         </Grid>
       </Grid>
-      <Footer className="footer" />
+      <Testing/>
+      <div><Box
+      component="div"
+      sx={{
+        display: "flex",
+        alignItems: "bottom",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <Grid
+        spacing={2}
+        container
+        component="div"
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+        className="home-footer"
+      >
+      </Grid>
+      <Box
+        component="span"
+        className="footer-bottom"
+        sx={{
+          margin: "0in",
+          marginBottom: ".0001pt",
+          textAlign: "center",
+          fontSize: "10.0pt",
+          lineHeight: "2",
+          marginTop: "3px",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        Copyright © MNC Development, Inc. 2008-present. All rights reserved.
+      </Box>
+      <Box
+        component="span"
+        sx={{
+          margin: "0in",
+          marginBottom: ".0001pt",
+          textAlign: "center",
+          fontSize: "10.0pt",
+          lineHeight: "2",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      ></Box>
+      <Box
+        component="span"
+        sx={{
+          margin: "0in",
+          marginBottom: ".0001pt",
+          textAlign: "center",
+          fontSize: "10.0pt",
+          lineHeight: "2",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        31 Buffalo Avenue, Brooklyn, New York 11233|Phone:1-718-771-5811 or
+        1-877-732-3492|Fax: 1-877-760-2763 or 1-718-771-5900{" "}
+        <Link to={"/contact"}> info@mncdevelopment.com</Link>
+      </Box>
+      <Box
+        component="span"
+        sx={{
+          margin: "0in",
+          marginBottom: ".0001pt",
+          textAlign: "center",
+          fontSize: "10.0pt",
+          lineHeight: "2",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        MNC Development and the MNC Development logos are trademarks of MNC
+        Development, Inc.
+      </Box>
+      <Box
+        component="span"
+        sx={{
+          margin: "0in",
+          marginBottom: ".0001pt",
+          textAlign: "center",
+          fontSize: "10.0pt",
+          lineHeight: "2",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        MNC Development, Inc. as a NYS licensed Real Estate Broker fully
+        supports the principles of the Fair Housing Act and the Equal
+        Opportunity Act. Listing information is deemed reliable, but is not
+        guaranteed
+      </Box>
+    </Box>
+    </div>
     </Box>
   );
 };

@@ -1,66 +1,46 @@
-import React, { useEffect, useState } from "react";
-import AddListingForm from "../../components/Admin/AddListing";
-import { Alert, Stack, Typography } from "@mui/material";
-import ViewAuditLog from "../../components/Admin/ViewAuditLog";
-import { ManageUsers } from "../../components/Admin/ManageUsers";
-import { useFirestore, useUser, useSigninCheck } from "reactfire";
-import { Spinner } from "react-bootstrap";
-import { doc, getDoc } from 'firebase/firestore'
-import { Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Button, Grid } from "@mui/material";
+import AddListing from "./addListing";
+import EditListing from "./editListing";
+import DeleteListing from "./deleteListing";
 
-export const AdminPage = () => {
-  const navigate = useNavigate();
-  const { status, data: user } = useUser();
-  const firestore = useFirestore();
-   const { data: signInCheckResult } = useSigninCheck();
-  useEffect(() => {
-    const userCheck = async () => {
-      if (status === "loading") {
-        return <Spinner />;
-      } if (signInCheckResult.signedIn === true) {
-        const currentUser = signInCheckResult.user;
+const AdminPage = () => {
+  const [activeComponent, setActiveComponent] = useState("");
 
-        if (user !== null) {
-          const docRef = doc(firestore, "users", currentUser.uid);
-          await getDoc(docRef).then((onSnapshot) => {
-            console.log(onSnapshot);
-            const userRole = onSnapshot.get("role");
-            console.log(userRole);
-            if (userRole !== "Administrator") {
-              setTimeout(() => 1000);
-              return <Alert severity="error">Not an Administrator! If this is incorrect, contact the site Admin</Alert>
-            }
-            navigate('/');
-          });
-        }
-      }
+  const handleButtonClick = (componentName) => {
+    setActiveComponent(componentName);
+  };
+
+  const renderActiveComponent = () => {
+    switch (activeComponent) {
+      case "add":
+        return <AddListing />;
+      case "edit":
+        return <EditListing />;
+      case "delete":
+        return <DeleteListing />;
+      default:
+        return null;
     }
-    userCheck();
-  })
+  };
+
   return (
-    <Stack
-      className="admin-container"
-      component="div"
-      direction="column"
-      sx={{ justifyContent: "center" }}
-    >
-      <Typography
-        variant="h5"
-        sx={{
-          fontFamily: "Garamond",
-          fontWeight: "bold",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {" "}
-        Add New Listing
-      </Typography>
-      <AddListingForm />
-      <br></br>
-      <ManageUsers />
-      <ViewAuditLog />
-    </Stack>
+    <Grid container direction="column" justify="center" alignItems="center" spacing={2} sx={{marginTop:"10px"}}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <Button variant="contained" onClick={() => handleButtonClick("add")} sx={{marginLeft:"10px", backgroundColor:"#a3a3a3"}}>
+          Add listings
+        </Button>
+        <Button variant="contained" color="primary" onClick={() => handleButtonClick("edit")} sx={{marginLeft:"10px", backgroundColor:"#a3a3a3"}}>
+          Edit listings
+        </Button>
+        <Button variant="contained" onClick={() => handleButtonClick("delete")} sx={{marginLeft:"10px", backgroundColor:"#a3a3a3"}}>
+          Delete listings
+        </Button>
+      </div>
+      <Grid item>
+        {renderActiveComponent()}
+      </Grid>
+    </Grid>
   );
 };
 

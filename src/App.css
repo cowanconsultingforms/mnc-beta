@@ -102,6 +102,7 @@ div#rs-btn-toolbar {
   border-radius: 0px;
   margin: 0 auto;
 }
+@media only screen and (max-width: 450px){
 .sold-button {
   width: 90px;
   padding: 15px;
@@ -112,6 +113,9 @@ div#rs-btn-toolbar {
   border-radius: 0px;
   margin: 0 auto;
 }
+}
+
+@media only screen and (max-width: 450px){
 .search-box {
   height: 300px;
   display: flex;
@@ -122,6 +126,7 @@ div#rs-btn-toolbar {
   border-bottom: 3px solid rgb(177, 177, 177);
   margin-left: 5%;
   margin: 0 auto;
+}
 }
 .navigation-bar {
   background-color: rgb(196, 196, 196);
@@ -304,7 +309,7 @@ div#rs-btn-toolbar {
 }
 
 /* For screens between 768px and 1024px wide/ laptops */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+@media screen and (min-width: 600px) and (max-width: 1024px) {
   .navigation-bar {
     height: 50px;
   }
