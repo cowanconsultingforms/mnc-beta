@@ -441,6 +441,30 @@ export function YearBuilt () {
 root.render(<YearBuilt />);
 
 
+//Keyword Form//
+
+export function KeyWords () {
+    const [keyWord, setKeyWord] = useState ("Try gym, or waterfront");
+
+return(
+    <form>
+        <label>Keywords
+        <input 
+        type = "text"
+        value = {keyWord}
+        onChange = {(e) => setKeyWord(e.target.value)}
+        />
+     
+     </label>
+    </form>
+)
+}
+root.render(<KeyWords/>);
+
+
+
+
+
 
 
 
