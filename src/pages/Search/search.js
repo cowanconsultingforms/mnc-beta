@@ -316,7 +316,7 @@ export function OtherAmenities (){
 </div>
     );
 }
-
+//Number of Bedrooms Dropdown List//
 export function NumBedrooms (){
     const [numRooms,setNumRooms] = useState("Min Bedrooms");
 
@@ -338,6 +338,9 @@ return(
 }
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<NumBedrooms />);
+
+
+//Number of Bathrooms dropdown list//
 
 export function NumBathrooms () {
     const [numBaths, setNumBaths] = useState ("Min Bathrooms");
@@ -362,6 +365,8 @@ export function NumBathrooms () {
 
 root.render(<NumBathrooms />);
 
+
+//Square Feet Dropdown List//
 export function SquareFeet () {
     const [sqFeet, setSqFeet] = useState ("No Min");
     const handleChange = (event)=> {
@@ -396,6 +401,9 @@ export function SquareFeet () {
 
 root.render(<SquareFeet />);
 
+
+
+//Year Built Dropdown List//
 export function YearBuilt () {
     const [yrBuilt,setYrBuild] =useState ("No Min");
     const handleChange = (event) =>{
@@ -431,6 +439,9 @@ export function YearBuilt () {
     )
 }
 root.render(<YearBuilt />);
+
+
+
 
 
 
