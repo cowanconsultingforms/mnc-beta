@@ -182,3 +182,26 @@ const EditListing = () => {
 }
 
 export default EditListing;
+
+/*
+This is a React component that allows the user to edit a listing from a Firestore database.
+
+It imports various components from the Material-UI library, as well as functions from the Firebase and ReactFire libraries.
+
+The component begins by defining several state variables that correspond to different properties of the listing, such as zip code,
+street address, and price. It also defines a state variable called selectedListing that is used to keep track of which listing
+the user is currently editing.
+
+The component defines two asynchronous functions: fetchListings, which queries the Firestore database and sets the listings state 
+variable to an array of objects that represent all the listings in the database; and editListing, which updates a listing in the 
+database and then calls fetchListings to refresh the list of listings.
+
+The component defines several event handlers: handleListingChange, which is called when the user selects a listing from a dropdown 
+menu and sets the state variables to the values of the selected listing; and handleSubmit, which is called when the user submits 
+the form to update the listing.
+
+The component renders a form that allows the user to edit the various properties of the selected listing. If there are no listings in the database,
+ a message is displayed indicating that there are no listings. If there is at least one listing in the database, the form displays a dropdown menu 
+ allowing the user to select a listing to edit, and the various form fields are pre-populated with the values of the selected listing. When the user submits the form,
+  the handleSubmit function is called to update the listing in the database.
+*/

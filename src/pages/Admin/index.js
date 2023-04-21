@@ -45,3 +45,16 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
+/*
+This is a functional component in React that renders an admin page with buttons to add, edit, and delete listings.
+
+The component uses the useState hook to manage the active component state, and a switch statement to determine which
+component to render based on the activeComponent state.
+
+The buttons are styled using Material-UI's Button component, and are placed in a row using a div with flexbox properties.
+ The buttons also call the handleButtonClick function to set the activeComponent state when clicked.
+
+Finally, the component returns a Grid container with a column direction, and a centered and spaced out layout using 
+Material-UI's Grid component. The renderActiveComponent function is called to render the appropriate component based on the activeComponent state.
+*/

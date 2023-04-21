@@ -80,7 +80,7 @@ export const Testing = () => {
               <CardMedia
                 component="img"
                 height="180"
-                image={property.images.image1}
+                image={property.images.image1 || property.images[0]}
                 alt={property.name}
               />
               <CardContent>
@@ -104,3 +104,17 @@ export const Testing = () => {
     </div>
   );
 };
+
+/*
+This is a React component that displays recommended properties in a slider.
+
+It imports various dependencies, including React, Bootstrap, reactfire, and slick-carousel 
+and defines two arrow functions for rendering the slider arrows.
+
+The component uses the useEffect hook to fetch the recommended properties from Firestore database 
+via getProperties function and update the state with useState hook.
+
+It then defines settings for the slider and maps over the properties array to render each property as a 
+Card component in the slider. The Card component displays information about the property, including its image,
+ address, price, description, and number of bedrooms and bathrooms.
+*/

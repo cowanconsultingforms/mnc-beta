@@ -172,3 +172,25 @@ const AddListing = () => {
 };
 
 export default AddListing
+
+/*
+This is a React component called AddListing that allows users to add a new property listing. 
+It uses several components from the Material-UI library such as Box, Button, TextField, Typography, 
+Card, CardContent, and CardMedia. It also uses the useState hook from React to manage the state of the input fields.
+
+The component has a form that takes in various inputs for the property such as zip, street, state, city, 
+price, description, bathrooms, bedrooms, and images. When the form is submitted, the handleSubmit function 
+is called, which first calls the addListing function.
+
+The addListing function uses the Firebase Firestore library to create a new property document with the given 
+inputs, and adds it to the properties sub-collection within the forSale document in the listings collection.
+
+If the property is added successfully, an alert is shown saying "Listing successfully created". 
+Otherwise, an alert saying "Error, listing could not be added" is shown.
+
+The component also has a preview of the property listing using the Card component from Material-UI, 
+which displays the property's image, address, price, description, and number of bathrooms and bedrooms.
+
+Finally, there is a submit button at the end of the form that triggers the handleSubmit function when clicked. 
+The entire form is wrapped in a Box component with some styling applied to it.
+*/

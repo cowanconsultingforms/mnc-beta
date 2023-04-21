@@ -59,7 +59,7 @@ const DeleteListing = () => {
         {selectedListing && (
           <Box sx={{ margin: "0 auto" }}>
             <Card sx={{ minWidth: 410, minHeight: 380, backgroundColor: "#eeeeee" }}>
-              <CardMedia component="img" height="180" image={listings.find(listing => listing.id === selectedListing).images.image1} />
+              <CardMedia component="img" height="180" image={listings.find(listing => listing.id === selectedListing).images.image1 || listings.find(listing => listing.id === selectedListing).images[0]} />
               <CardContent>
                 <Typography gutterBottom variant="h6" component="div">
                   {listings.find(listing => listing.id === selectedListing).street}, {listings.find(listing => listing.id === selectedListing).city}, {listings.find(listing => listing.id === selectedListing).state}
@@ -84,3 +84,27 @@ const DeleteListing = () => {
 }
 
 export default DeleteListing
+
+/*
+This code defines a React component named DeleteListing, which is used to delete a real estate listing.
+
+The component first imports several modules from the Material-UI and Firebase libraries. 
+The useEffect and useState hooks are also imported from the react library.
+
+Inside the DeleteListing component, there are three state variables declared using the useState hook. 
+listings holds an array of all available real estate listings, selectedListing holds the ID of the currently 
+selected listing, and firestore holds a reference to the Firestore database.
+
+Two asynchronous functions are defined: fetchListings and deleteListing. fetchListings retrieves the listings 
+data from Firestore and updates the listings state variable, while deleteListing deletes the listing with the 
+specified ID from Firestore and then calls fetchListings to refresh the list of available listings.
+
+The component uses the useEffect hook to call fetchListings once when the component is first mounted.
+
+The component then renders a form using the Box and Typography components from Material-UI. The form contains a 
+select element that lists all available real estate listings, and a Card component that displays the details of 
+the selected listing. When a listing is selected from the select element, the Card component is displayed.
+
+Finally, there is a Button component that, when clicked, calls the handleSubmit function to delete the selected 
+listing from Firestore.
+*/
