@@ -1,3 +1,9 @@
+/**This is the JavaScript code for a React-based web application that generates a form where users can select various sorts of properties,
+ *  listing statuses, listing types, and other amenities.  */
+
+//Import statements are used to load external libraries and stylesheets that are essential for the program to function correctly. 
+//In this scenario, React, Material UI, and a custom stylesheet are used.
+
 import { useState } from "react";
 import ReactDOM from "react-dom/client";
 import * as React from 'react';
@@ -468,7 +474,15 @@ return(
 )
 }
 root.render(<KeyWords/>);
+/**The React components PropertyType, ListingStatus, ListingType, and OtherAmenities construct a form area for each category.
+ *  They all make use of the useState hook to manage the state of the checkboxes and render the UI based on the options that are selected.
+ * 
+ * 
+Each category is represented by a collection of checkboxes that indicate the possible alternatives. The handleChange method is 
+invoked when a checkbox is clicked to update the status of the corresponding checkbox.
 
+Each component is rendered onto the DOM using the root.render method. 
+The root variable is not declared in this code, but it is presumed to correspond to the HTML document's root element.*/
 
 
 
