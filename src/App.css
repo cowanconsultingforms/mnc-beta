@@ -278,10 +278,12 @@ div#rs-btn-toolbar {
  #logo {
     width: 100%;
     height: auto;
+    margin-right:9px;
   }
   #logo2{
     width:300px;
     height:auto;
+    margin-right:20px;
   }
   .search-input {
     width: 350px;
@@ -289,8 +291,19 @@ div#rs-btn-toolbar {
     margin-left:25px;
     margin-right:-35px;
   }
+  .account-page-container {
+    padding-top: 50px;
+    display: flex;
+    width: 75%;
+    height: 100%;
+    padding: 15px;
+    margin: 0 auto;
+    margin-left:20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }
-
 /* For screens between 576px and 768px wide/tablets */
 @media screen and (min-width: 400px) and (max-width: 768px) {
   .navigation-bar {
@@ -333,6 +346,7 @@ div#rs-btn-toolbar {
   #logo2{
     width:50%;
     height:auto;
+
   }
 }
 
@@ -408,6 +422,7 @@ div#rs-btn-toolbar {
 #logo2{
   width:30%;
   height:auto;
+ 
 }
   .search-icon {
     padding-right: 140px;

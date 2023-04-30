@@ -28,28 +28,6 @@
   margin: auto;
   padding: 15px;
 }
-/* .SignOutBox {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  text-align: left;
-  background-color: #eeeeee;
-  color: rgb(128, 128, 128);
-  font-size: 20px;
-  width: 50%;
-} */
-.delete-profile {
-  height: 100%;
-  grid-column: 3;
-  grid-row: 5 / span 2;
-  justify-content: center;
-  position: relative;
-  text-align: left;
-  background-color: #eeeeee;
-  color: rgb(128, 128, 128);
-  font-size: 20px;
-  width: 100%;
-}
 
 .Grid{
   justify-content: center;

@@ -59,15 +59,15 @@ export const AccountPage = (props) => {
     
    
         <Grid item xs={10}>
-          <Item sx={{ height: 120  }}>
+          <Item sx={{ height: 50  }}>
 
             <Typography
-              variant="h1"
+              variant="h4"
               sx={{
                 fontFamily: "Garamond",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "75px",
+                fontSize: "25px",
               }}
             >
               Edit Profile
