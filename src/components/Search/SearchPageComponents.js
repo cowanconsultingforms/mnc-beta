@@ -207,7 +207,7 @@ export const UseButtonGroup = ({ onChange }) => {
           textAlign: "center",
           padding: "15px",
           fontSize: "16px",
-          width: "90px",
+          width: "300px",
           fontFamily: "Garamond",
           backgroundColor: isHover3 ? "white" : "lightgrey",
           color: isHover3 ? "black" : "black",

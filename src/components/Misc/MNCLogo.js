@@ -34,7 +34,7 @@ export const MNCLogoGray = () => {
   const storage = useStorage();
   const logoRef = reff(
     storage,
-    "gs://mnc-development.appspot.com/images/mncdevelopmentlogoAdjusted.jpg"
+    "gs://mnc-development.appspot.com/images/mnclogo-transparent.png"
   );
   const { status, data: imageURL } = useStorageDownloadURL(logoRef);
 
@@ -44,7 +44,7 @@ export const MNCLogoGray = () => {
 
   return (
     <React.Fragment>
-      <img src={imageURL} alt="logo" id="logo" sx={{ grayStyle }} />
+      <img src={imageURL} alt="logo2" id="logo2" sx={{ grayStyle }} />
     </React.Fragment>
   );
 };
