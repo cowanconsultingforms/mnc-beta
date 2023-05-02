@@ -51,8 +51,18 @@ export const LoginForm = () => {
       {status !== "success" ? (
       <h1>Loading...</h1>
     ) : (
-      <div style={{ backgroundImage: `url(${url1})`, backgroundAttachment: "fixed",
-                    backgroundRepeat: "no-repeat",float:"down", whiteSpace: "nowrap"}}>
+<div style={{ 
+  backgroundImage: `url(${url1})`, 
+  backgroundAttachment: "fixed",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  height: "100vh",
+  width: "100vw",
+  position: "fixed",
+  top: 0,
+  left: 0,
+  zIndex: -1
+}}>
       <Grid 
         container 
         alignItems="center" 
@@ -60,8 +70,8 @@ export const LoginForm = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          marginTop: "0px",
-          paddding: "20px",
+          marginTop: "200px",
+          padding: "100px 50px 50px 50px",
         }}>
       <Box
         className="login-form-box"

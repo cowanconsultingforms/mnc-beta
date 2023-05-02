@@ -59,13 +59,13 @@ export const NavBar = () => {
       id: "listing-page",
     },
     */
-    {
+   /* {
       page: "/account",
       text: "Profile",
       onClickFunc: () => navigate("/account"),
       id: "account-page",
       
-    }
+    }*/
   ];
 
   const logOut = {
