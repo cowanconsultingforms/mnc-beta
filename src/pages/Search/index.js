@@ -83,6 +83,7 @@ export const SearchPage = (props) => {
         component="span"
         className="footer-bottom"
         sx={{
+          paddingTop:"65px",
           margin: "0in",
           marginBottom: ".0001pt",
           textAlign: "center",

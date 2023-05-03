@@ -84,7 +84,7 @@ export const ListingPage = () => {
     <div
       style={{
         display: "block",
-        width: 700,
+        width: 500,
         paddingLeft: 30,
       }}
     >
