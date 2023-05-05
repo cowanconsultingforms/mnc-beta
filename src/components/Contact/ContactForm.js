@@ -13,6 +13,18 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
+
+import { FirebaseStorage, ref } from "firebase/storage";
+import { getDocs, collection } from "firebase/firestore";
+import { useAuth, useFirestore, useStorage, useStorageDownloadURL } from "reactfire";
+
+
+
+
+
+
+
+
 import emailjs from "@emailjs/browser";
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor:
@@ -24,7 +36,15 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 // needs an email service handler
 
-export const ContactForm = ({ ref }) => {
+export const ContactForm = ({ }) => {
+
+  const storage = useStorage()
+  const backgroundImage = ref(storage, "gs://mnc-development.appspot.com/images/contact.jpg")
+  const { status, data: url1 } = useStorageDownloadURL(backgroundImage);
+
+
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     emailjs
@@ -52,6 +72,26 @@ export const ContactForm = ({ ref }) => {
   const [zip, setZip] = useState("");
 
   return (
+
+<div>
+      {status !== "success" ? (
+      <h1>Loading...</h1>
+    ) : (
+<div style={{ 
+  backgroundImage: `url(${url1})`, 
+  backgroundAttachment: "fixed",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  height: "100vh",
+  width: "100vw",
+  position: "fixed",
+  top: 0,
+  left: 0,
+  zIndex: -1
+}}>
+
+
+
     <Grid 
       className = "contact-form"
       container 
@@ -75,9 +115,14 @@ export const ContactForm = ({ ref }) => {
         borderRadius: "20px",
         backgroundColor: "#eeeeee",
         marginBottom: "30px",
-        marginTop: "30px",
+        marginTop: "150px",
         width: "525px"
       }}>
+
+
+
+
+        
       <Grid display="flex" justifyContent="center" alignItems="center">
         <h1>Contact Us</h1>
       </Grid>
@@ -154,6 +199,8 @@ export const ContactForm = ({ ref }) => {
         <br/>
       </Box>
     </Grid>
+    </div>
+)}; </div>
   );
 };
 

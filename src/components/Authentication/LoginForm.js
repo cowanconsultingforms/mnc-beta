@@ -9,7 +9,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   onAuthStateChanged
-} from "firebase/auth"
+} from "firebase/auth";
 import { FirebaseStorage, ref } from "firebase/storage";
 import { getDocs, collection } from "firebase/firestore";
 import { useAuth, useFirestore, useStorage, useStorageDownloadURL } from "reactfire";
@@ -69,7 +69,7 @@ export const LoginForm = () => {
         direction="column"
         sx={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "stack",
           marginTop: "200px",
           padding: "100px 50px 50px 50px",
         }}>

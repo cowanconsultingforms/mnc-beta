@@ -111,7 +111,7 @@ export const NavBar = () => {
       <div className="navigation-bar">
         <div className="navigation-bar-left">
           <button className="nav-btn" href="/" onClick={() => navigate("/")}>
-            <HomeIcon size={25} padding="2" sx={{marginBottom:"10"}} />
+            <HomeIcon size={50} padding="2" sx={{marginBottom:"10"}} />
           </button>
           <MNCLogoGray/>
         </div>
