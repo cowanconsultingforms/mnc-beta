@@ -82,7 +82,7 @@ export const ContactForm = ({ }) => {
   backgroundAttachment: "fixed",
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
-  height: "100vh",
+  height: "150vh",
   width: "100vw",
   position: "fixed",
   top: 0,
@@ -100,7 +100,7 @@ export const ContactForm = ({ }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        marginTop: "20px",
+        marginTop: "110px",
       }}>
       <Box
       className="contact-form-box"
@@ -116,7 +116,9 @@ export const ContactForm = ({ }) => {
         backgroundColor: "#eeeeee",
         marginBottom: "30px",
         marginTop: "150px",
-        width: "525px"
+        width: "390px",
+        padding:"10px"
+
       }}>
 
 
@@ -137,7 +139,9 @@ export const ContactForm = ({ }) => {
           sx={{
             fontFamily: "Garamond",
             width: "50%",
-            backgroundColor: 'whitesmoke'
+            backgroundColor: 'whitesmoke',
+            padding:"10px"
+
           }}
           onChange={(e) => setName(e.target.value)}
         />
@@ -149,7 +153,9 @@ export const ContactForm = ({ }) => {
           sx={{
             fontFamily: "Garamond",
             width: "50%",
-            backgroundColor: 'whitesmoke'
+            backgroundColor: 'whitesmoke',
+            padding:"10px"
+
           }}
         />
         </Stack>
@@ -165,7 +171,8 @@ export const ContactForm = ({ }) => {
           sx={{
             fontFamily: "Garamond",
             width: "50%",
-            backgroundColor: 'whitesmoke'
+            backgroundColor: 'whitesmoke',
+            padding:"10px"
           }}
         />
         <TextField
@@ -176,7 +183,9 @@ export const ContactForm = ({ }) => {
           sx={{
             fontFamily: "Garamond",
             width: "50%",
-            backgroundColor: 'whitesmoke'
+            backgroundColor: 'whitesmoke',
+            padding:"10px"
+
           }}
         />
         </Stack>
@@ -185,7 +194,7 @@ export const ContactForm = ({ }) => {
           name="message"
           label="Message"
           onChange={(e) => setMessage(e.target.value)}
-          style={{ width: 430, border: "2px solid gray", height: 180,backgroundColor: 'whitesmoke' }}
+          style={{ width: 380, border: "2px solid gray", height: 180,backgroundColor: 'whitesmoke' }}
           />
           <br/>
           <Button

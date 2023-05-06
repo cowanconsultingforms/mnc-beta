@@ -67,7 +67,7 @@ const EditListing = () => {
   },[])
 
   return (
-    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px" }}>
+    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px", backgroundColor: "#eeeeee", padding:"10px" }}>
       <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>Edit Listing</Typography>
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

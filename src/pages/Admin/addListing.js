@@ -47,7 +47,7 @@ const AddListing = () => {
   };
 
   return (
-    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px" }}>
+    <Box sx={{ width: 900, margin: "0 auto", marginTop: "30px",  backgroundColor: "#eeeeee", padding:"10px" }}>
       <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>Add New Listing</Typography>
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
@@ -57,6 +57,7 @@ const AddListing = () => {
             onChange={(event) => setZip(event.target.value)}
             required
             fullWidth
+           
           />
           <TextField
             label="Street"

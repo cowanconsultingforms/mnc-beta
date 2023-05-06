@@ -3,6 +3,7 @@ import { Button, Grid } from "@mui/material";
 import AddListing from "./addListing";
 import EditListing from "./editListing";
 import DeleteListing from "./deleteListing";
+import { Adminbg } from "../../components/Misc/adminbg";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState("");
@@ -25,8 +26,8 @@ const AdminPage = () => {
   };
 
   return (
-    <Grid container direction="column" justify="center" alignItems="center" spacing={2} sx={{marginTop:"10px"}}>
-      <div style={{ display: "flex", flexDirection: "row" }}>
+    <Grid container direction="column" justify="center" alignItems="center" spacing={2} sx={{marginTop:"20px", padding:"20px"}}>
+      <div style={{ display: "flex", flexDirection: "row", padding:"35px"}}>
         <Button variant="contained" onClick={() => handleButtonClick("add")} sx={{marginLeft:"10px", backgroundColor:"#a3a3a3"}}>
           Add listings
         </Button>
@@ -40,6 +41,8 @@ const AdminPage = () => {
       <Grid item>
         {renderActiveComponent()}
       </Grid>
+      <Adminbg />
+
     </Grid>
   );
 };

@@ -42,7 +42,7 @@ const DeleteListing = () => {
   },[])
 
   return (
-    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px" }}>
+    <Box sx={{ width: 750, margin: "0 auto", marginTop: "30px", backgroundColor: "#eeeeee", padding:"100px" }}>
       <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>Delete Listing</Typography>
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "grid", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

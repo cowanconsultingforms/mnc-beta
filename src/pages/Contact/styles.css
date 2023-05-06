@@ -70,5 +70,12 @@ height:50%;
   opacity:.3;
 }
 
+@media only screen and (max-width: 450px){
+  .contact-form-box {
+    width:390px;
+    
+
+  }
+  }
 
 /*Contact Page CSS*/
