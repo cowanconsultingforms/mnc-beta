@@ -6,7 +6,18 @@ import React, { useEffect, useId, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useFirestore } from 'reactfire';
 
+
+import { FirebaseStorage, ref } from "firebase/storage";
+import { useStorage, useStorageDownloadURL } from "reactfire";
+
+
 export const RegisterForm = ({ title }) => {
+
+
+  const storage = useStorage()
+  const backgroundImage = ref(storage, "gs://mnc-development.appspot.com/images/R.jfif")
+  const { status, data: url1 } = useStorageDownloadURL(backgroundImage);
+
   const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,6 +72,23 @@ export const RegisterForm = ({ title }) => {
 
       
   return (
+
+    <div>
+    {status !== "success" ? (
+    <h1>Loading...</h1>
+  ) : (
+<div style={{ 
+backgroundImage: `url(${url1})`, 
+backgroundAttachment: "fixed",
+backgroundRepeat: "no-repeat",
+backgroundSize: "cover",
+height: "100vh",
+width: "100vw",
+position: "fixed",
+top: 0,
+left: 0,
+zIndex: -1
+}}>
     <div className="register-form">
       <Grid 
       container 
@@ -84,7 +112,7 @@ export const RegisterForm = ({ title }) => {
           borderRadius: "20px",
           backgroundColor: "#eeeeee",
           marginBottom: "30px",
-          marginTop: "30px",
+          marginTop: "200px",
           width: "300px",
         }}>
         <h1>Sign Up</h1>
@@ -146,8 +174,11 @@ export const RegisterForm = ({ title }) => {
       </Box>
       </Grid>
     </div>
+    </div>
+)};
   );
-};
+  </div>
+)};
 
 export default RegisterForm
 
