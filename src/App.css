@@ -142,10 +142,10 @@ div#rs-btn-toolbar {
   overflow: hidden;
 
 }
-.navigation-bar :hover {
+.nav-btn:hover {
   opacity: 0.8;
   background-color: grey;
-}
+} */
 .navigation-bar-right {
   font-size: 20px;
   display: inline-flex;
