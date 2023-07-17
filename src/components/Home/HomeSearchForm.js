@@ -58,7 +58,7 @@ const grey = {
 const StyledInputElement = styled("input")(
   ({ theme }) => `
   width: 100%;
-  height: 80px;
+  height: 70px;
   font-family: Garamond;
   font-size: 20px;
   font-weight: 500;
