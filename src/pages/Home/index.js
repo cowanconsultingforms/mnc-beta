@@ -16,13 +16,13 @@ import { HomeSearchForm } from "../../components/Home/HomeSearchForm";
 
 export const HomePage = (props) => {
 
-  <div class="home-search-bar">
-  <input type="text" placeholder="Search" class="box">
-  <button class="search-icon">
-    <i class="fa fa-search"></i>
-  </button>
-  </input>
-</div>
+//   <div class="home-search-bar">
+//   <input type="text" placeholder="Search" class="box">
+//   <button class="search-icon">
+//     <i class="fa fa-search"></i>
+//   </button>
+//   </input>
+// </div>
 
     //useLocation hook to get current location object from the react-router-dom library
   const location = useLocation();
