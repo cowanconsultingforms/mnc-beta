@@ -49,10 +49,6 @@ button#login-page {
   text-align: left;
 }
 
-button#login-page:hover {
-  opacity: 0.8;
-}
-
 /* Footer styles */
 
 .footer-bottom {

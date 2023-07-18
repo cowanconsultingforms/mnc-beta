@@ -84,6 +84,7 @@ export const NavBar = () => {
     text: "Login/Register",
     onClickFunc: () => navigate("/login"),
     id: "login-page",
+    class: "nav-btn"
   }
 
   const admin = {
