@@ -1,9 +1,11 @@
 * {
   font-family: "Garamond";
 }
+
 body {
   font-family: "Garamond";
 }
+
 .login-page {
   background-color: rgb(196, 196, 196);
   height: 100%;
@@ -27,14 +29,13 @@ button#login-page {
   text-decoration: none;
   text-align: left;
 }
-button#login-page:hover {
-  opacity: 0.8;
-}
+
 div#rs-btn-toolbar {
   justify-content: center;
   align-items: center;
   width: 60%;
 }
+
 .animate {
   -webkit-animation: animatezoom 0.6s;
   animation: animatezoom 0.6s;
@@ -137,7 +138,7 @@ div#rs-btn-toolbar {
   text-decoration: none;
   overflow: hidden;
 }
-.navigation-bar :hover {
+.nav-btn:hover {
   opacity: 0.8;
   background-color: grey;
 }
