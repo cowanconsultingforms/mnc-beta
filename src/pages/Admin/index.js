@@ -26,6 +26,7 @@ const AdminPage = () => {
   };
 
   return (
+    //call user auth to check if admin --> {if admin && code below}
     <Grid container direction="column" justify="center" alignItems="center" spacing={2} sx={{marginTop:"20px", padding:"20px"}}>
       <div style={{ display: "flex", flexDirection: "row", padding:"35px"}}>
         <Button variant="contained" onClick={() => handleButtonClick("add")} sx={{marginLeft:"10px", backgroundColor:"#a3a3a3"}}>
