@@ -84,7 +84,6 @@ export const NavBar = () => {
     text: "Login/Register",
     onClickFunc: () => navigate("/login"),
     id: "login-page",
-    class: "nav-btn"
   }
 
   const admin = {
@@ -112,7 +111,7 @@ export const NavBar = () => {
       <div className="navigation-bar">
         <div className="navigation-bar-left">
           <button className="nav-btn" href="/" onClick={() => navigate("/")}>
-            <HomeIcon size={50} padding="2" sx={{margin:"10"}} />
+            <HomeIcon size={50} padding="2" sx={{marginBottom:"10"}} />
           </button>
           <MNCLogoGray/>
         </div>
