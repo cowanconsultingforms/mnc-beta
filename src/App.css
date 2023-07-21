@@ -4,6 +4,8 @@
 
 body {
   font-family: "Garamond";
+  @media screen and (min-width: 500px) {
+  }
 }
 
 .login-page {
@@ -16,6 +18,7 @@ body {
   align-items: center;
   font-size: 22px;
   color: white;
+
   text-decoration: none;
 }
 
@@ -234,18 +237,16 @@ div#rs-btn-toolbar {
 @media (max-width: 400px) {
   .navigation-bar {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     height: auto;
     width: auto;
   }
   .navigation-bar-left {
-    margin: 10px;
+    margin-bottom: 10px;
     flex-direction: column;
     height: auto;
   }
   .navigation-bar-right {
-    margin: 10px;
+    margin-top: 10px;
     flex-direction: column;
     height: auto;
   }
@@ -346,7 +347,7 @@ div#rs-btn-toolbar {
 }
 
 /* For screens between 768px and 1024px wide/ laptops */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
+@media screen and (min-width: 600px) and (max-width: 1024px) {
   .navigation-bar {
     height: 50px;
   }

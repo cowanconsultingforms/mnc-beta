@@ -16,13 +16,15 @@ import { HomeSearchForm } from "../../components/Home/HomeSearchForm";
 
 export const HomePage = (props) => {
 
-//   <div class="home-search-bar">
-//   <input type="text" placeholder="Search" class="box">
-//   <button class="search-icon">
-//     <i class="fa fa-search"></i>
-//   </button>
-//   </input>
-// </div>
+  <div class="home-search-bar">
+  <input type="text" placeholder="Search" class="box">
+  <button class="search-icon">
+    <i class="fa fa-search"></i>
+  </button>
+  </input>
+</div>
+
+//I have no idea what this does ^^^^
 
     //useLocation hook to get current location object from the react-router-dom library
   const location = useLocation();
@@ -50,7 +52,6 @@ export const HomePage = (props) => {
           display: "flex",
         }}
       >
-
         <Grid
           item
           sx={{
@@ -59,7 +60,7 @@ export const HomePage = (props) => {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            paddingTop: "150px",
+            paddingTop: "35px",
           }}
         >
           <MNCLogo />

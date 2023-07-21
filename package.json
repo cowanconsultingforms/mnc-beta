@@ -41,8 +41,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "dev": "vite serve build", 
-    "build": "vite build build",
+    "dev": "react-scripts start", 
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
