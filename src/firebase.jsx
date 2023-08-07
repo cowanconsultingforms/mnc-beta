@@ -7,7 +7,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: `${import.meta.env.VITE_API_KEY}`,
+  apiKey: import.meta.env.VITE_API_KEY,
   authDomain: "mnc-development.firebaseapp.com",
   // databaseURL: "https://mnc-development-default-rtdb.firebaseio.com",
   projectId: "mnc-development",
