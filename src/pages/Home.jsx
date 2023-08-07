@@ -83,10 +83,6 @@ const Home = () => {
     fetchProperties(searchTerm);
   };
 
-  useEffect(() => {
-    fetchProperties("");
-  }, []);
-
   return (
     <>
       <Slider />
