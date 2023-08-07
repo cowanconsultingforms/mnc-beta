@@ -88,10 +88,10 @@ const Slider = () => {
                   backgroundSize: "cover",
                 }}
               ></div>
-              <p className="absolute left-3 top-3 max-w-[90%] bg-opacity-75 px-3 py-1 text-lg font-semibold text-gray-700 shadow-md rounded bg-white">
+              <p className="text-white absolute left-1 top-3 font-medium max-w-[90%] bg-gray-500 shadow-lg opacity-90 p-2 rounded rounded-br-xl">
                 {data.name}
               </p>
-              <p className="absolute left-3 bottom-3 max-w-[90%] bg-opacity-75 px-3 py-1 text-lg font-semibold text-gray-700 shadow-md rounded bg-white">
+              <p className="text-white absolute left-1 bottom-1 font-medium max-w-[90%] bg-gray-500 shadow-lg opacity-90 p-2 rounded rounded-tr-xl">
                 $
                 {data.offer
                   ? data.discountedPrice
