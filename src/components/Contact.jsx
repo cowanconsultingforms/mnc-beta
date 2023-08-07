@@ -32,10 +32,7 @@ const Contact = ({ userRef, listing }) => {
       {/* Element only displayed once creator data is received */}
       {creator !== null && (
         <div className="flex flex-col w-full">
-          <p>
-            Contact <span className="font-medium">{creator.name}</span> for
-            inquiries about the listing!
-          </p>
+          <p>Contact us for inquiries about this listing!</p>
           <div className="mt-3 mb-6">
             <textarea
               name="message"
