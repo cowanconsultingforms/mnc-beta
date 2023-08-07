@@ -96,7 +96,7 @@ const Header = () => {
             </li>
 
             {/* Offers button */}
-            <li
+            {/* <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
               ${
                 !pathMatchRoute("/offers") &&
@@ -106,7 +106,7 @@ const Header = () => {
               onClick={() => navigate("/offers")}
             >
               Offers
-            </li>
+            </li> */}
 
             {/* Sign in button */}
             <li
@@ -173,7 +173,7 @@ const Header = () => {
             </li>
 
             {/* Offers button */}
-            <li
+            {/* <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${!pathMatchRoute("/offers") && "text-gray-400"} 
               ${pathMatchRoute("/offers") && "text-black"}`}
@@ -183,7 +183,7 @@ const Header = () => {
               }}
             >
               Offers
-            </li>
+            </li> */}
 
             {/* Sign in button */}
             <li
