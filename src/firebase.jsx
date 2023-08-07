@@ -5,12 +5,9 @@ import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-
-//Currently configured for development
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_DEV_KEY,
+  apiKey: import.meta.env.VITE_API_KEY,
   authDomain: "mnc-development.firebaseapp.com",
   // databaseURL: "https://mnc-development-default-rtdb.firebaseio.com",
   projectId: "mnc-development",
