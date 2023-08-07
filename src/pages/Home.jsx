@@ -1,13 +1,7 @@
 // TODO: Create home page
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import {
-  collection,
-  query,
-  getDocs,
-  where,
-  onSnapshot,
-} from "firebase/firestore";
+import { collection, query, getDocs, where } from "firebase/firestore";
 import { AiOutlineSearch } from "react-icons/ai";
 import ListingItem from "../components/ListingItem";
 
@@ -15,8 +9,9 @@ import ListingItem from "../components/ListingItem";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
-import MncLogo from "../assets/svg/mnc-logo.svg";
-import { Navigate } from "react-router-dom";
+
+// Import created components
+import Slider from "../components/Slider";
 
 const Home = () => {
   const images = [img1, img2, img3];
@@ -81,7 +76,6 @@ const Home = () => {
     );
 
     setFilteredProperties(filteredProperties);
-    // console.log(filteredProperties);
   };
 
   const handleSearch = (e) => {
@@ -91,12 +85,13 @@ const Home = () => {
 
   return (
     <>
+      <Slider />
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-6">
         <div className="w-full px-3">
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-16">
+          <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
               className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -138,7 +133,7 @@ const Home = () => {
         {/* Search bar + button */}
         <form
           onSubmit={handleSearch}
-          className="max-w-md mt-6 w-full text flex justify-center mb-10"
+          className="max-w-md mt-6 w-full text flex justify-center"
         >
           {/* Search bar */}
           <div className="w-full px-3 relative">
@@ -179,7 +174,7 @@ const Home = () => {
 
       {/* Thumbnail images */}
       <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <ul className="mx-auto max-w-6xl w-full flex flex-row justify-center items-center space-x-3">
+        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
           {images.map((img, i) => (
             <li
               key={i}
@@ -194,6 +189,7 @@ const Home = () => {
           ))}
         </ul>
       </div>
+
       {/* Footer Information */}
       <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <ul className="mx-auto max-w-6xl w-full flex flex-col justify-center items-center space-x-3">

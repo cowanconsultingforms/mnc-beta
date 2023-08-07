@@ -43,7 +43,7 @@ const Map = () => {
 
   // return <Map properties={properties} navigate={navigate} />;
   return (
-    <div className="w-full h-[calc(100vh-48px)] z-10 overflow-x-hidden grayscale">
+    <div className="w-full h-full z-10 overflow-x-hidden grayscale">
       <GoogleMap
         zoom={11}
         center={{ lat: 40.78, lng: -73.97 }}
@@ -51,7 +51,8 @@ const Map = () => {
         clickableIcons={false}
         options={{
           disableDefaultUI: true,
-          navigationControl: true,
+          gestureHandling: "greedy",
+          keyboardShortcuts: true,
         }}
       >
         {/* Render Markers using properties */}

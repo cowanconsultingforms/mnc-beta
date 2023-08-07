@@ -76,7 +76,6 @@ const ContactUs = () => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            //needs to wrap to next line
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required
           />

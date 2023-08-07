@@ -213,9 +213,8 @@ const Listing = () => {
             clickableIcons={false}
             options={{
               disableDefaultUI: true,
-              navigationControl: true,
-              zoomControl: true,
-              fullscreenControl: true,
+              gestureHandling: "greedy",
+              keyboardShortcuts: true,
             }}
             mapContainerClassName="w-full h-full rounded grayscale"
             zoom={14}
