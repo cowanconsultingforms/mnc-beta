@@ -10,9 +10,6 @@ import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
 
-// Import created components
-import Slider from "../components/Slider";
-
 const Home = () => {
   const images = [img1, img2, img3];
   const [selectedButton, setSelectedButton] = useState(1);
@@ -85,8 +82,7 @@ const Home = () => {
 
   return (
     <>
-      <Slider />
-      <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-6">
+      <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
         <div className="w-full px-3">
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
