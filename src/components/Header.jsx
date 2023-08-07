@@ -145,9 +145,9 @@ const Header = () => {
           <ul className="flex flex-col space-y-2 ml-3">
             {/* Home button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px] 
-              ${!pathMatchRoute("/") && "text-gray-400 border-b-transparent"} 
-              ${pathMatchRoute("/") && "text-black border-b-gray-900 "}`}
+              className={`cursor-pointer py-3 text-sm font-semibold 
+              ${!pathMatchRoute("/") && "text-gray-400"} 
+              ${pathMatchRoute("/") && "text-black "}`}
               onClick={() => {
                 navigate("/");
                 toggleMobileMenu();
@@ -158,9 +158,9 @@ const Header = () => {
 
             {/* Contact button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
-                !pathMatchRoute("/map") && "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}`}
+              className={`cursor-pointer py-3 text-sm font-semibold ${
+                !pathMatchRoute("/map") && "text-gray-400"
+              } ${pathMatchRoute("/map") && "text-black"}`}
               onClick={() => {
                 navigate("/map");
                 toggleMobileMenu();
@@ -170,11 +170,11 @@ const Header = () => {
             </li>
 
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+              className={`cursor-pointer py-3 text-sm font-semibold ${
                 !pathMatchRoute("/contact-us") &&
-                "text-gray-400 border-b-transparent"
+                "text-gray-400"
               } ${
-                pathMatchRoute("/contact-us") && "text-black border-b-gray-900"
+                pathMatchRoute("/contact-us") && "text-black"
               }`}
               onClick={() => {
                 navigate("/contact-us");
@@ -186,12 +186,12 @@ const Header = () => {
 
             {/* Offers button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
+              className={`cursor-pointer py-3 text-sm font-semibold
               ${
                 !pathMatchRoute("/offers") &&
-                "text-gray-400 border-b-transparent"
+                "text-gray-400"
               } 
-              ${pathMatchRoute("/offers") && "text-black border-b-gray-900"}`}
+              ${pathMatchRoute("/offers") && "text-black"}`}
               onClick={() => {
                 navigate("/offers");
                 toggleMobileMenu();
@@ -202,15 +202,15 @@ const Header = () => {
 
             {/* Sign in button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
+              className={`cursor-pointer py-3 text-sm font-semibold
               ${
                 !pathMatchRoute("/sign-in") &&
                 !pathMatchRoute("/profile") &&
-                "text-gray-400 border-b-transparent"
+                "text-gray-400"
               } 
               ${
                 (pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) &&
-                "text-black border-b-gray-900"
+                "text-black"
               }`}
               onClick={() => {
                 navigate("/profile");
