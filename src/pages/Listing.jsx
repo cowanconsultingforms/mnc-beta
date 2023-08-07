@@ -114,7 +114,7 @@ const Listing = () => {
       </div>
 
       {/* Information section */}
-      <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
+      <div className="lg:m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
         <div className="w-full">
           <p className="text-2xl font-bold mb-3 text-gray-800">
             {/* Name and price */}
@@ -160,7 +160,7 @@ const Listing = () => {
           </p>
 
           {/* Beds, baths, parking, furnished */}
-          <ul className="flex items-center space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
+          <ul className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
             {/* Bedrooms */}
             <li className="flex items-center whitespace-nowrap">
               <FaBed className="text-lg mr-1" />
