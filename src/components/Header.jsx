@@ -142,7 +142,7 @@ const Header = () => {
       {/* Mobile Dropdown Menu */}
       {isMobileMenuOpen && (
         <div className="lg:hidden">
-          <ul className="flex flex-col space-y-2 ml-8">
+          <ul className="flex flex-col space-y-2 ml-3">
             {/* Home button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px] 
