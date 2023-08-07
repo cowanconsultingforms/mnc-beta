@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { AiOutlineMenu } from "react-icons/ai";
+
 import MncLogo from "../assets/svg/mnc-logo.svg";
 
 const Header = () => {
@@ -49,26 +51,13 @@ const Header = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="lg:hidden">
-          <button
-            className="flex items-center px-3 py-2  rounded text-gray-500 hover:text-black"
-            onClick={toggleMobileMenu}
-          >
-            <svg
-              className="w-4 h-4 fill-current"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M0 0h20v20H0z" fill="none" />
-              <path
-                d="M2.5 6h15M2.5 10h15M2.5 14h15"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+        <div
+          className={`lg:hidden block cursor-pointer py-3 text-[20px] font-semibold  border-b-[3px] border-b-transparent
+              ${!isMobileMenuOpen && "text-gray-400"} 
+              ${isMobileMenuOpen && "text-black"}`}
+          onClick={() => toggleMobileMenu()}
+        >
+          <AiOutlineMenu />
         </div>
 
         {/* Desktop Menu */}
@@ -76,7 +65,7 @@ const Header = () => {
           <ul className="flex space-x-10">
             {/* Home button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px] 
+              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] 
               ${!pathMatchRoute("/") && "text-gray-400 border-b-transparent"} 
               ${pathMatchRoute("/") && "text-black border-b-gray-900 "}`}
               onClick={() => navigate("/")}
@@ -145,9 +134,9 @@ const Header = () => {
           <ul className="flex flex-col space-y-2 ml-3">
             {/* Home button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold  border-b-[3px] 
-              ${!pathMatchRoute("/") && "text-gray-400 border-b-transparent"} 
-              ${pathMatchRoute("/") && "text-black border-b-gray-900 "}`}
+              className={`cursor-pointer py-3 text-lg font-semibold  border-b-[3px] border-b-transparent 
+              ${!pathMatchRoute("/") && "text-gray-400"} 
+              ${pathMatchRoute("/") && "text-black"}`}
               onClick={() => {
                 navigate("/");
                 toggleMobileMenu();
@@ -158,9 +147,10 @@ const Header = () => {
 
             {/* Contact button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
-                !pathMatchRoute("/map") && "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}`}
+              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/map") && "text-gray-400"} ${
+                pathMatchRoute("/map") && "text-black"
+              }`}
               onClick={() => {
                 navigate("/map");
                 toggleMobileMenu();
@@ -170,11 +160,9 @@ const Header = () => {
             </li>
 
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
-                !pathMatchRoute("/contact-us") &&
-                "text-gray-400 border-b-transparent"
-              } ${
-                pathMatchRoute("/contact-us") && "text-black border-b-gray-900"
+              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/contact-us") && "text-gray-400"} ${
+                pathMatchRoute("/contact-us") && "text-black"
               }`}
               onClick={() => {
                 navigate("/contact-us");
@@ -186,12 +174,9 @@ const Header = () => {
 
             {/* Offers button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
-              ${
-                !pathMatchRoute("/offers") &&
-                "text-gray-400 border-b-transparent"
-              } 
-              ${pathMatchRoute("/offers") && "text-black border-b-gray-900"}`}
+              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/offers") && "text-gray-400"} 
+              ${pathMatchRoute("/offers") && "text-black"}`}
               onClick={() => {
                 navigate("/offers");
                 toggleMobileMenu();
@@ -202,15 +187,15 @@ const Header = () => {
 
             {/* Sign in button */}
             <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
+              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${
                 !pathMatchRoute("/sign-in") &&
                 !pathMatchRoute("/profile") &&
-                "text-gray-400 border-b-transparent"
+                "text-gray-400"
               } 
               ${
                 (pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) &&
-                "text-black border-b-gray-900"
+                "text-black"
               }`}
               onClick={() => {
                 navigate("/profile");
