@@ -138,7 +138,7 @@ const Home = () => {
           {/* Search bar */}
           <div className="w-full px-3 relative">
             <input
-              type="text"
+              type="search"
               placeholder={"Search by borough"}
               value={searchTerm}
               onChange={onChange}
