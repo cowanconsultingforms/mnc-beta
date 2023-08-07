@@ -141,7 +141,7 @@ const EditListing = () => {
     if (geolocationEnabled) {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_API_KEY
+          import.meta.env.VITE_DEV_KEY
         }`
       );
       const data = await response.json();

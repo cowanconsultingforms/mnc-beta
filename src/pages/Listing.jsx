@@ -50,7 +50,7 @@ const Listing = () => {
 
   // Loads google maps api script
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
+    googleMapsApiKey: `${import.meta.env.VITE_DEV_KEY}`,
   });
 
   const [selectedMarker, setSelectedMarker] = useState(null);

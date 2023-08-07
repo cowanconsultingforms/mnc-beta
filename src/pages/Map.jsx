@@ -9,7 +9,7 @@ const Map = () => {
   const [properties, setProperties] = useState([]);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
+    googleMapsApiKey: `${import.meta.env.VITE_DEV_KEY}`,
   });
   const navigate = useNavigate();
 
