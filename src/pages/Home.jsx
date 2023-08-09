@@ -11,6 +11,7 @@ import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
 
 const Home = () => {
+  const [timer, setTimer] = useState(null);
   const images = [img1, img2, img3];
   const [selectedButton, setSelectedButton] = useState(1);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -19,6 +20,13 @@ const Home = () => {
   // Updates search bar data when user types
   const onChange = (e) => {
     setSearchTerm(e.target.value);
+
+    // Displays results after 500ms delay
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      fetchProperties(searchTerm);
+    }, 500);
+    setTimer(newTimer);
   };
 
   // Get the category based on the selectedButton
@@ -133,7 +141,7 @@ const Home = () => {
           <div className="w-full px-3 relative">
             <input
               type="search"
-              placeholder={"Search by borough"}
+              placeholder={"Search by location or point of interest"}
               value={searchTerm}
               onChange={onChange}
               onSubmit={handleSearch}
