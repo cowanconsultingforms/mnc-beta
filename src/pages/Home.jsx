@@ -16,16 +16,12 @@ const Home = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Updates search bar data
+  // Updates search bar data when user types
   const onChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Updates buy/rent/sold buttons when one is selected
-  // const setSelectedButton = (buttonId) => {
-  //   setSelectedButton(buttonId);
-  // };
-
+  // Get the category based on the selectedButton
   const getCategory = (button) => {
     switch (button) {
       case 1:
@@ -43,6 +39,13 @@ const Home = () => {
     return tokens.map((token) => token.toLowerCase());
   };
 
+  // Submit function for searchbar
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchProperties(searchTerm);
+  };
+
+  // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm) => {
     const listingRef = collection(db, "propertyListings");
 
@@ -73,11 +76,6 @@ const Home = () => {
     );
 
     setFilteredProperties(filteredProperties);
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchProperties(searchTerm);
   };
 
   return (
