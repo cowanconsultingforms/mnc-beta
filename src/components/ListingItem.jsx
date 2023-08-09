@@ -22,7 +22,9 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
         >
           {listing.timestamp?.toDate()}
         </Moment>
+
         <div className="w-full p-[10px]">
+          {/* Displays listing address */}
           <div className="flex items-center space-x-1">
             <FaMapMarkerAlt className="h-4 w-4 text-gray-600" />
             <p className="font-semibold text-sm mb-[2px] text-gray-600 truncate">
@@ -64,18 +66,26 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
 
       {/* Displays delete icon with listing on profile page */}
       {onDelete && (
-        <FaTrash
-          className="absolute bottom-2 right-2 h-[14px] cursor-pointer"
+        <button
+          type="button"
           onClick={() => onDelete(listing.id)}
-        />
+          className="text-sm absolute flex items-center justify-center space-x-1 bottom-2 right-2 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
+        >
+          <span>Delete</span>
+          <FaTrash />
+        </button>
       )}
 
       {/* Displays edit icon with listing on profile page */}
       {onEdit && (
-        <MdEdit
-          className="absolute bottom-2 right-7 h-4 cursor-pointer"
+        <button
+          type="button"
           onClick={() => onEdit(listing.id)}
-        />
+          className="text-sm absolute flex items-center space-x-1 justify-center bottom-2 right-20 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
+        >
+          <span>Edit</span>
+          <MdEdit className="text-lg" />
+        </button>
       )}
     </li>
   );
