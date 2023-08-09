@@ -276,20 +276,20 @@ const EditListing = () => {
     <main className="max-w-md px-2 mx-auto">
       <h1 className="text-3xl text-center mt-6 font-bold">Edit Listing</h1>
       <form onSubmit={onSubmit}>
-        {/* Select sell/rent buttons */}
-        <p className="text-lg mt-6 font-semibold">Sell / Rent</p>
+        {/* Select buy/rent buttons */}
+        <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
         <div className="flex ">
           <button
             type="button"
             id="type"
-            value="sale"
+            value="buy"
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
               type === "rent" ? "bg-white text-black" : "bg-gray-500 text-white"
             }`}
           >
-            Sell
+            Buy
           </button>
           <button
             type="button"
@@ -298,7 +298,7 @@ const EditListing = () => {
             onClick={onChange}
             className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "sale" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "buy" ? "bg-white text-black" : "bg-gray-500 text-white"
             }`}
           >
             Rent

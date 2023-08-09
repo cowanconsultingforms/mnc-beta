@@ -25,7 +25,7 @@ const Home = () => {
   const getCategory = (button) => {
     switch (button) {
       case 1:
-        return "sale";
+        return "buy";
       case 2:
         return "rent";
       case 3:
