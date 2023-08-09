@@ -135,10 +135,10 @@ const Listing = () => {
             {listing.address}
           </p>
 
-          {/* For rent/sale */}
+          {/* Buy/rent */}
           <div className="flex justify-start items-center space-x-4 w-[75%]">
             <p className="bg-gray-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
-              {listing.type === "rent" ? "Rent" : "Sale"}
+              {listing.type === "rent" ? "Rent" : "Buy"}
             </p>
 
             {/* Shows amount saved if discount is available */}
