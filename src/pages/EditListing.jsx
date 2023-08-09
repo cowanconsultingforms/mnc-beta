@@ -13,9 +13,13 @@ import {
   addDoc,
   collection,
   doc,
+  documentId,
   getDoc,
+  getDocs,
+  query,
   serverTimestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate, useParams } from "react-router-dom";
@@ -64,11 +68,34 @@ const EditListing = () => {
 
   // Checks that listing belongs to the user that is editing it
   useEffect(() => {
-    if (listing && listing.userRef !== auth.currentUser.uid) {
-      toast.error("You cannot edit this listing.");
-      navigate("/");
-    }
-  }, [auth.currentUser.uid, listing, navigate]);
+    setLoading(true);
+    const fetchUser = async () => {
+      // Get user info from firestore database
+      const userRef = collection(db, "users");
+      const userQuery = query(
+        userRef,
+        where(documentId(), "==", auth.currentUser.uid)
+      );
+      const user = [];
+      const userSnap = await getDocs(userQuery);
+      userSnap.forEach((doc) => {
+        return user.push(doc.data());
+      });
+
+      // Gives user access to listings if they have the correct role
+      if (
+        user[0]?.role !== "agent" &&
+        user[0]?.role !== "admin" &&
+        user[0]?.role !== "superadmin"
+      ) {
+        toast.error("You cannot edit this listing.");
+        navigate("/");
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [auth.currentUser.uid, navigate]);
 
   // Fetches listing data and adds it to the form
   useEffect(() => {
