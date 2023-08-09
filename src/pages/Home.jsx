@@ -145,7 +145,7 @@ const Home = () => {
               value={searchTerm}
               onChange={onChange}
               onSubmit={handleSearch}
-              className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
+              className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
             ></input>
 
             {/* Search button */}
