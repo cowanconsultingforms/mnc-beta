@@ -91,10 +91,10 @@ const EditListing = () => {
         toast.error("You cannot edit this listing.");
         navigate("/");
       }
-      setLoading(false);
     };
 
     fetchUser();
+    setLoading(false);
   }, [auth.currentUser.uid, navigate]);
 
   // Fetches listing data and adds it to the form
