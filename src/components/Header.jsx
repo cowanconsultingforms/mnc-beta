@@ -73,7 +73,7 @@ const Header = () => {
               Home
             </li>
 
-            {/* Contact button */}
+            {/* Map button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/map") && "text-gray-400 border-b-transparent"
@@ -83,6 +83,7 @@ const Header = () => {
               Map
             </li>
 
+            {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/contact-us") &&
@@ -145,7 +146,7 @@ const Header = () => {
               Home
             </li>
 
-            {/* Contact button */}
+            {/* Map button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${!pathMatchRoute("/map") && "text-gray-400"} ${
@@ -159,6 +160,7 @@ const Header = () => {
               Map
             </li>
 
+            {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${!pathMatchRoute("/contact-us") && "text-gray-400"} ${

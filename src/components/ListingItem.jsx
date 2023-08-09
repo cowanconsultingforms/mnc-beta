@@ -31,6 +31,8 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
               {listing.address}
             </p>
           </div>
+
+          {/* Displays listing name */}
           <p className="font-semibold m-0 text-xl truncate">{listing.name}</p>
 
           {/* Displays discounted price if available, otherwise displays regular price (added commas for readability) */}
