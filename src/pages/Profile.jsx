@@ -8,6 +8,7 @@ import {
   query,
   updateDoc,
   where,
+  documentId,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect, useState } from "react";
@@ -66,30 +67,45 @@ const Profile = () => {
 
   // Display user created listing on profile page
   useEffect(() => {
-    const fetchUserListings = async () => {
-      const listingRef = collection(db, "propertyListings");
-
-      // Queries all listings that match user id
-      const q = query(
-        listingRef,
-        where("userRef", "==", auth.currentUser.uid),
-        orderBy("timestamp", "desc")
+    const fetchListings = async () => {
+      // Get user info from firestore database
+      const userRef = collection(db, "users");
+      const userQuery = query(
+        userRef,
+        where(documentId(), "==", auth.currentUser.uid)
       );
-      const querySnap = await getDocs(q);
-
-      // Adds all listings from query to 'listings' variable
-      let listings = [];
-      querySnap.forEach((doc) => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
+      const user = [];
+      const userSnap = await getDocs(userQuery);
+      userSnap.forEach((doc) => {
+        return user.push(doc.data());
       });
-      setListings(listings);
+
+      // Gives user access to listings if they have the correct role
+      if (
+        user[0]?.role === "agent" ||
+        user[0]?.role === "admin" ||
+        user[0]?.role === "superadmin"
+      ) {
+        const listingRef = collection(db, "propertyListings");
+
+        // Queries all listings that match user id
+        const q = query(listingRef, orderBy("timestamp", "desc"));
+        const querySnap = await getDocs(q);
+
+        // Adds all listings from query to 'listings' variable
+        let listings = [];
+        querySnap.forEach((doc) => {
+          return listings.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setListings(listings);
+      }
       setLoading(false);
     };
 
-    fetchUserListings();
+    fetchListings();
   }, [auth.currentUser.uid]);
 
   // Allows users to delete their own entries
@@ -189,7 +205,7 @@ const Profile = () => {
         {!loading && listings.length > 0 && (
           <>
             <h2 className="text-2xl text-center font-semibold mb-6">
-              My Listings
+              Listings
             </h2>
             <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
               {listings.map((listing) => (
