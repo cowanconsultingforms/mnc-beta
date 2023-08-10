@@ -26,6 +26,7 @@ const OAuth = () => {
           name: user.displayName,
           email: user.email,
           timestamp: serverTimestamp(),
+          role: "user",
         });
       }
 
