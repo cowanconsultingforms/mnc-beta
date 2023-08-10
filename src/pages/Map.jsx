@@ -23,7 +23,7 @@ const Map = () => {
 
   // Use the 'property' data or id to navigate to the desired page
   const handleClick = (property) => {
-    navigate(`/category/${property.type}/${property.id}`);
+    navigate(`/category/${property.data.type}/${property.id}`);
   };
 
   async function getProperties() {
@@ -49,7 +49,6 @@ const Map = () => {
     strokeColor: "black",
     strokeWeight: 1,
   };
-
 
   // return <Map properties={properties} navigate={navigate} />;
   return (
