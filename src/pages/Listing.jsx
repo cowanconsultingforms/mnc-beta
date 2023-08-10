@@ -215,8 +215,9 @@ const Listing = () => {
               disableDefaultUI: true,
               gestureHandling: "greedy",
               keyboardShortcuts: true,
+              styles: [{ stylers: [{ saturation: -100 }] }],
             }}
-            mapContainerClassName="w-full h-full rounded grayscale"
+            mapContainerClassName="w-full h-full rounded"
             zoom={14}
             center={{
               lat: listing.geolocation.lat,
