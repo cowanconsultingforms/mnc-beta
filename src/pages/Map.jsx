@@ -41,6 +41,16 @@ const Map = () => {
     setProperties(listings);
   }
 
+  const markerIcon = {
+    path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+    fillColor: "yellow",
+    fillOpacity: 1,
+    scale: 6,
+    strokeColor: "black",
+    strokeWeight: 2,
+  };
+
+
   // return <Map properties={properties} navigate={navigate} />;
   return (
     <div className="w-full h-full z-10 overflow-x-hidden">
@@ -65,6 +75,7 @@ const Map = () => {
               lat: property.data.geolocation.lat,
               lng: property.data.geolocation.lng,
             }}
+            icon={markerIcon}
           />
         ))}
       </GoogleMap>
