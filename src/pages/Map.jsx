@@ -47,7 +47,7 @@ const Map = () => {
     fillOpacity: 1,
     scale: 6,
     strokeColor: "black",
-    strokeWeight: 2,
+    strokeWeight: 1,
   };
 
 
