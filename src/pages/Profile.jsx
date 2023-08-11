@@ -81,11 +81,7 @@ const Profile = () => {
       });
 
       // Gives user access to listings if they have the correct role
-      if (
-        user[0]?.role === "agent" ||
-        user[0]?.role === "admin" ||
-        user[0]?.role === "superadmin"
-      ) {
+      if (user[0]?.roles.includes("agent")) {
         const listingRef = collection(db, "propertyListings");
 
         // Queries all listings that match user id
