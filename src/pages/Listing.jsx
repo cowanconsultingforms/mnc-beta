@@ -72,15 +72,6 @@ const Listing = () => {
     return <Spinner />;
   }
 
-  const markerIcon = {
-    path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-    fillColor: "yellow",
-    fillOpacity: 1,
-    scale: 6,
-    strokeColor: "black",
-    strokeWeight: 1,
-  };
-
   return (
     <main>
       {/* Image carousel using Swiper component */}
@@ -224,9 +215,8 @@ const Listing = () => {
               disableDefaultUI: true,
               gestureHandling: "greedy",
               keyboardShortcuts: true,
-              styles: [{ stylers: [{ saturation: -100 }] }],
             }}
-            mapContainerClassName="w-full h-full rounded"
+            mapContainerClassName="w-full h-full rounded grayscale"
             zoom={14}
             center={{
               lat: listing.geolocation.lat,
@@ -241,7 +231,6 @@ const Listing = () => {
                 lat: listing.geolocation.lat,
                 lng: listing.geolocation.lng,
               }}
-              icon={markerIcon}
               onClick={() => setSelectedMarker(1)}
             >
               {/* Displays listing name and address on top of marker when marker is clicked */}
