@@ -83,11 +83,7 @@ const EditListing = () => {
       });
 
       // Gives user access to listings if they have the correct role
-      if (
-        user[0]?.role !== "agent" &&
-        user[0]?.role !== "admin" &&
-        user[0]?.role !== "superadmin"
-      ) {
+      if (!user[0]?.roles.includes("agent")) {
         toast.error("You cannot edit this listing.");
         navigate("/");
       }

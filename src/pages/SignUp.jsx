@@ -22,7 +22,7 @@ const SignUp = () => {
     name: "",
     email: "",
     password: "",
-    role: "user",
+    roles: ["user"],
   });
 
   // Hook to update text when typing in form data
