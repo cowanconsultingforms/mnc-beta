@@ -24,6 +24,8 @@ const Profile = () => {
   const [changeDetail, setChangeDetail] = useState(false);
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showCreateListing, setShowCreateListing] = useState(false);
 
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
@@ -38,34 +40,7 @@ const Profile = () => {
     navigate("/");
   };
 
-  // Changes name form data as user types
-  const onChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  // Updates changed name data to firebase
-  const onSubmit = async () => {
-    try {
-      if (auth.currentUser.displayName !== name) {
-        // Update display name in firebase auth
-        await updateProfile(auth.currentUser, {
-          displayName: name,
-        });
-
-        // Update name in firestore database
-        const docRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(docRef, { name });
-      }
-      toast.success("Profile details updated!");
-    } catch (error) {
-      toast.error("Could not apply changes.");
-    }
-  };
-
-  // Display user created listing on profile page
+  // Get user account roles
   useEffect(() => {
     const fetchListings = async () => {
       // Get user info from firestore database
@@ -80,23 +55,29 @@ const Profile = () => {
         return user.push(doc.data());
       });
 
-      // Gives user access to listings if they have the correct role
-      if (user[0]?.roles.includes("agent")) {
-        const listingRef = collection(db, "propertyListings");
+      // Updates admin status if user has the correct role
+      if (user[0]?.roles.includes("admin")) {
+        setIsAdmin(true);
 
-        // Queries all listings that match user id
-        const q = query(listingRef, orderBy("timestamp", "desc"));
-        const querySnap = await getDocs(q);
+        // Gives user access to listings if they have the correct role
+        if (user[0]?.roles.includes("agent")) {
+          setShowCreateListing(true);
+          const listingRef = collection(db, "propertyListings");
 
-        // Adds all listings from query to 'listings' variable
-        let listings = [];
-        querySnap.forEach((doc) => {
-          return listings.push({
-            id: doc.id,
-            data: doc.data(),
+          // Queries all listings that match user id
+          const q = query(listingRef, orderBy("timestamp", "desc"));
+          const querySnap = await getDocs(q);
+
+          // Adds all listings from query to 'listings' variable
+          let listings = [];
+          querySnap.forEach((doc) => {
+            return listings.push({
+              id: doc.id,
+              data: doc.data(),
+            });
           });
-        });
-        setListings(listings);
+          setListings(listings);
+        }
       }
       setLoading(false);
     };
@@ -132,17 +113,8 @@ const Profile = () => {
               type="text"
               id="name"
               value={name}
-              disabled={!changeDetail}
-              onChange={onChange}
-              className={`mb-6 w-full px-4 py-2 text-lg text-gray-700 border shadow-md rounded transition ease-in-out focus:shadow-lg focus:text-gray-700
-              ${
-                !changeDetail &&
-                "bg-white focus:bg-white border-white focus:border-white"
-              }
-              ${
-                changeDetail &&
-                "bg-red-200 focus:bg-red-200 border-red-200 focus:border-red-200"
-              }`}
+              disabled
+              className="mb-6 w-full px-4 py-2 text-lg text-gray-700 border shadow-md rounded transition ease-in-out focus:shadow-lg focus:text-gray-700 bg-white focus:bg-white border-white focus:border-white"
             />
 
             {/* Email input */}
@@ -154,45 +126,32 @@ const Profile = () => {
               className="mb-6 w-full px-4 py-2 text-lg text-gray-700 border shadow-md rounded transition ease-in-out focus:shadow-lg focus:text-gray-700 bg-white focus:bg-white border-white focus:border-white"
             />
 
-            <div className="flex justify-between whitespace-nowrap text-sm mb-6">
-              {/* Edit profile name button */}
-              <p className="flex items-center">
-                Do you want to change your name?
-                <span
-                  onClick={() => {
-                    changeDetail && onSubmit();
-                    setChangeDetail((prevState) => !prevState);
-                  }}
-                  className="text-gray-500 hover:text-gray-700 transition ease-in-out duration-200 ml-1 cursor-pointer"
-                >
-                  {/* Dynamically switches text depending on changeDetail value */}
-                  {changeDetail ? "Apply Changes" : "Edit"}
-                </span>
-              </p>
+            {/* Sign out button */}
 
-              {/* Sign out button */}
-              <p
-                onClick={onLogout}
-                className="text-gray-500 hover:text-gray-700 transition ease-in-out duration-200 cursor-pointer"
-              >
-                Sign out
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex justify-center items-center mb-6 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+            >
+              Sign out
+            </button>
           </form>
 
           {/* Create listing button, navigates to /create-listing page */}
-          <button
-            type="submit"
-            className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-          >
-            <Link
-              to="/create-listing"
-              className="flex justify-center items-center"
+          {showCreateListing && (
+            <button
+              type="submit"
+              className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
-              <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-              Create a Listing
-            </Link>
-          </button>
+              <Link
+                to="/create-listing"
+                className="flex justify-center items-center"
+              >
+                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
+                Create a Listing
+              </Link>
+            </button>
+          )}
         </div>
       </section>
 
