@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Regular site imports
 import Home from "./pages/Home";
@@ -16,16 +16,13 @@ import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import ContactUs from "./pages/ContactUs";
 import Map from "./pages/Map";
-
-// Admin control panel imports
-import AdminHome from "./pages/Admin/AdminHome";
-import List from "./pages/Admin/List";
-import Single from "./pages/Admin/Single";
+import AdminRoute from "./components/AdminRoute";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
     <>
-      <Router>
+      <BrowserRouter>
         <Header />
         <Routes>
           {/* Displays corresponding component when navigating to specified path */}
@@ -59,19 +56,11 @@ function App() {
             <Route path="/edit-listing/:listingId" element={<EditListing />} />
           </Route>
 
-          {/* Admin panel */}
-          <Route path="/admin">
-            {/* Admin home page */}
-            <Route index element={<AdminHome />} />
-
-            {/* Admin user overview */}
-            <Route path="users">
-              <Route index element={<List />} />
-              <Route path=":userId" element={<Single />} />
-            </Route>
+          <Route path="/admin" element={<AdminRoute />}>
+            <Route path="/admin" element={<Admin />} />
           </Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
 
       <ToastContainer
         position="bottom-center"
