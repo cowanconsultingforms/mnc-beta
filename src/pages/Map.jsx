@@ -41,28 +41,18 @@ const Map = () => {
     setProperties(listings);
   }
 
-  const markerIcon = {
-    path: window.google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-    fillColor: "yellow",
-    fillOpacity: 1,
-    scale: 6,
-    strokeColor: "black",
-    strokeWeight: 1,
-  };
-
   // return <Map properties={properties} navigate={navigate} />;
   return (
     <div className="w-full h-full z-10 overflow-x-hidden">
       <GoogleMap
         zoom={11}
         center={{ lat: 40.78, lng: -73.97 }}
-        mapContainerClassName="map-container"
+        mapContainerClassName="map-container grayscale"
         clickableIcons={false}
         options={{
           disableDefaultUI: true,
           gestureHandling: "greedy",
           keyboardShortcuts: true,
-          styles: [{ stylers: [{ saturation: -100 }] }],
         }}
       >
         {/* Render Markers using properties */}
@@ -74,7 +64,6 @@ const Map = () => {
               lat: property.data.geolocation.lat,
               lng: property.data.geolocation.lng,
             }}
-            icon={markerIcon}
           />
         ))}
       </GoogleMap>
