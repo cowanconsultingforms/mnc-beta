@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Regular site imports
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
@@ -14,6 +16,11 @@ import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import ContactUs from "./pages/ContactUs";
 import Map from "./pages/Map";
+
+// Admin control panel imports
+import AdminHome from "./pages/Admin/AdminHome";
+import List from "./pages/Admin/List";
+import Single from "./pages/Admin/Single";
 
 function App() {
   return (
@@ -51,8 +58,21 @@ function App() {
           <Route path="/edit-listing" element={<PrivateRoute />}>
             <Route path="/edit-listing/:listingId" element={<EditListing />} />
           </Route>
+
+          {/* Admin panel */}
+          <Route path="/admin">
+            {/* Admin home page */}
+            <Route index element={<AdminHome />} />
+
+            {/* Admin user overview */}
+            <Route path="users">
+              <Route index element={<List />} />
+              <Route path=":userId" element={<Single />} />
+            </Route>
+          </Route>
         </Routes>
       </Router>
+
       <ToastContainer
         position="bottom-center"
         autoClose={1500}
