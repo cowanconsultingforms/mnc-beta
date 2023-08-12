@@ -45,7 +45,7 @@ const Contact = ({ userRef, listing }) => {
             ></textarea>
           </div>
           <a
-            href={`mailto:${creator.email}?Subject=${listing.name}&body=${message}`}
+            href={`mailto:info@mncdevelopment.com?Subject=${listing.name}&body=${message}`}
           >
             <button
               type="button"

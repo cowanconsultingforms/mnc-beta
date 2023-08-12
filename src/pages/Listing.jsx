@@ -191,13 +191,13 @@ const Listing = () => {
           </ul>
 
           {/* Contact button */}
-          {listing.userRef !== auth.currentUser?.uid && !contactCreator && (
+          {!contactCreator && (
             <div className="mt-6">
               <button
                 onClick={() => setContactCreator(true)}
                 className="px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out"
               >
-                Contact Listing Creator
+                Contact
               </button>
             </div>
           )}
