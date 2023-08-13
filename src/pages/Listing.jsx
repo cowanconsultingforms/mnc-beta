@@ -138,7 +138,7 @@ const Listing = () => {
           {/* Buy/rent */}
           <div className="flex justify-start items-center space-x-4 w-[75%]">
             <p className="bg-gray-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
-              {listing.type === "rent" ? "Rent" : "Buy"}
+              {listing.type === "rent" ? "Rent" : listing.type === "buy" ? "Buy" : "Sold"}
             </p>
 
             {/* Shows amount saved if discount is available */}
