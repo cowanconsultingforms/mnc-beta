@@ -275,14 +275,14 @@ const EditListing = () => {
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
         <div className="flex ">
-          <button
+        <button
             type="button"
             id="type"
             value="buy"
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "rent" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "rent" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
             }`}
           >
             Buy
@@ -292,12 +292,24 @@ const EditListing = () => {
             id="type"
             value="rent"
             onClick={onChange}
-            className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
+            className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "buy" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "buy" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
             }`}
           >
             Rent
+          </button>
+          <button
+            type="button"
+            id="type"
+            value="sold"
+            onClick={onChange}
+            className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
+            ${
+              type === "rent" || type === "buy" ? "bg-white text-black" : "bg-gray-500 text-white"
+            }`}
+          >
+            Sold
           </button>
         </div>
 
