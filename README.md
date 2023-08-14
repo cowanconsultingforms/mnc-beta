@@ -16,13 +16,3 @@ npm run dev
 ```
 
 **Note:** certain functionalites may not work when running the site locally due to domain restrictions on the API key. The production API key only runs on the official site domain. Therefore, a separate development API key is necessary to access the various google APIs utilized in this project.
-
-## For MNC Development Staff
-
-Developers need to create their own `.env.local` file in the root of the project directory, and add the following in the file:
-
-```
-VITE_API_KEY=
-```
-
-Contact the development team for further assistance on setting up the API key.
