@@ -45,7 +45,7 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
               : listing.regularPrice
                   .toString()
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            {listing.type === "rent" && " / month"}
+            {listing.type === "rent" && " / Month"}
           </p>
 
           {/* Displays number of bedrooms and bathrooms */}
