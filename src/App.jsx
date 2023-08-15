@@ -33,7 +33,6 @@ function App() {
           <Route path="/create-listing" element={<CreateListing />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/role-assign" element={<RoleAssign />} />
 
           {/* Navigates to dynamic listing URL (different for each listing) */}
           <Route
