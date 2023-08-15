@@ -16,6 +16,7 @@ import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import ContactUs from "./pages/ContactUs";
 import Map from "./pages/Map";
+import RoleAssign from "./components/RoleAssign";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/create-listing" element={<CreateListing />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/map" element={<Map />} />
+          <Route path="/role-assign" element={<RoleAssign />} />
 
           {/* Navigates to dynamic listing URL (different for each listing) */}
           <Route
