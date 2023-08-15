@@ -64,7 +64,7 @@ const Profile = () => {
           setShowCreateListing(true);
           const listingRef = collection(db, "propertyListings");
 
-          // Queries all listings that match user id
+          // Queries all listings
           const q = query(listingRef, orderBy("timestamp", "desc"));
           const querySnap = await getDocs(q);
 
