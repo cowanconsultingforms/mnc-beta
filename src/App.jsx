@@ -16,7 +16,7 @@ import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import ContactUs from "./pages/ContactUs";
 import Map from "./pages/Map";
-import RoleAssign from "./components/RoleAssign";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -54,6 +54,10 @@ function App() {
           {/* Navigates to /edit-listing when user clicks on the edit icon otherwise navigates to /sign-in */}
           <Route path="/edit-listing" element={<PrivateRoute />}>
             <Route path="/edit-listing/:listingId" element={<EditListing />} />
+          </Route>
+
+          <Route path="/admin" element={<PrivateRoute />}>
+            <Route path="/admin" element={<Admin />} />
           </Route>
         </Routes>
       </BrowserRouter>
