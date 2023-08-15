@@ -16,3 +16,5 @@ npm run dev
 ```
 
 **Note:** certain functionalites may not work when running the site locally due to domain restrictions on the API key. The production API key only runs on the official site domain. Therefore, a separate development API key is necessary to access the various google APIs utilized in this project.
+
+If you have a blank page after you run your local host(npm run dev) watch this video https://youtu.be/pxH6YqNMLPg
