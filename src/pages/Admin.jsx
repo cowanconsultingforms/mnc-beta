@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import {
   collection,
   query,
@@ -13,8 +14,10 @@ import { getAuth } from "firebase/auth";
 
 import { db } from "../firebase";
 import Spinner from "../components/Spinner";
+import Moment from "react-moment";
 
 const Admin = () => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState(null);
   const auth = getAuth();
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ const Admin = () => {
       userSnap.forEach((doc) => {
         return user.push(doc.data());
       });
+      setCurrentUser(user);
 
       // Gives access to users if current account has admin role
       if (!user[0]?.roles.includes("admin")) {
@@ -78,21 +82,63 @@ const Admin = () => {
     <div>
       {!loading && users?.length > 0 && (
         <>
-          <h2 className="text-2xl text-center font-semibold mb-6">Users</h2>
-          <ul className="">
-            <li className="flex justify-between items-center font-bold">
-              <p>Name</p>
-              <p>Email</p>
-              <p>Roles</p>
-            </li>
-            {users.map((user) => (
-              <li key={user.id} className="flex justify-between items-center">
-                <p>{user.data.name}</p>
-                <p>{user.data.email}</p>
-                <p>{user.data.roles.toString()}</p>
-              </li>
-            ))}
-          </ul>
+          <h2 className="flex items-center justify-center text-2xl text-center font-semibold mb-6">
+            Users
+          </h2>
+          <div className="overflow-scroll">
+            <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
+              <thead>
+                <tr className="font-bold">
+                  <td>Name</td>
+                  <td>Email</td>
+                  <td>Creation Date</td>
+                  <td>User?</td>
+                  <td>Agent?</td>
+                  <td>Admin?</td>
+                  <td>Superadmin?</td>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td className="whitespace-nowrap">{user.data.name}</td>
+                    <td className="whitespace-nowrap">{user.data.email}</td>
+                    <td>
+                      <Moment local>{user.data.timestamp?.toDate()}</Moment>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {user.data.roles[0] === "user" ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {user.data.roles[1] === "agent" ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {user.data.roles[2] === "admin" ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {user.data.roles[3] === "superadmin" ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>
