@@ -26,41 +26,46 @@ const Admin = () => {
   useEffect(() => {
     setLoading(true);
     const fetchUser = async () => {
-      // Get user info from firestore database
-      const userRef = collection(db, "users");
-      const userQuery = query(
-        userRef,
-        where(documentId(), "==", auth.currentUser.uid)
-      );
-      const user = [];
-      const userSnap = await getDocs(userQuery);
-      userSnap.forEach((doc) => {
-        return user.push(doc.data());
-      });
-      setCurrentUser(user);
-
-      // Gives access to users if current account has admin role
-      if (["superadmin", "admin"].includes(user[0]?.role)) {
-        const usersRef = collection(db, "users");
-
-        // Queries all users
-        const q = query(usersRef, orderBy("timestamp", "desc"));
-        const querySnap = await getDocs(q);
-
-        // Adds all users from query to 'users' variable
-        let users = [];
-        querySnap.forEach((doc) => {
-          return users.push({
-            id: doc.id,
-            data: doc.data(),
-          });
+      try {
+        // Get user info from firestore database
+        const userRef = collection(db, "users");
+        const userQuery = query(
+          userRef,
+          where(documentId(), "==", auth.currentUser.uid)
+        );
+        const user = [];
+        const userSnap = await getDocs(userQuery);
+        userSnap.forEach((doc) => {
+          return user.push(doc.data());
         });
-        setUsers(users);
-      } else {
-        toast.error("You cannot access this page.");
+        setCurrentUser(user);
+
+        // Gives access to users if current account has admin role
+        if (["superadmin", "admin"].includes(user[0]?.role)) {
+          const usersRef = collection(db, "users");
+
+          // Queries all users
+          const q = query(usersRef, orderBy("timestamp", "desc"));
+          const querySnap = await getDocs(q);
+
+          // Adds all users from query to 'users' variable
+          let users = [];
+          querySnap.forEach((doc) => {
+            return users.push({
+              id: doc.id,
+              data: doc.data(),
+            });
+          });
+          setUsers(users);
+        } else {
+          toast.error("You cannot access this page.");
+          navigate("/");
+        }
+        setLoading(false);
+      } catch (error) {
+        toast.error("Insufficient permissions.");
         navigate("/");
       }
-      setLoading(false);
     };
 
     fetchUser();
@@ -77,7 +82,7 @@ const Admin = () => {
           <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
 
           {/* Table for all queried users */}
-          <div className="mt-6 overflow-x-auto">
+          <div className="mt-6 overflow-auto md:overflow-visible">
             <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
               <thead>
                 <tr>
