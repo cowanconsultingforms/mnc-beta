@@ -33,7 +33,7 @@ const Profile = () => {
   // Allows user to sign out from logged in account
   const onLogout = () => {
     auth.signOut();
-    navigate("/");
+    window.location.assign("/");
   };
 
   // Get user account role
