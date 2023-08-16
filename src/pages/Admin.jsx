@@ -1,20 +1,20 @@
+import { getAuth } from "firebase/auth";
+import {
+  collection,
+  documentId,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  documentId,
-  getDocs,
-} from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 
-import { db } from "../firebase";
-import Spinner from "../components/Spinner";
 import Moment from "react-moment";
+import Dropdown from "../components/Dropdown";
+import Spinner from "../components/Spinner";
+import { db } from "../firebase";
 
 const Admin = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -40,12 +40,7 @@ const Admin = () => {
       setCurrentUser(user);
 
       // Gives access to users if current account has admin role
-      if (!user[0]?.roles.includes("admin")) {
-        toast.error("You cannot access this page.");
-        navigate("/");
-      }
-
-      if (user[0]?.roles.includes("admin")) {
+      if (["superadmin", "admin"].includes(user[0]?.role)) {
         const usersRef = collection(db, "users");
 
         // Queries all users
@@ -61,85 +56,59 @@ const Admin = () => {
           });
         });
         setUsers(users);
+      } else {
+        toast.error("You cannot access this page.");
+        navigate("/");
       }
       setLoading(false);
     };
 
     fetchUser();
-    console.log(users);
   }, [auth.currentUser.uid, navigate]);
 
   if (loading) {
     return <Spinner />;
   }
 
-  const onChange = (e) => {
-    e.preventDefault();
-    console.log(users);
-  };
-
   return (
     <div>
       {!loading && users?.length > 0 && (
-        <>
-          <h2 className="flex items-center justify-center text-2xl text-center font-semibold mb-6">
-            Users
-          </h2>
-          <div className="overflow-scroll">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
+
+          {/* Table for all queried users */}
+          <div className="mt-6 overflow-x-auto">
             <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
               <thead>
-                <tr className="font-bold">
-                  <td>Name</td>
-                  <td>Email</td>
-                  <td>Creation Date</td>
-                  <td>User?</td>
-                  <td>Agent?</td>
-                  <td>Admin?</td>
-                  <td>Superadmin?</td>
+                <tr>
+                  <th className="p-6 text-center">Role</th>
+                  <th className="p-6 text-left">Email</th>
+                  <th className="p-6 text-left">Name</th>
+                  <th className="p-6 text-left">Creation Date</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td className="whitespace-nowrap">{user.data.name}</td>
-                    <td className="whitespace-nowrap">{user.data.email}</td>
-                    <td>
+                {/* Dynamically adds rows for each user */}
+                {users.map((user, index) => (
+                  <tr
+                    key={index}
+                    className={`${index % 2 == 0 ? "bg-gray-200" : "bg-white"}`}
+                  >
+                    {/* Role selector menu */}
+                    <td className="p-6">
+                      <Dropdown userId={user.id} />
+                    </td>
+                    <td className="p-6">{user.data.email}</td>
+                    <td className="p-6">{user.data.name}</td>
+                    <td className="p-6">
                       <Moment local>{user.data.timestamp?.toDate()}</Moment>
-                    </td>
-                    <td className="whitespace-nowrap">
-                      {user.data.roles[0] === "user" ? (
-                        <ImCheckboxChecked />
-                      ) : (
-                        <ImCheckboxUnchecked />
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap">
-                      {user.data.roles[1] === "agent" ? (
-                        <ImCheckboxChecked />
-                      ) : (
-                        <ImCheckboxUnchecked />
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap">
-                      {user.data.roles[2] === "admin" ? (
-                        <ImCheckboxChecked />
-                      ) : (
-                        <ImCheckboxUnchecked />
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap">
-                      {user.data.roles[3] === "superadmin" ? (
-                        <ImCheckboxChecked />
-                      ) : (
-                        <ImCheckboxUnchecked />
-                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
