@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React, { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { doc, getDoc } from "@firebase/firestore";
 import MncLogo from "../assets/svg/mnc-logo.svg";
+import { db } from "../firebase";
 
 const Header = () => {
   const [pageState, setPageState] = useState("Sign in");
@@ -11,17 +13,30 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = getAuth();
+  const [roleData, setRoleData] = useState({
+    role: "",
+  });
+  const { role } = roleData;
 
   // Dynamically changes Sign in button text depending on if user is signed in or not
   useEffect(() => {
+    // Gets user role
+    const fetchUserRole = async () => {
+      const docRef = doc(db, "users", auth?.currentUser?.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setRoleData({ ...docSnap.data() });
+      }
+    };
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setPageState("Profile");
       } else {
         setPageState("Sign in");
       }
+      fetchUserRole();
     });
-  }, [auth]);
+  }, [role]);
 
   // Highlights respective button on navigation bar depending on current page
   const pathMatchRoute = (route) => {
@@ -96,18 +111,20 @@ const Header = () => {
               Contact Us
             </li>
 
-            {/* Offers button */}
-            {/* <li
-              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px]
-              ${
-                !pathMatchRoute("/offers") &&
-                "text-gray-400 border-b-transparent"
-              } 
-              ${pathMatchRoute("/offers") && "text-black border-b-gray-900"}`}
-              onClick={() => navigate("/offers")}
-            >
-              Offers
-            </li> */}
+            {/* Admin button */}
+            {["admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+                  !pathMatchRoute("/admin") &&
+                  "text-gray-400 border-b-transparent"
+                } ${
+                  pathMatchRoute("/admin") && "text-black border-b-gray-900"
+                }`}
+                onClick={() => navigate("/admin")}
+              >
+                Admin
+              </li>
+            )}
 
             {/* Sign in button */}
             <li
@@ -174,20 +191,23 @@ const Header = () => {
               Contact Us
             </li>
 
-            {/* Offers button */}
-            {/* <li
-              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
-              ${!pathMatchRoute("/offers") && "text-gray-400"} 
-              ${pathMatchRoute("/offers") && "text-black"}`}
-              onClick={() => {
-                navigate("/offers");
-                toggleMobileMenu();
-              }}
-            >
-              Offers
-            </li> */}
+            {/* Admin button */}
+            {["admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/admin") && "text-gray-400"} ${
+                  pathMatchRoute("/admin") && "text-black"
+                }`}
+                onClick={() => {
+                  navigate("/admin");
+                  toggleMobileMenu();
+                }}
+              >
+                Admin
+              </li>
+            )}
 
-            {/* Sign in button */}
+            {/* Sign in / Profile button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${
