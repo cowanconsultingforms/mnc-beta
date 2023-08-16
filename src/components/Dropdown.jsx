@@ -77,7 +77,7 @@ const Dropdown = ({ userId }) => {
         >
           <div className="relative w-full">
             <button
-              className={`w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
+              className={`min-w-[100px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
                 isOpen && "rounded-bl-none"
               }`}
               type="button"
@@ -119,6 +119,18 @@ const Dropdown = ({ userId }) => {
                   }`}
                 >
                   user
+                </button>
+                <button
+                  value="vip"
+                  type="button"
+                  onClick={onChange}
+                  className={`p-3 ${
+                    role === "vip"
+                      ? "bg-gray-500 text-white"
+                      : "bg-white text-gray-500 hover:bg-gray-300 focus:bg-gray-400 focus:text-white"
+                  }`}
+                >
+                  vip
                 </button>
                 <button
                   value="agent"
