@@ -1,16 +1,5 @@
-import { useEffect, useState } from "react";
-import Spinner from "../components/Spinner";
-import { toast } from "react-toastify";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { v4 as uuidv4 } from "uuid";
 import {
-  addDoc,
   collection,
   doc,
   documentId,
@@ -21,8 +10,18 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
+import Spinner from "../components/Spinner";
+import { db } from "../firebase";
 
 const EditListing = () => {
   const navigate = useNavigate();
@@ -83,7 +82,7 @@ const EditListing = () => {
       });
 
       // Gives user access to listings if they have the correct role
-      if (!user[0]?.roles.includes("agent")) {
+      if (!["agent", "admin", "superadmin"].includes(user[0]?.role)) {
         toast.error("You cannot edit this listing.");
         navigate("/");
       }
@@ -275,14 +274,16 @@ const EditListing = () => {
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
         <div className="flex ">
-        <button
+          <button
             type="button"
             id="type"
             value="buy"
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "rent" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "rent" || type === "sold"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Buy
@@ -294,7 +295,9 @@ const EditListing = () => {
             onClick={onChange}
             className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "buy" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "buy" || type === "sold"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Rent
@@ -306,7 +309,9 @@ const EditListing = () => {
             onClick={onChange}
             className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "rent" || type === "buy" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "rent" || type === "buy"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Sold
