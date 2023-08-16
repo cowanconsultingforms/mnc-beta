@@ -167,7 +167,6 @@ const EditListing = () => {
         }`
       );
       const data = await response.json();
-      console.log(data);
 
       // Gets longitude and latitude from google maps api call
       geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
