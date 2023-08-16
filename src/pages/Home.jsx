@@ -1,4 +1,3 @@
-// TODO: Create home page
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";

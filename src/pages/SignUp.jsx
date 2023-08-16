@@ -1,17 +1,16 @@
-import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
-import { useState } from "react";
-import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import OAuth from "../components/OAuth";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
+  getAuth,
   updateProfile,
 } from "firebase/auth";
-import { db } from "../firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
+import OAuth from "../components/OAuth";
+import { db } from "../firebase";
 
 const SignUp = () => {
   // Hook to show/hide password text
@@ -22,7 +21,7 @@ const SignUp = () => {
     name: "",
     email: "",
     password: "",
-    roles: ["user"],
+    role: "user",
   });
 
   // Hook to update text when typing in form data

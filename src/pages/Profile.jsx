@@ -1,30 +1,26 @@
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import {
   collection,
   deleteDoc,
   doc,
+  documentId,
   getDocs,
   orderBy,
   query,
-  updateDoc,
   where,
-  documentId,
 } from "firebase/firestore";
-import { db } from "../firebase";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { AiFillHome } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ListingItem from "../components/ListingItem";
+import { db } from "../firebase";
 
 const Profile = () => {
   const auth = getAuth();
   const navigate = useNavigate();
-  const [changeDetail, setChangeDetail] = useState(false);
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [showCreateListing, setShowCreateListing] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -40,7 +36,7 @@ const Profile = () => {
     navigate("/");
   };
 
-  // Get user account roles
+  // Get user account role
   useEffect(() => {
     const fetchListings = async () => {
       // Get user info from firestore database
@@ -55,29 +51,24 @@ const Profile = () => {
         return user.push(doc.data());
       });
 
-      // Updates admin status if user has the correct role
-      if (user[0]?.roles.includes("admin")) {
-        setIsAdmin(true);
+      // Gives user access to listings if they have the correct role
+      if (["agent", "admin", "superadmin"].includes(user[0]?.role)) {
+        setShowCreateListing(true);
+        const listingRef = collection(db, "propertyListings");
 
-        // Gives user access to listings if they have the correct role
-        if (user[0]?.roles.includes("agent")) {
-          setShowCreateListing(true);
-          const listingRef = collection(db, "propertyListings");
+        // Queries all listings
+        const q = query(listingRef, orderBy("timestamp", "desc"));
+        const querySnap = await getDocs(q);
 
-          // Queries all listings that match user id
-          const q = query(listingRef, orderBy("timestamp", "desc"));
-          const querySnap = await getDocs(q);
-
-          // Adds all listings from query to 'listings' variable
-          let listings = [];
-          querySnap.forEach((doc) => {
-            return listings.push({
-              id: doc.id,
-              data: doc.data(),
-            });
+        // Adds all listings from query to 'listings' variable
+        let listings = [];
+        querySnap.forEach((doc) => {
+          return listings.push({
+            id: doc.id,
+            data: doc.data(),
           });
-          setListings(listings);
-        }
+        });
+        setListings(listings);
       }
       setLoading(false);
     };

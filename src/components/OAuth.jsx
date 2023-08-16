@@ -1,9 +1,9 @@
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { RiGoogleFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
-import { useNavigate } from "react-router-dom";
 
 // OAuth (Sign in with google) component
 const OAuth = () => {
@@ -26,7 +26,7 @@ const OAuth = () => {
           name: user.displayName,
           email: user.email,
           timestamp: serverTimestamp(),
-          roles: ["user"],
+          role: "user",
         });
       }
 
