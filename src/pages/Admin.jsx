@@ -82,14 +82,14 @@ const Admin = () => {
           <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
 
           {/* Table for all queried users */}
-          <div className="mt-6 overflow-auto md:overflow-visible">
+          <div className="text-sm sm:text-base mt-6 overflow-auto md:overflow-visible">
             <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
               <thead>
                 <tr>
-                  <th className="p-6 text-center">Role</th>
-                  <th className="p-6 text-left">Email</th>
-                  <th className="p-6 text-left">Name</th>
-                  <th className="p-6 text-left">Creation Date</th>
+                  <th className="p-3 md:p-6 text-center">Role</th>
+                  <th className="p-3 md:p-6 text-left">Email</th>
+                  <th className="p-3 md:p-6 text-left">Name</th>
+                  <th className="p-3 md:p-6 text-left">Creation Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,12 +100,12 @@ const Admin = () => {
                     className={`${index % 2 == 0 ? "bg-gray-200" : "bg-white"}`}
                   >
                     {/* Role selector menu */}
-                    <td className="p-6">
+                    <td className="p-3 md:p-6">
                       <Dropdown userId={user.id} />
                     </td>
-                    <td className="p-6">{user.data.email}</td>
-                    <td className="p-6">{user.data.name}</td>
-                    <td className="p-6">
+                    <td className="p-3 md:p-6">{user.data.email}</td>
+                    <td className="p-3 md:p-6">{user.data.name}</td>
+                    <td className="p-3 md:p-6">
                       <Moment local>{user.data.timestamp?.toDate()}</Moment>
                     </td>
                   </tr>

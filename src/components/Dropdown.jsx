@@ -77,7 +77,7 @@ const Dropdown = ({ userId }) => {
         >
           <div className="relative w-full">
             <button
-              className={`min-w-[100px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
+              className={`min-w-[90px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
                 isOpen && "rounded-bl-none"
               }`}
               type="button"
