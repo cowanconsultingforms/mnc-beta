@@ -21,12 +21,12 @@ const Profile = () => {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
+  const auth = getAuth();
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
     email: auth.currentUser.email,
   });
   const navigate = useNavigate();
-  const auth = getAuth();
   const { name, email } = formData;
 
   // Allows user to sign out from logged in account
