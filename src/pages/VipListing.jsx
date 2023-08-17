@@ -14,7 +14,7 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/effect-fade";
@@ -29,6 +29,7 @@ import { db } from "../firebase";
 
 const VipListing = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contactCreator, setContactCreator] = useState(false);
@@ -43,11 +44,16 @@ const VipListing = () => {
   // Gets data from ListingItem that user clicked on
   useEffect(() => {
     const fetchListing = async () => {
-      const docRef = doc(db, "vipPropertyListings", params.listingId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setListing(docSnap.data());
-        setLoading(false);
+      try {
+        const docRef = doc(db, "vipPropertyListings", params.listingId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setListing(docSnap.data());
+          setLoading(false);
+        }
+      } catch (error) {
+        toast.error("Insufficient permissions");
+        navigate("/");
       }
     };
     fetchListing();
