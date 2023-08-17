@@ -88,6 +88,19 @@ const Header = () => {
               Home
             </li>
 
+            {/* Vip button */}
+            {["vip", "agent", "admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+                  !pathMatchRoute("/vip") &&
+                  "text-gray-400 border-b-transparent"
+                } ${pathMatchRoute("/vip") && "text-black border-b-gray-900"}`}
+                onClick={() => navigate("/vip")}
+              >
+                VIP
+              </li>
+            )}
+
             {/* Map button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
@@ -162,6 +175,22 @@ const Header = () => {
             >
               Home
             </li>
+
+            {/* VIP button */}
+            {["vip", "agent", "admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/vip") && "text-gray-400"} ${
+                  pathMatchRoute("/vip") && "text-black"
+                }`}
+                onClick={() => {
+                  navigate("/vip");
+                  toggleMobileMenu();
+                }}
+              >
+                VIP
+              </li>
+            )}
 
             {/* Map button */}
             <li
