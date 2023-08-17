@@ -4,6 +4,7 @@ import {
   deleteDoc,
   doc,
   documentId,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -14,6 +15,7 @@ import { AiFillHome } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { deleteObject, getStorage, ref } from "firebase/storage";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
@@ -78,6 +80,18 @@ const Profile = () => {
   // Allows users to delete their own entries
   const onDelete = async (listingID) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
+      const storage = getStorage();
+
+      const docRef = doc(db, "propertyListings", listingID);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const deletedListing = docSnap.data();
+        deletedListing.imgs.forEach((img) => {
+          deleteObject(ref(storage, img.path));
+        });
+      }
+
       await deleteDoc(doc(db, "propertyListings", listingID));
       const updatedListings = listings.filter(
         (listing) => listing.id !== listingID

@@ -74,12 +74,12 @@ const Listing = () => {
         modules={[Navigation, EffectFade, Autoplay, Pagination]}
       >
         {/* Maps each image url from listing object to each slide in the image carousel */}
-        {listing.imgUrls.map((url, index) => (
-          <SwiperSlide key={index}>
+        {listing.imgs.map(({ path }, index) => (
+          <SwiperSlide key={path}>
             <div
               className="grayscale relative w-full overflow-hidden h-[300px]"
               style={{
-                background: `url(${listing.imgUrls[index]}) center no-repeat`,
+                background: `url(${listing.imgs[index].url}) center no-repeat`,
                 backgroundSize: "cover",
               }}
             ></div>

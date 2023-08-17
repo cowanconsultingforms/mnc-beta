@@ -131,7 +131,7 @@ const CreateListing = () => {
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
         const storage = getStorage();
-        const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
+        const filename = `images/${image.name}-${uuidv4()}`;
         const storageRef = ref(storage, filename);
         const uploadTask = uploadBytesResumable(storageRef, image);
 
@@ -158,14 +158,16 @@ const CreateListing = () => {
             }
           },
           (error) => {
-            // Handle unsuccessful uploads
             reject(error);
           },
           () => {
             // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              resolve(downloadURL);
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+              // Returns img object with filepath and url fields
+              resolve({
+                path: filename,
+                url: downloadUrl,
+              });
             });
           }
         );
@@ -173,18 +175,19 @@ const CreateListing = () => {
     };
 
     // Passes all images to storeImage function, displays error message if image upload fails
-    const imgUrls = await Promise.all(
+    const imgs = await Promise.all(
       [...images].map((image) => storeImage(image))
     ).catch((error) => {
       setLoading(false);
       toast.error("Images not uploaded.");
+      console.log(error);
       return;
     });
 
     // Copy of form data with additional fields for image urls, geolocation, and timestamp
     const formDataCopy = {
       ...formData,
-      imgUrls,
+      imgs,
       geolocation,
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
