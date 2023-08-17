@@ -8,6 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Admin from "./pages/Admin";
 import ContactUs from "./pages/ContactUs";
 import CreateListing from "./pages/CreateListing";
+import CreateVIPListing from "./pages/CreateVIPListing";
 import EditListing from "./pages/EditListing";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
@@ -17,7 +18,6 @@ import Offers from "./pages/Offers";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import createVIPListing from "./pages/createVIPListing";
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
           />
           <Route
             path="/vip-create-listing"
-            element={<CreateListing />}
+            element={<CreateVIPListing />}
           />
           <Route
             path="/contact-us"
