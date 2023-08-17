@@ -8,20 +8,19 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import Moment from "react-moment";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import Moment from "react-moment";
 import Dropdown from "../components/Dropdown";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
 const Admin = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
   const auth = getAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -38,9 +37,8 @@ const Admin = () => {
         userSnap.forEach((doc) => {
           return user.push(doc.data());
         });
-        setCurrentUser(user);
 
-        // Gives access to users if current account has admin role
+        // Gives access to user management data if current account has admin role
         if (["superadmin", "admin"].includes(user[0]?.role)) {
           const usersRef = collection(db, "users");
 
@@ -58,11 +56,13 @@ const Admin = () => {
           });
           setUsers(users);
         } else {
+          // Does not allow access to user management data if user does not have admin role
           toast.error("You cannot access this page.");
           navigate("/");
         }
         setLoading(false);
       } catch (error) {
+        // Does not allow access to user management data if firestore rules blocks unauthorized user from accessing page
         toast.error("Insufficient permissions.");
         navigate("/");
       }
@@ -77,6 +77,7 @@ const Admin = () => {
 
   return (
     <div>
+      {/* Only displays table once data is fetched */}
       {!loading && users?.length > 0 && (
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
