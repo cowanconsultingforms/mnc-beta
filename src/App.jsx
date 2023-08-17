@@ -18,6 +18,7 @@ import Offers from "./pages/Offers";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import VipEditListing from "./pages/VipEditListing";
 import VipListing from "./pages/VipListing";
 
 function App() {
@@ -106,6 +107,16 @@ function App() {
             <Route
               path="/edit-listing/:listingId"
               element={<EditListing />}
+            />
+          </Route>
+
+          <Route
+            path="/edit-vip-listing"
+            element={<PrivateRoute />}
+          >
+            <Route
+              path="/edit-vip-listing/:listingId"
+              element={<VipEditListing />}
             />
           </Route>
 

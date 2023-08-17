@@ -144,8 +144,8 @@ const Profile = () => {
     }
   };
 
-  const onVipEdit = (vipListingID) => {
-    navigate(`/edit-vip-listing/${listingID}`);
+  const vipOnEdit = (vipListingID) => {
+    navigate(`/edit-vip-listing/${vipListingID}`);
   };
 
   // Redirects users to /edit-listing page
@@ -252,8 +252,8 @@ const Profile = () => {
                   key={vipListing.id}
                   id={vipListing.id}
                   vipListing={vipListing.data}
-                  onDelete={() => onDelete(vipListing.id)}
-                  onEdit={() => onEdit(vipListing.id)}
+                  onDelete={() => vipOnDelete(vipListing.id)}
+                  onEdit={() => vipOnEdit(vipListing.id)}
                 />
               ))}
             </ul>
