@@ -6,12 +6,11 @@ import { toast } from "react-toastify";
 import { db } from "../firebase";
 import Spinner from "./Spinner";
 
-const Dropdown = ({ userId }) => {
+const Dropdown = ({ userId, selected }) => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState({
     name: "",
   });
-  const [selectedButton, setSelectedButton] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     role: "user",
@@ -49,6 +48,7 @@ const Dropdown = ({ userId }) => {
   // Submits changed role to firestore database
   const onSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
 
     const formDataCopy = {
@@ -63,16 +63,15 @@ const Dropdown = ({ userId }) => {
   };
 
   return (
-    <div
-      onClick={() => setIsOpen((prev) => !prev)}
-      onMouseLeave={() => setIsOpen(false)}
-      onMouseUp={() => setIsOpen(false)}
-    >
+    <div onMouseLeave={() => setIsOpen(false)}>
       {role === "superadmin" ? (
         <div className="relative w-full">
-          <p className="w-full text-center p-3 z-10 bg-gray-600 text-white rounded-lg">
+          <button
+            type="button"
+            className="w-full text-center p-3 z-10 bg-gray-600 text-white rounded-lg"
+          >
             {role}
-          </p>
+          </button>
         </div>
       ) : (
         <form
@@ -86,6 +85,7 @@ const Dropdown = ({ userId }) => {
                 isOpen && "rounded-bl-none"
               }`}
               type="button"
+              onClick={() => setIsOpen((prev) => !prev)}
             >
               {role}
               {/* Displays downward arrow when menu is closed, upward arrow when menu is open  */}
@@ -100,6 +100,7 @@ const Dropdown = ({ userId }) => {
           {/* Apply changes button */}
           <div className="relative w-full">
             <button
+              type="submit"
               className={`w-full flex justify-center items-center p-3 z-10 bg-white text-gray-600 rounded-r-lg hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 ${
                 isOpen && "rounded-br-none"
               }`}
@@ -109,8 +110,12 @@ const Dropdown = ({ userId }) => {
           </div>
 
           {/* Displays role options when dropdown menu is clicked */}
-          {isOpen && (
-            <div className="absolute flex flex-col top-11 md:top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl">
+          {isOpen && selected && (
+            <div
+              className="absolute flex flex-col top-11 sm:top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl"
+              // onTouchEnd={() => setIsOpen(false)}
+              onClick={() => setIsOpen(false)}
+            >
               {/* user role option */}
               <div className="flex flex-col z-30 w-full shadow-2xl ">
                 <button

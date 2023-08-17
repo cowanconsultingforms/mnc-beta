@@ -17,6 +17,7 @@ import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
 const Admin = () => {
+  const [selectedRow, setSelectedRow] = useState();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
   const auth = getAuth();
@@ -83,7 +84,7 @@ const Admin = () => {
           <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
 
           {/* Table for all queried users */}
-          <div className="text-sm sm:text-base mt-6 overflow-auto md:overflow-visible">
+          <div className="pb-20 text-sm sm:text-base mt-6 overflow-y-scroll overflow-x-visible overflow-visible">
             <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
               <thead>
                 <tr>
@@ -101,8 +102,17 @@ const Admin = () => {
                     className={`${index % 2 == 0 ? "bg-gray-200" : "bg-white"}`}
                   >
                     {/* Role selector menu */}
-                    <td className="p-3 md:p-6">
-                      <Dropdown userId={user.id} />
+                    <td
+                      onClick={() => {
+                        setSelectedRow(user.id);
+                        console.log(user.id);
+                      }}
+                      className="p-3 md:p-6"
+                    >
+                      <Dropdown
+                        userId={user.id}
+                        selected={selectedRow === user.id}
+                      />
                     </td>
                     <td className="p-3 md:p-6">{user.data.email}</td>
                     <td className="p-3 md:p-6">{user.data.name}</td>
