@@ -10,16 +10,9 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
 
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
@@ -42,7 +35,6 @@ const EditListing = () => {
     discountedPrice: 0,
     latitude: 0,
     longitude: 0,
-    images: {},
   });
   const navigate = useNavigate();
   const auth = getAuth();
@@ -61,7 +53,6 @@ const EditListing = () => {
     discountedPrice,
     latitude,
     longitude,
-    images,
   } = formData;
 
   const params = useParams();
@@ -122,21 +113,11 @@ const EditListing = () => {
       bool = false;
     }
 
-    // File (image) input
-    if (e.target.files) {
-      setFormData((prevState) => ({
-        ...prevState,
-        images: e.target.files,
-      }));
-    }
-
     // Text / Boolean / Number input
-    if (!e.target.files) {
-      setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
-      }));
-    }
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
+    }));
   };
 
   // Submits form data to firebase
@@ -148,13 +129,6 @@ const EditListing = () => {
     if (+discountedPrice >= +regularPrice) {
       setLoading(false);
       toast.error("Discounted price needs to be less than the regular price.");
-      return;
-    }
-
-    // Checks that no more than 6 images are uploaded
-    if (images.length > 6) {
-      setLoading(false);
-      toast.error("Maximum of 6 images are allowed.");
       return;
     }
 
@@ -186,70 +160,14 @@ const EditListing = () => {
       geolocation.lng = longitude;
     }
 
-    // Uploads image to firestore database
-    const storeImage = async (image) => {
-      return new Promise((resolve, reject) => {
-        const storage = getStorage();
-        const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
-        const storageRef = ref(storage, filename);
-        const uploadTask = uploadBytesResumable(storageRef, image);
-
-        // Register three observers:
-        // 1. 'state_changed' observer, called any time the state changes
-        // 2. Error observer, called on failure
-        // 3. Completion observer, called on successful completion
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            // Observe state change events such as progress, pause, and resume
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-            // eslint-disable-next-line default-case
-            switch (snapshot.state) {
-              case "paused":
-                console.log("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
-          },
-          (error) => {
-            // Handle unsuccessful uploads
-            reject(error);
-          },
-          () => {
-            // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              resolve(downloadURL);
-            });
-          }
-        );
-      });
-    };
-
-    // Passes all images to storeImage function, displays error message if image upload fails
-    const imgUrls = await Promise.all(
-      [...images].map((image) => storeImage(image))
-    ).catch((error) => {
-      setLoading(false);
-      toast.error("Images not uploaded.");
-      return;
-    });
-
-    // Copy of form data with additional fields for image urls, geolocation, and timestamp
+    // Copy of form data with additional fields for geolocation, and timestamp
     const formDataCopy = {
       ...formData,
-      imgUrls,
       geolocation,
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
 
-    delete formDataCopy.images;
     delete formDataCopy.latitude;
     delete formDataCopy.longitude;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
@@ -551,23 +469,6 @@ const EditListing = () => {
             </div>
           </div>
         )}
-
-        {/* Submit images field */}
-        <div className="mb-6">
-          <p className="text-lg font-semibold">Images</p>
-          <p className="text-gray-600">
-            The first image will be the cover (max 6).
-          </p>
-          <input
-            type="file"
-            id="images"
-            onChange={onChange}
-            accept=".jpg,.png,.jpeg"
-            multiple
-            required
-            className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
-          />
-        </div>
 
         {/* Submit form data button */}
         <button
