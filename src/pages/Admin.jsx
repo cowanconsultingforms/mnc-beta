@@ -20,8 +20,8 @@ const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
-  const auth = getAuth();
   const navigate = useNavigate();
+  const auth = getAuth();
 
   useEffect(() => {
     setLoading(true);

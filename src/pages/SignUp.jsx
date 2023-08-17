@@ -8,25 +8,23 @@ import { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
 import OAuth from "../components/OAuth";
 import { db } from "../firebase";
 
 const SignUp = () => {
-  // Hook to show/hide password text
   const [showPassword, setShowPassword] = useState(false);
-
-  // Sets name, email, and password forms to be empty on default
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     role: "user",
   });
-
-  // Hook to update text when typing in form data
-  const { name, email, password } = formData;
   const navigate = useNavigate();
+  const { name, email, password } = formData;
+
+  // Update text when typing in form data
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,

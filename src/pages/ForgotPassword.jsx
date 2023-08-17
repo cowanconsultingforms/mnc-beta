@@ -1,9 +1,10 @@
-import signInBackgroundImage from "../assets/img/sign-in-background.jpg";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import OAuth from "../components/OAuth";
 import { toast } from "react-toastify";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+
+import signInBackgroundImage from "../assets/img/sign-in-background.jpg";
+import OAuth from "../components/OAuth";
 
 const ForgotPassword = () => {
   // Sets email form to be empty on default

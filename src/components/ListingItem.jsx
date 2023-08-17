@@ -1,14 +1,17 @@
+import { FaMapMarkerAlt, FaTrash } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 import Moment from "react-moment";
 import { Link } from "react-router-dom";
-import { MdLocationOn, MdEdit } from "react-icons/md";
-import { FaTrash, FaMapMarkerAlt } from "react-icons/fa";
 
 // Listing Item component
 const ListingItem = ({ listing, id, onEdit, onDelete }) => {
   return (
     <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
       {/* Clicking on listing component redirects user to full listing page */}
-      <Link className="contents" to={`/category/${listing.type}/${id}`}>
+      <Link
+        className="contents"
+        to={`/category/${listing.type}/${id}`}
+      >
         {/* Displays first selected image when listing was created */}
         <img
           className="grayscale h-[170px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in"

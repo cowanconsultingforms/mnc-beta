@@ -20,12 +20,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
+
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
 const EditListing = () => {
-  const navigate = useNavigate();
-  const auth = getAuth();
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [listing, setListing] = useState(null);
@@ -45,6 +44,8 @@ const EditListing = () => {
     longitude: 0,
     images: {},
   });
+  const navigate = useNavigate();
+  const auth = getAuth();
 
   const {
     type,

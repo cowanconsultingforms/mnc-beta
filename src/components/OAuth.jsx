@@ -3,6 +3,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { RiGoogleFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import { db } from "../firebase";
 
 // OAuth (Sign in with google) component

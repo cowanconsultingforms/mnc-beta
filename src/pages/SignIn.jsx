@@ -1,23 +1,20 @@
-import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import OAuth from "../components/OAuth";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 
-const SignIn = () => {
-  // Hook to show/hide password text
-  const [showPassword, setShowPassword] = useState(false);
+import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
+import OAuth from "../components/OAuth";
 
-  // Sets email and password forms to be empty on default
+const SignIn = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const { email, password } = formData;
   const navigate = useNavigate();
+  const { email, password } = formData;
 
   // Update text when typing in form data
   const onChange = (e) => {

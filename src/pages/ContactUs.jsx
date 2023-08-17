@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
+import React, { useRef, useState } from "react";
 import ContactImage from "../assets/img/contact.jpeg";
 
 const ContactUs = () => {
@@ -7,9 +7,7 @@ const ContactUs = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-
   const [sent, setSent] = useState("Send Message");
-
   const form = useRef();
 
   const handleSubmit = (e) => {
@@ -46,7 +44,10 @@ const ContactUs = () => {
 
       {/* Contact form */}
       <div className="max-w-md mx-auto bg-gray-100 rounded px-6 py-6">
-        <form ref={form} onSubmit={handleSubmit}>
+        <form
+          ref={form}
+          onSubmit={handleSubmit}
+        >
           <input
             placeholder="Name"
             type="text"
@@ -55,6 +56,7 @@ const ContactUs = () => {
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required
           />
+
           <input
             placeholder="Email"
             type="email"
@@ -63,6 +65,7 @@ const ContactUs = () => {
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required
           />
+
           <input
             placeholder="Phone Number"
             type="tel"
@@ -71,6 +74,7 @@ const ContactUs = () => {
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required
           />
+
           <textarea
             placeholder="Message"
             type="text"
@@ -79,6 +83,7 @@ const ContactUs = () => {
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required
           />
+
           <button
             type="submit"
             className="w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"

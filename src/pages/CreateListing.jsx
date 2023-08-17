@@ -1,21 +1,20 @@
-import { useState } from "react";
-import Spinner from "../components/Spinner";
-import { toast } from "react-toastify";
+import { getAuth } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
+  getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
-  getDownloadURL,
 } from "firebase/storage";
-import { getAuth } from "firebase/auth";
-import { v4 as uuidv4 } from "uuid";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
+
+import Spinner from "../components/Spinner";
+import { db } from "../firebase";
 
 const CreateListing = () => {
-  const navigate = useNavigate();
-  const auth = getAuth();
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,6 +33,8 @@ const CreateListing = () => {
     longitude: 0,
     images: {},
   });
+  const navigate = useNavigate();
+  const auth = getAuth();
 
   const {
     type,
@@ -223,7 +224,9 @@ const CreateListing = () => {
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "rent" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "rent" || type === "sold"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Buy
@@ -235,7 +238,9 @@ const CreateListing = () => {
             onClick={onChange}
             className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "buy" || type === "sold" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "buy" || type === "sold"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Rent
@@ -247,7 +252,9 @@ const CreateListing = () => {
             onClick={onChange}
             className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
             ${
-              type === "rent" || type === "buy" ? "bg-white text-black" : "bg-gray-500 text-white"
+              type === "rent" || type === "buy"
+                ? "bg-white text-black"
+                : "bg-gray-500 text-white"
             }`}
           >
             Sold

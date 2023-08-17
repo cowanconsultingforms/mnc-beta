@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc } from "@firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
 import { toast } from "react-toastify";
@@ -8,10 +8,10 @@ import Spinner from "./Spinner";
 
 const Dropdown = ({ userId, selected }) => {
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState({
     name: "",
   });
-  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     role: "user",
   });

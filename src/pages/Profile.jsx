@@ -13,21 +13,20 @@ import { useEffect, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
 const Profile = () => {
-  const auth = getAuth();
-  const navigate = useNavigate();
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
-
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
     email: auth.currentUser.email,
   });
-
+  const navigate = useNavigate();
+  const auth = getAuth();
   const { name, email } = formData;
 
   // Allows user to sign out from logged in account

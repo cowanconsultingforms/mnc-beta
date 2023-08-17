@@ -1,48 +1,33 @@
-// Import react components
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-
-// Import firebase components
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
-
-// Import icons
-import {
-  FaShare,
-  FaMapMarkerAlt,
-  FaBed,
-  FaBath,
-  FaParking,
-  FaChair,
-} from "react-icons/fa";
-import { getAuth } from "firebase/auth";
-
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay, Pagination, EffectFade } from "swiper/modules";
-
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/effect-fade";
-
-// Import Google Maps components
 import {
   GoogleMap,
-  useLoadScript,
   InfoWindowF,
   MarkerF,
+  useLoadScript,
 } from "@react-google-maps/api";
-
-// Import created components
-import Spinner from "../components/Spinner";
-import Contact from "../components/Contact";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  FaBath,
+  FaBed,
+  FaChair,
+  FaMapMarkerAlt,
+  FaParking,
+  FaShare,
+} from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+import Contact from "../components/Contact";
+import Spinner from "../components/Spinner";
+import { db } from "../firebase";
 
 const Listing = () => {
-  // Hooks
-  const auth = getAuth();
   const params = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -138,7 +123,11 @@ const Listing = () => {
           {/* Buy/rent */}
           <div className="flex justify-start items-center space-x-4 w-[75%]">
             <p className="bg-gray-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
-              {listing.type === "rent" ? "Rent" : listing.type === "buy" ? "Buy" : "Sold"}
+              {listing.type === "rent"
+                ? "Rent"
+                : listing.type === "buy"
+                ? "Buy"
+                : "Sold"}
             </p>
 
             {/* Shows amount saved if discount is available */}
@@ -201,9 +190,7 @@ const Listing = () => {
               </button>
             </div>
           )}
-          {contactCreator && (
-            <Contact userRef={listing.userRef} listing={listing} />
-          )}
+          {contactCreator && <Contact listing={listing} />}
         </div>
 
         {/* Map section */}

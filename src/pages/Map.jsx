@@ -1,13 +1,13 @@
-import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
-import { db } from "../firebase";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { collection, getDocs } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Spinner from "../components/Spinner";
+import { db } from "../firebase";
 
 const Map = () => {
   const [properties, setProperties] = useState([]);
-
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
   });

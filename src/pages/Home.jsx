@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react";
-import { db } from "../firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import ListingItem from "../components/ListingItem";
 
-// Thumbnail image imports
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
+import ListingItem from "../components/ListingItem";
+import { db } from "../firebase";
 
 const Home = () => {
   const [timer, setTimer] = useState(null);
-  const images = [img1, img2, img3];
   const [selectedButton, setSelectedButton] = useState(1);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const images = [img1, img2, img3];
 
   // Updates search bar data when user types
   const onChange = (e) => {

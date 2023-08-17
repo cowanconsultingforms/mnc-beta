@@ -1,22 +1,22 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { doc, getDoc } from "@firebase/firestore";
 import MncLogo from "../assets/svg/mnc-logo.svg";
 import { db } from "../firebase";
 
 const Header = () => {
   const [pageState, setPageState] = useState("Sign in");
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const auth = getAuth();
   const [roleData, setRoleData] = useState({
     role: "",
   });
   const { role } = roleData;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const auth = getAuth();
 
   // Dynamically changes Sign in button text depending on if user is signed in or not
   useEffect(() => {
