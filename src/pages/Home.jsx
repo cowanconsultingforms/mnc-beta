@@ -5,6 +5,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
+
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
