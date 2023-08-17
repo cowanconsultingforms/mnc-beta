@@ -23,6 +23,8 @@ const Profile = () => {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
+  const [showVIPCreateListing, setShowVIPCreateListing] = useState(false); // VIP
+
   const auth = getAuth();
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
@@ -55,6 +57,7 @@ const Profile = () => {
       // Gives user access to listings if they have the correct role
       if (["agent", "admin", "superadmin"].includes(user[0]?.role)) {
         setShowCreateListing(true);
+        setShowVIPCreateListing(true); // VIP
         const listingRef = collection(db, "propertyListings");
 
         // Queries all listings
@@ -135,7 +138,7 @@ const Profile = () => {
             <button
               type="button"
               onClick={onLogout}
-              className="flex justify-center items-center mb-6 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+              className="flex justify-center items-center mb-9 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               Sign out
             </button>
@@ -145,7 +148,7 @@ const Profile = () => {
           {showCreateListing && (
             <button
               type="submit"
-              className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+              className="w-full mb-3 bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               <Link
                 to="/create-listing"
@@ -153,6 +156,21 @@ const Profile = () => {
               >
                 <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
                 Create a Listing
+              </Link>
+            </button>
+          )}
+
+          {showVIPCreateListing && (
+            <button
+              type="submit"
+              className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+            >
+              <Link
+                to="/vip-create-listing"
+                className="flex justify-center items-center"
+              >
+                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
+                Create a VIP Listing
               </Link>
             </button>
           )}
