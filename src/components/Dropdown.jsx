@@ -1,8 +1,8 @@
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
-
 import { toast } from "react-toastify";
+
 import { db } from "../firebase";
 import Spinner from "./Spinner";
 
@@ -63,7 +63,11 @@ const Dropdown = ({ userId }) => {
   };
 
   return (
-    <div>
+    <div
+      onClick={() => setIsOpen((prev) => !prev)}
+      onMouseLeave={() => setIsOpen(false)}
+      onMouseUp={() => setIsOpen(false)}
+    >
       {role === "superadmin" ? (
         <div className="relative w-full">
           <p className="w-full text-center p-3 z-10 bg-gray-600 text-white rounded-lg">
@@ -75,13 +79,13 @@ const Dropdown = ({ userId }) => {
           onSubmit={onSubmit}
           className="relative w-full flex justify-center items-center shadow-xl rounded-lg"
         >
+          {/* Dropdown button */}
           <div className="relative w-full">
             <button
               className={`min-w-[90px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
                 isOpen && "rounded-bl-none"
               }`}
               type="button"
-              onClick={() => setIsOpen((prev) => !prev)}
             >
               {role}
               {/* Displays downward arrow when menu is closed, upward arrow when menu is open  */}
@@ -92,21 +96,22 @@ const Dropdown = ({ userId }) => {
               )}
             </button>
           </div>
+
+          {/* Apply changes button */}
           <div className="relative w-full">
             <button
-              className={`w-full flex justify-center items-center p-3 z-10 bg-white text-gray-600 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 ${
+              className={`w-full flex justify-center items-center p-3 z-10 bg-white text-gray-600 rounded-r-lg hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 ${
                 isOpen && "rounded-br-none"
               }`}
             >
               Apply
             </button>
           </div>
-          {/* Displays role options when menu is clicked */}
+
+          {/* Displays role options when dropdown menu is clicked */}
           {isOpen && (
-            <div
-              className="absolute flex flex-col top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl"
-              onMouseLeave={() => setIsOpen(false)}
-            >
+            <div className="absolute flex flex-col top-11 md:top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl">
+              {/* user role option */}
               <div className="flex flex-col z-30 w-full shadow-2xl ">
                 <button
                   value="user"
@@ -114,44 +119,50 @@ const Dropdown = ({ userId }) => {
                   onClick={onChange}
                   className={`p-3 ${
                     role === "user"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white text-gray-500 hover:bg-gray-300 focus:bg-gray-400 focus:text-white"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
                   user
                 </button>
+
+                {/* vip role option */}
                 <button
                   value="vip"
                   type="button"
                   onClick={onChange}
                   className={`p-3 ${
                     role === "vip"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white text-gray-500 hover:bg-gray-300 focus:bg-gray-400 focus:text-white"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
                   vip
                 </button>
+
+                {/* agent role option */}
                 <button
                   value="agent"
                   type="button"
                   onClick={onChange}
                   className={`p-3 ${
                     role === "agent"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white text-gray-500 hover:bg-gray-300 focus:bg-gray-400 focus:text-white"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
                   agent
                 </button>
+
+                {/* admin role option */}
                 <button
                   value="admin"
                   type="button"
                   onClick={onChange}
                   className={`p-3 ${
                     role === "admin"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white text-gray-500 hover:bg-gray-300 focus:bg-gray-400 focus:text-white"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
                   admin
