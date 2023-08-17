@@ -205,7 +205,7 @@ const createVIPListing = () => {
     );
     setLoading(false);
     toast.success("Listing created!");
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+    navigate(`/vip/category/${formDataCopy.type}/${docRef.id}`);
   };
 
   // Displays loading screen while listing is created
@@ -215,7 +215,9 @@ const createVIPListing = () => {
 
   return (
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Create a Listing</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">
+        Create a VIP Listing
+      </h1>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -520,7 +522,7 @@ const createVIPListing = () => {
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
         >
-          Create Listing
+          Create VIP Listing
         </button>
       </form>
     </main>

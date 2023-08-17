@@ -17,10 +17,12 @@ import { toast } from "react-toastify";
 
 import { deleteObject, getStorage, ref } from "firebase/storage";
 import ListingItem from "../components/ListingItem";
+import VipListingItem from "../components/VipListingItem";
 import { db } from "../firebase";
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
+  const [vipListings, setVipListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
   const [showVIPCreateListing, setShowVIPCreateListing] = useState(false); // VIP
@@ -59,10 +61,15 @@ const Profile = () => {
         setShowCreateListing(true);
         setShowVIPCreateListing(true); // VIP
         const listingRef = collection(db, "propertyListings");
+        const vipListingRef = collection(db, "vipPropertyListings");
 
         // Queries all listings
         const q = query(listingRef, orderBy("timestamp", "desc"));
         const querySnap = await getDocs(q);
+
+        // Queries all vip listings
+        const vipQ = query(vipListingRef, orderBy("timestamp", "desc"));
+        const vipQuerySnap = await getDocs(vipQ);
 
         // Adds all listings from query to 'listings' variable
         let listings = [];
@@ -73,6 +80,16 @@ const Profile = () => {
           });
         });
         setListings(listings);
+
+        // Adds all vip listings from query to 'vipListings' variable
+        let vipListings = [];
+        vipQuerySnap.forEach((doc) => {
+          return vipListings.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setVipListings(vipListings);
       }
       setLoading(false);
     };
@@ -102,6 +119,33 @@ const Profile = () => {
       setListings(updatedListings);
       toast.success("The listing was deleted!");
     }
+  };
+
+  const vipOnDelete = async (viplistingID) => {
+    if (window.confirm("Are you sure you want to delete this entry?")) {
+      const storage = getStorage();
+
+      const docRef = doc(db, "vipPropertyListings", viplistingID);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const vipDeletedListing = docSnap.data();
+        vipDeletedListing.imgs.forEach((img) => {
+          deleteObject(ref(storage, img.path));
+        });
+      }
+
+      await deleteDoc(doc(db, "vipPropertyListings", viplistingID));
+      const vipUpdatedListings = vipListings.filter(
+        (vipListing) => vipListing.id !== viplistingID
+      );
+      setVipListings(vipUpdatedListings);
+      toast.success("The listing was deleted!");
+    }
+  };
+
+  const onVipEdit = (vipListingID) => {
+    navigate(`/edit-vip-listing/${listingID}`);
   };
 
   // Redirects users to /edit-listing page
@@ -163,7 +207,7 @@ const Profile = () => {
           {showVIPCreateListing && (
             <button
               type="submit"
-              className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+              className="mt-6 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               <Link
                 to="/vip-create-listing"
@@ -177,7 +221,7 @@ const Profile = () => {
         </div>
       </section>
 
-      {/* Display user created listings on profile */}
+      {/* Display created listings on profile for agents, admins, superadmins */}
       <div className="max-w-6xl px-3 mt-6 mx-auto">
         {!loading && listings?.length > 0 && (
           <>
@@ -192,6 +236,24 @@ const Profile = () => {
                   listing={listing.data}
                   onDelete={() => onDelete(listing.id)}
                   onEdit={() => onEdit(listing.id)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+        {!loading && vipListings?.length > 0 && (
+          <>
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              VIP Listings
+            </h2>
+            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+              {vipListings.map((vipListing) => (
+                <VipListingItem
+                  key={vipListing.id}
+                  id={vipListing.id}
+                  vipListing={vipListing.data}
+                  onDelete={() => onDelete(vipListing.id)}
+                  onEdit={() => onEdit(vipListing.id)}
                 />
               ))}
             </ul>

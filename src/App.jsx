@@ -8,7 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Admin from "./pages/Admin";
 import ContactUs from "./pages/ContactUs";
 import CreateListing from "./pages/CreateListing";
-import CreateVIPListing from "./pages/CreateVIPListing";
+import CreateVipListing from "./pages/CreateVipListing";
 import EditListing from "./pages/EditListing";
 import ForgotPassword from "./pages/ForgotPassword";
 import Home from "./pages/Home";
@@ -18,6 +18,7 @@ import Offers from "./pages/Offers";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import VipListing from "./pages/VipListing";
 
 function App() {
   return (
@@ -52,7 +53,7 @@ function App() {
           />
           <Route
             path="/vip-create-listing"
-            element={<CreateVIPListing />}
+            element={<CreateVipListing />}
           />
           <Route
             path="/contact-us"
@@ -63,10 +64,16 @@ function App() {
             element={<Map />}
           />
 
-          {/* Navigates to dynamic listing URL (different for each listing) */}
+          {/* Navigates to dynamic listing URL */}
           <Route
             path="/category/:categoryName/:listingId"
             element={<Listing />}
+          />
+
+          {/* Navigates to dynamic vip listing URL */}
+          <Route
+            path="/vip/category/:categoryName/:listingId"
+            element={<VipListing />}
           />
 
           {/* Navigates to /profile if user is signed in, otherwise navigates to /sign-in */}
