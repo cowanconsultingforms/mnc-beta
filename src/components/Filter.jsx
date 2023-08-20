@@ -19,6 +19,18 @@ const Filter = () => {
     setFilterOpen(!isFilterOpen);
   };
 
+  const handleBedroomsChange = (event) => {
+    setSelectedBedrooms(event.target.value);
+  };
+
+  const handleBathroomsChange = (event) => {
+    setSelectedBathrooms(event.target.value);
+  };
+
+  const handlePropertyTypeChange = (event) => {
+    setSelectedPropertyType(event.target.value);
+  };
+
 
   return (
     <>
