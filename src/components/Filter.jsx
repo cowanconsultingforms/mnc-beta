@@ -31,7 +31,6 @@ const Filter = () => {
     setSelectedPropertyType(event.target.value);
   };
 
-
   return (
     <>
       {/* Filter menu */}
@@ -56,7 +55,7 @@ const Filter = () => {
                 <select
                   value={selectedBedrooms}
                   onChange={(e) => setSelectedBedrooms(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Bedrooms</option>
                   <option value="1">1 Bedroom</option>
@@ -71,7 +70,7 @@ const Filter = () => {
                 <select
                   value={selectedBathrooms}
                   onChange={(e) => setSelectedBathrooms(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Bathrooms</option>
                   <option value="1">1 Bathroom</option>
@@ -86,7 +85,7 @@ const Filter = () => {
                 <select
                   value={selectedPropertyType}
                   onChange={(e) => setSelectedPropertyType(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Property Type</option>
                   <option value="Apartment">Apartment</option>
@@ -101,7 +100,7 @@ const Filter = () => {
                 <select
                   value={selectedSqft}
                   onChange={(e) => setSelectedSqft(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Sqft</option>
                   <option value="1000">1000 Sqft</option>
@@ -116,7 +115,7 @@ const Filter = () => {
                 <select
                   value={selectedLotSize}
                   onChange={(e) => setSelectedLotSize(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Lot Size</option>
                   <option value="5000">5000 sqft</option>
@@ -131,7 +130,7 @@ const Filter = () => {
                 <select
                   value={selectedStories}
                   onChange={(e) => setSelectedStories(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Stories</option>
                   <option value="1">1 Story</option>
@@ -146,7 +145,7 @@ const Filter = () => {
                 <select
                   value={selectedParkingSpaces}
                   onChange={(e) => setSelectedParkingSpaces(e.target.value)}
-                  className="ml-2 px-2 py-1 border rounded"
+                  className="ml-2 px-2 py-1 border rounded min-w-[200px]"
                 >
                   <option value="Any">Any Parking Spaces</option>
                   <option value="1">1 Space</option>
