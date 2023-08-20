@@ -19,18 +19,6 @@ const Header = () => {
   const navigate = useNavigate();
   const auth = getAuth();
 
-  const handleBedroomsChange = (event) => {
-    setSelectedBedrooms(event.target.value);
-  };
-
-  const handleBathroomsChange = (event) => {
-    setSelectedBathrooms(event.target.value);
-  };
-
-  const handlePropertyTypeChange = (event) => {
-    setSelectedPropertyType(event.target.value);
-  };
-
   // Dynamically changes Sign in button text depending on if user is signed in or not
   useEffect(() => {
     // Gets user role
@@ -138,7 +126,7 @@ const Header = () => {
             </li>
             
             {/* Devak's Filter Componenet*/}
-            <Filter></Filter>
+            <Filter/>
 
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
