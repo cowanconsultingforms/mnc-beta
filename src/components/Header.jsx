@@ -10,6 +10,15 @@ import { db } from "../firebase";
 const Header = () => {
   const [pageState, setPageState] = useState("Sign in");
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [roleData, setRoleData] = useState({
+    role: "",
+  });
+  const { role } = roleData;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const auth = getAuth();
+
+  // Filter menu data
   const [isFilterOpen, setFilterOpen] = useState(false);
   const [selectedBedrooms, setSelectedBedrooms] = useState("Any");
   const [selectedBathrooms, setSelectedBathrooms] = useState("Any");
@@ -21,14 +30,8 @@ const Header = () => {
   const [hasWasherDryer, setHasWasherDryer] = useState(false);
   const [hasPets, setHasPets] = useState(false);
   const [hasDoorman, setHasDoorman] = useState(false);
-  const [roleData, setRoleData] = useState({
-    role: "",
-  });
-  const { role } = roleData;
-  const location = useLocation();
-  const navigate = useNavigate();
-  const auth = getAuth();
 
+  // Filter menu functions
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
   };
