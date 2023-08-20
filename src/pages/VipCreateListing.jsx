@@ -419,8 +419,8 @@ const createVIPListing = () => {
           className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
         />
 
-        {/* Offer buttons */}
-        <p className="text-lg font-semibold">Offer</p>
+        {/* Add discount buttons */}
+        <p className="text-lg font-semibold">Add Discount?</p>
         <div className="flex mb-6">
           <button
             type="button"
@@ -454,7 +454,7 @@ const createVIPListing = () => {
                 id="regularPrice"
                 value={regularPrice}
                 onChange={onChange}
-                min="50"
+                min="0"
                 max="400000000"
                 required
                 className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
@@ -481,7 +481,7 @@ const createVIPListing = () => {
                   id="discountedPrice"
                   value={discountedPrice}
                   onChange={onChange}
-                  min="50"
+                  min="0"
                   max="400000000"
                   required={offer}
                   className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
