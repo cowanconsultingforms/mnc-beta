@@ -417,7 +417,7 @@ const VipEditListing = () => {
         {/* Regular Price input field */}
         <div className="flex items-center mb-6">
           <div>
-            <p className="text-lg font-semibold">Regular Price</p>
+            <p className="text-lg font-semibold">Listing Price</p>
             <div className="flex w-full justify-center items-center space-x-6">
               <input
                 type="number"
