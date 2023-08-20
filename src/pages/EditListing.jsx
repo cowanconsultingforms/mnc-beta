@@ -390,7 +390,7 @@ const EditListing = () => {
         />
 
         {/* Offer buttons */}
-        <p className="text-lg font-semibold">Offer</p>
+        <p className="text-lg font-semibold">Add Discount?</p>
         <div className="flex mb-6">
           <button
             type="button"
