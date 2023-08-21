@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+// TODO: Integrate filter with firestore database to query listings from it
+// TODO: Display results from filtered data, e.g. on a results page.
+// TODO: Update form data options on CreateListing, EditListing, VipCreateListing, VipEditListing to reflect options available on filter
+
 const Filter = () => {
   // Filter menu data
   const [isFilterOpen, setFilterOpen] = useState(false);
@@ -14,7 +18,7 @@ const Filter = () => {
   const [hasPets, setHasPets] = useState(false);
   const [hasDoorman, setHasDoorman] = useState(false);
 
-   // Filter menu functions
+  // Filter menu functions
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
   };
