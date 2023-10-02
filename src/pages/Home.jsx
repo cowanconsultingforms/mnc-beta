@@ -100,6 +100,7 @@ const Home = () => {
   };
 
   const applyFilters = async() =>{
+    
     const listingRef = collection(db, "propertyListings");
     const category = getCategory(selectedButton);
     let q = query(listingRef, where("type", "==", category));
@@ -120,8 +121,8 @@ const Home = () => {
     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
                     (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
 
-    const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
-    (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
+    const beds = (!bedroom1 || !bedroom2 ||
+      (listing.data.bedrooms >= parseInt(bedroom1, 10) && listing.data.bedrooms <= parseInt(bedroom2, 10)));
 
     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
     const meetsParkingFilter = !parkingChecked || listing.data.parking;
@@ -265,7 +266,7 @@ const Home = () => {
               onChange={(e) => setBedroom1(e.target.value)}
               style={{ fontSize: "14px", width: "65px", height: "35px" }}
             >
-              {Array.from({ length: 6 }, (_, i) => i + 1).map((number) => (
+              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -279,7 +280,7 @@ const Home = () => {
               onChange={(e) => setBedroom2(e.target.value)}
               style={{ fontSize: "14px", width: "65px", height: "35px" }}
             >
-              {Array.from({ length: 6 }, (_, i) => i + 1).map((number) => (
+              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>

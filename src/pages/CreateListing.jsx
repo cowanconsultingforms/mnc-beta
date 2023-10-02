@@ -77,6 +77,14 @@ const CreateListing = () => {
 
   // Update all form data
   const onChange = (e) => {
+    if (e.target.type === "checkbox") {
+      // Handle checkboxes separately
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: e.target.checked, // Set the boolean value based on whether the checkbox is checked
+      }));
+    }else{
+
     let bool = null;
     if (e.target.value === "true") {
       bool = true;
@@ -99,7 +107,8 @@ const CreateListing = () => {
         ...prevState,
         [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
       }));
-    }
+    }}
+    // console.log(formData);
   };
 
   
@@ -559,6 +568,7 @@ const CreateListing = () => {
               value={schoolRating}
               onChange={onChange}
               min="1"
+              max="10"
               required
               className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
             />
