@@ -102,14 +102,7 @@ const CreateListing = () => {
     }
   };
 
-  const handleCheckboxChange = (e) => {
-    const { name } = e.target;
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: !prevFormData[name], // Toggle the value
-    }));
-  };
+  
   // Submits form data to firebase
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -228,6 +221,7 @@ const CreateListing = () => {
     delete formDataCopy.longitude;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
+    console.log("formDataCopy:", formDataCopy);
     // Adds form data to firestore database
     const docRef = await addDoc(
       collection(db, "propertyListings"),
@@ -535,7 +529,7 @@ const CreateListing = () => {
              style={{ width: "100px", height: "35px" }}
               type="number"
               id="landSize"
-              // value={landSize}
+              value={landSize}
               onChange={onChange}
               min="1"
               required
@@ -549,7 +543,7 @@ const CreateListing = () => {
              style={{ width: "100px", height: "35px" }}
               type="number"
               id="yearBuilt"
-              // value={yearBuilt}
+              value={yearBuilt}
               onChange={onChange}
               min="1900"
               required
@@ -562,7 +556,7 @@ const CreateListing = () => {
              style={{ width: "100px", height: "35px" }}
               type="number"
               id="schoolRating"
-              // value={schoolRating}
+              value={schoolRating}
               onChange={onChange}
               min="1"
               required
@@ -588,23 +582,23 @@ const CreateListing = () => {
             <p style={{width: "150px"}} className="text-lg font-semibold">Outdoor Space &nbsp;
             <input
              type="checkbox"
-             name="privateOutdoorSpace"
+             id="privateOutdoorSpace"
              checked={privateOutdoorSpace}
-              onChange={handleCheckboxChange}/>
+              onChange={onChange}/>
               </p>
               <p className="text-lg font-semibold">Basement &nbsp;
             <input
              type="checkbox"
-             name="basement"
+             id="basement"
              checked={basement}
-              onChange={handleCheckboxChange}
+              onChange={onChange}
             /></p>
             <p className="text-lg font-semibold">Doorman &nbsp; 
             <input
              type="checkbox"
-             name="doorMan"
+             id="doorMan"
              checked={doorMan}
-              onChange={handleCheckboxChange}/>
+              onChange={onChange}/>
               </p>
 
             </div>
@@ -614,9 +608,9 @@ const CreateListing = () => {
             <p className="text-lg font-semibold">Pool &nbsp;
             <input
              type="checkbox"
-             name="pool"
+             id="pool"
              checked={pool}
-              onChange={handleCheckboxChange}
+              onChange={onChange}
             /></p>
 
            
@@ -624,25 +618,25 @@ const CreateListing = () => {
             <p className="text-lg font-semibold">Elevator &nbsp;
             <input
              type="checkbox"
-             name="elevator"
+             id="elevator"
              checked={elevator}
-              onChange={handleCheckboxChange}
+              onChange={onChange}
             /></p>
 
             <p className="text-lg font-semibold">Garage &nbsp;
             <input
              type="checkbox"
-             name="garage"
+             id="garage"
              checked={garage}
-              onChange={handleCheckboxChange}
+              onChange={onChange}
             /></p>
 
             <p className="text-lg font-semibold">Air Conditioning &nbsp; 
             <input
              type="checkbox"
-             name="airConditioning"
+             id="airConditioning"
              checked={airConditioning}
-              onChange={handleCheckboxChange}
+              onChange={onChange}
             /></p>
             </div>
       </div>  &nbsp;
