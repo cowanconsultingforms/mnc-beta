@@ -15,7 +15,15 @@ const Home = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const images = [img1, img2, img3];
-
+  const [showFilters, setShowFilters] = useState(false);
+  const [input1Value, setInput1Value] = useState("");
+  const [input2Value, setInput2Value] = useState("");
+  const [bedroom1, setBedroom1] = useState(1);
+  const [bedroom2, setBedroom2] = useState(1);
+  const [bathroomCount, setBathroomCount] = useState(1);
+  const [parkingChecked, setParkingChecked] = useState(false);
+  const [filter, setFilter] = useState();
+  const [applyFilt, setApplyFilt] = useState();
   // Updates search bar data when user types
   const onChange = (e) => {
     setSearchTerm(e.target.value);
@@ -83,6 +91,58 @@ const Home = () => {
     );
 
     setFilteredProperties(filteredProperties);
+  };
+
+
+  //Filters
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  const applyFilters = async() =>{
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedButton);
+    let q = query(listingRef, where("type", "==", category));
+
+    const querySnap = await getDocs(q);
+
+    let listings = [];
+    querySnap.forEach((doc) => {
+      //if searchTerm != null, only return properties that contian the search term in the address
+      return listings.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+
+    const filteredProperties = listings.filter((listing) => {
+    const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
+                    (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
+
+    const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
+    (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
+
+    const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
+    const meetsParkingFilter = !parkingChecked || listing.data.parking;
+      return prices && beds && meetsBathroomFilter && meetsParkingFilter;
+    });
+       setFilteredProperties(filteredProperties);
+  
+  }
+
+  const handleIncrementBathrooms = () => {
+    setBathroomCount(bathroomCount + 1);
+  };
+
+  const handleDecrementBathrooms = () => {
+    if (bathroomCount > 1) {
+      setBathroomCount(bathroomCount - 1);
+    }
+  };
+
+  const handleParkingCheckboxChange = () => {
+    setParkingChecked(!parkingChecked);
   };
 
   return (
@@ -155,7 +215,119 @@ const Home = () => {
               <AiOutlineSearch className="text-gray-700 text-2xl" />
             </button>
           </div>
-        </form>
+
+       {/* filters */}
+      <div style={{ marginBottom: "20px" }}>
+         <button
+        className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+          filter === "true" ? "bg-gray-600 text-white" : "bg-white text-black"
+        }`}
+        style={{ width: "120px", height: "45px" }}
+        onClick={() => {setApplyFilt("false"); setFilter("true"); {toggleFilters()}}}
+        
+      >
+        Filters
+      </button>
+      </div>
+      </form>
+
+      {showFilters && (
+        <div style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
+        <div style={{ display: "flex", alignItems: "center"}}>
+          <p> Price </p> &nbsp;
+          <span>$</span>
+          <input
+            type="text"
+            value={input1Value}
+            onChange={(e) => setInput1Value(e.target.value)}
+            placeholder="MIN"
+            style={{ fontSize: "14px", width: "100px", height: "35px" }}
+          />
+        </div>
+        &nbsp;<span> - </span>&nbsp;
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span>$</span>
+          <input
+            type="text"
+            value={input2Value}
+            onChange={(e) => setInput2Value(e.target.value)}
+            placeholder="MAX"
+            style={{ fontSize: "14px", width: "100px", height: "35px" }}
+          />
+          &nbsp;
+        </div>
+        &nbsp;&nbsp;
+        <div style={{ display: "flex", alignItems: "center"}}>
+        <span>Beds</span>&nbsp;
+            <select
+              value={bedroom1}
+              onChange={(e) => setBedroom1(e.target.value)}
+              style={{ fontSize: "14px", width: "65px", height: "35px" }}
+            >
+              {Array.from({ length: 6 }, (_, i) => i + 1).map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+          &nbsp; <span>-</span>&nbsp;
+          <div>
+            <select
+              value={bedroom2}
+              onChange={(e) => setBedroom2(e.target.value)}
+              style={{ fontSize: "14px", width: "65px", height: "35px" }}
+            >
+              {Array.from({ length: 6 }, (_, i) => i + 1).map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+      </div>
+
+          <div style={{ display: "flex", alignItems: "center" }}>
+          <span>Baths</span>&nbsp;
+            <button onClick={handleDecrementBathrooms}
+            style={{width: "20px", height: "35px", border: "1px solid" }}
+            >-</button>
+            <input
+              type="text"
+              value={bathroomCount}
+              readOnly
+              style={{ width: "200px", height: "35px", textAlign: "center",fontSize: "14px"
+              }}
+            />
+            <button onClick={handleIncrementBathrooms} 
+            style={{width: "20px", height: "35px", border: "1px solid" }}
+            >+</button>
+            <div style={{ marginLeft: "60px" }}>
+            <label>
+              Parking: &nbsp;
+              <input
+                type="checkbox"
+                checked={parkingChecked}
+                onChange={handleParkingCheckboxChange}
+              />
+            </label>
+            </div>
+          </div>
+          <div style={{ marginTop: "10px" }}>
+          <button
+              className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+                applyFilt === "true"
+                  ? "bg-gray-600 text-white"
+                  : "bg-white text-black"
+              }`}
+              onClick={() => {applyFilters(); setApplyFilt("true")}}
+            >
+              Apply Filters
+            </button>
+            </div>
+        </div>
+      )}
       </section>
 
       {/* Search results (only displays when results are found) */}

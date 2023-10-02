@@ -26,6 +26,17 @@ const CreateListing = () => {
     furnished: false,
     address: "",
     description: "",
+    landSize: "",
+    yearBuilt: "",
+    schoolRating: "",
+    stories: "",
+    doorMan: false,
+    privateOutdoorSpace: false,
+    pool: false,
+    basement: false,
+    elevator: false,
+    garage: false,
+    airConditioning: false,
     offer: false,
     regularPrice: 0,
     discountedPrice: 0,
@@ -45,6 +56,17 @@ const CreateListing = () => {
     furnished,
     address,
     description,
+    landSize,
+    yearBuilt,
+    schoolRating,
+    stories,
+    doorMan,
+    privateOutdoorSpace,
+    pool,
+    basement,
+    elevator,
+    garage,
+    airConditioning,
     offer,
     regularPrice,
     discountedPrice,
@@ -80,6 +102,14 @@ const CreateListing = () => {
     }
   };
 
+  const handleCheckboxChange = (e) => {
+    const { name } = e.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: !prevFormData[name], // Toggle the value
+    }));
+  };
   // Submits form data to firebase
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -498,6 +528,125 @@ const CreateListing = () => {
           </div>
         )}
 
+<div style= {{paddingBottom: "20px"}}>
+          <div sytle={{marginBottom:"100px"}}>
+            <p className="text-lg font-semibold">Land Size</p>
+            <input
+             style={{ width: "100px", height: "35px" }}
+              type="number"
+              id="landSize"
+              // value={landSize}
+              onChange={onChange}
+              min="1"
+              required
+              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+            /> <span> Squre Feet</span>
+</div>
+<div style={{  marginTop: "20px", display: "flex", justifyContent: "space-between"}} >
+            <div style={{ width: "100px", height: "35px" }}>
+            <p className="text-lg font-semibold">Year Built</p>
+            <input
+             style={{ width: "100px", height: "35px" }}
+              type="number"
+              id="yearBuilt"
+              // value={yearBuilt}
+              onChange={onChange}
+              min="1900"
+              required
+              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+            />
+            </div>
+            <div style={{width: "100px", height: "35px", margin: "0 40px" }}>
+            <p style={{ width: "200px"}}className="text-lg font-semibold">School Rating</p>
+            <input
+             style={{ width: "100px", height: "35px" }}
+              type="number"
+              id="schoolRating"
+              // value={schoolRating}
+              onChange={onChange}
+              min="1"
+              required
+              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+            />
+            </div>
+            <div style={{ width: "100px", height: "40px" , margin: "0 30px"}}>
+            <p className="text-lg font-semibold">Stories</p>
+            <input
+             style={{ width: "100px", height: "35px" }}
+              type="number"
+              id="stories"
+              value={stories}
+              onChange={onChange}
+              min="1"
+              required
+              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+            />
+            </div>
+            </div>
+            <div style={{ marginTop: "50px", display: "flex", justifyContent: "space-between"}} >
+            
+            <p style={{width: "150px"}} className="text-lg font-semibold">Outdoor Space &nbsp;
+            <input
+             type="checkbox"
+             name="privateOutdoorSpace"
+             checked={privateOutdoorSpace}
+              onChange={handleCheckboxChange}/>
+              </p>
+              <p className="text-lg font-semibold">Basement &nbsp;
+            <input
+             type="checkbox"
+             name="basement"
+             checked={basement}
+              onChange={handleCheckboxChange}
+            /></p>
+            <p className="text-lg font-semibold">Doorman &nbsp; 
+            <input
+             type="checkbox"
+             name="doorMan"
+             checked={doorMan}
+              onChange={handleCheckboxChange}/>
+              </p>
+
+            </div>
+
+            <div style={{ marginTop: "25px", display: "flex", justifyContent: "space-between"}} >
+          
+            <p className="text-lg font-semibold">Pool &nbsp;
+            <input
+             type="checkbox"
+             name="pool"
+             checked={pool}
+              onChange={handleCheckboxChange}
+            /></p>
+
+           
+
+            <p className="text-lg font-semibold">Elevator &nbsp;
+            <input
+             type="checkbox"
+             name="elevator"
+             checked={elevator}
+              onChange={handleCheckboxChange}
+            /></p>
+
+            <p className="text-lg font-semibold">Garage &nbsp;
+            <input
+             type="checkbox"
+             name="garage"
+             checked={garage}
+              onChange={handleCheckboxChange}
+            /></p>
+
+            <p className="text-lg font-semibold">Air Conditioning &nbsp; 
+            <input
+             type="checkbox"
+             name="airConditioning"
+             checked={airConditioning}
+              onChange={handleCheckboxChange}
+            /></p>
+            </div>
+      </div>  &nbsp;
+      
         {/* Submit images field */}
         <div className="mb-6">
           <p className="text-lg font-semibold">Images</p>
