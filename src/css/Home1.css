@@ -1,0 +1,58 @@
+.filter-panel {
+    position: fixed;
+    top: 0;
+    right: -550px; 
+    width: 400px; 
+    height: 100%;
+    background-color: rgb(238, 231, 231);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease;
+    z-index: 999; /* Ensure the panel appears above other content */
+    overflow-y: auto;
+
+    @media (max-width: 768px) {
+      width: 100%; /* Make the panel full width on small screens */
+      right: -100%; /* Initially, off-screen to the right on small screens */
+    }
+  }
+  
+ .open {
+    right: 0; /* Bring the panel into view */
+    @media (max-width: 768px) {
+      right: 0; /* Make it fully visible on small screens */
+    }
+  }
+  
+  /* Style the close button (you can add this button in the filter panel) */
+  #close-button {
+    position: absolute;
+    /* top: 10px;
+    right: 10px; */
+    cursor: pointer;
+  }
+
+  #panel-title{
+    display: flex;
+    font-size: 20px;
+    font:bolder;
+    overflow: hidden;
+    font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
+    font-style: normal;
+    background-color: rgb(255, 255, 255);
+  }
+
+  #close-filters2{
+    /* background-color: rgb(38, 74, 235); */
+    background-color: #4a5568;
+    width: 100px;
+    height: 27px;
+    margin-top: 1px;
+    margin-left: 15px;
+    color: white;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    font-size: 15px;
+    font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
+  }

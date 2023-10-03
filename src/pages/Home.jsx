@@ -1,7 +1,7 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-
+import "../css/Home1.css";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
@@ -21,9 +21,38 @@ const Home = () => {
   const [bedroom1, setBedroom1] = useState(1);
   const [bedroom2, setBedroom2] = useState(1);
   const [bathroomCount, setBathroomCount] = useState(1);
+  const [land1, setLand] = useState("");
+  const [land2, setLand2] = useState("");
+  const [year1, setYear1] = useState("");
+  const [year2, setYear2] = useState("");
+  const [schoolRating, setSchoolRating] = useState("");
+  const [story1, setstory1] = useState("");
+  const [story2, setStory2] = useState("");
+  const [doorMan, setDoorman] = useState("");
+  const [pool, setPool] = useState("");
+  const [basement, setBasement] = useState("");
+  const [privateOutdoorSpace, setPrivateOutdoorSpace] = useState("");
+  const [elevator, setElevator] = useState("");
+  const [garage, setGarage] = useState("");
+  const [airCondition, setAirCondition] = useState("");
   const [parkingChecked, setParkingChecked] = useState(false);
   const [filter, setFilter] = useState();
   const [applyFilt, setApplyFilt] = useState();
+  const [clicked, setClicked] = useState(false);
+  const [buttonText, setButtonText] = useState("Filters");
+  
+useEffect(() =>{
+  setBedroom2(10);
+}, []);
+
+  const handleClick = () => {
+    setClicked(!clicked);
+    if (clicked) {
+      setButtonText("Filters");
+    } else {
+      setButtonText("Close Filters");
+    }
+  };
   // Updates search bar data when user types
   const onChange = (e) => {
     setSearchTerm(e.target.value);
@@ -89,8 +118,7 @@ const Home = () => {
     const filteredProperties = listings.filter((listing) =>
       listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    setFilteredProperties(filteredProperties);
+        setFilteredProperties(filteredProperties);
   };
 
 
@@ -100,11 +128,9 @@ const Home = () => {
   };
 
   const applyFilters = async() =>{
-    
     const listingRef = collection(db, "propertyListings");
     const category = getCategory(selectedButton);
     let q = query(listingRef, where("type", "==", category));
-
     const querySnap = await getDocs(q);
 
     let listings = [];
@@ -116,20 +142,33 @@ const Home = () => {
       });
     });
 
-
     const filteredProperties = listings.filter((listing) => {
     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
                     (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
-
     const beds = (!bedroom1 || !bedroom2 ||
       (listing.data.bedrooms >= parseInt(bedroom1, 10) && listing.data.bedrooms <= parseInt(bedroom2, 10)));
-
     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
+    const meetsLandFilter = (!land1 || !land2 ||
+      (listing.data.landSize >= parseInt(land1, 10) && listing.data.landSize <= parseInt(land2, 10)));
+    const meetsYearBuiltFilter = (!year1 || !year2 ||
+        (listing.data.yearBuilt >= parseInt(year1, 10) && listing.data.yearBuilt <= parseInt(year2, 10)));
+    const meetsSchoolFilter = (!schoolRating || listing.data.schoolRating >= parseInt(schoolRating, 10));
+    const meetsStoriesFilter = (!story1 || !story2 ||
+          (listing.data.stories >= parseInt(story1, 10) && listing.data.stories <= parseInt(story2, 10)));
+    
+    
     const meetsParkingFilter = !parkingChecked || listing.data.parking;
-      return prices && beds && meetsBathroomFilter && meetsParkingFilter;
+    const meetsOutdoorSpaceFilter =  !privateOutdoorSpace || listing.data.privateOutdoorSpace;
+    const meetsPoolFilter = !parkingChecked || listing.data.pool;
+    const meetsschoolRatingFilter = !parkingChecked || listing.data.schoolRating;
+    const meetsDoormanFilter = !parkingChecked || listing.data.doorMan;
+    const meetsBasementFilter = !parkingChecked || listing.data.basement;
+    const meetsGarageFilter = !parkingChecked || listing.data.garage;
+    const meetsAirFilter = !parkingChecked || listing.data.airCondition;
+
+    return prices || meetsSchoolFilter || meetsStoriesFilter || meetsYearBuiltFilter || meetsLandFilter || beds || meetsBathroomFilter || meetsParkingFilter || meetsOutdoorSpaceFilter || meetsPoolFilter || meetsschoolRatingFilter || meetsDoormanFilter || meetsBasementFilter || meetsGarageFilter || meetsAirFilter;
     });
        setFilteredProperties(filteredProperties);
-  
   }
 
   const handleIncrementBathrooms = () => {
@@ -142,8 +181,39 @@ const Home = () => {
     }
   };
 
+  const handleDoorman = () => {
+    setDoorman(!doorMan);
+  };
+
+  const handlePrivateOutdoorSpace = () => {
+    setPrivateOutdoorSpace(!privateOutdoorSpace);
+  };
+
+  const handlePool = () => {
+    setPool(!pool);
+  };
+
+  const handleBasement = () => {
+    setBasement(!basement);
+  };
+
+  const handleElevator = () => {
+    setElevator(!elevator);
+  };
+
+  const handleGarage = () => {
+    setGarage(!garage);
+  };
+
+  const HandleAircondition = () => {
+    setAirCondition(!airCondition);
+  };
   const handleParkingCheckboxChange = () => {
     setParkingChecked(!parkingChecked);
+  };
+
+  const closeFilters = () => {
+    setShowFilters(false); // Close the filter panel
   };
 
   return (
@@ -191,7 +261,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-
+<div style={{display: "flex"}}>
         {/* Search bar + button */}
         <form
           onSubmit={handleSearch}
@@ -216,27 +286,29 @@ const Home = () => {
               <AiOutlineSearch className="text-gray-700 text-2xl" />
             </button>
           </div>
-
-       {/* filters */}
-      <div style={{ marginBottom: "20px" }}>
+      </form>
+{/* filters */}
+<div style={{ marginTop: "25px" }}>
          <button
+         id="close-button"
         className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-          filter === "true" ? "bg-gray-600 text-white" : "bg-white text-black"
+          buttonText === "Close Filters" ? "bg-gray-600 text-white" : "bg-white text-black"
         }`}
-        style={{ width: "120px", height: "45px" }}
-        onClick={() => {setApplyFilt("false"); setFilter("true"); {toggleFilters()}}}
-        
-      >
-        Filters
+        onClick={() => {handleClick(); setApplyFilt("false"); setFilter("true"); {toggleFilters()}}}
+        style={{ width: "120px", height: "auto" }} >
+        {buttonText}
       </button>
       </div>
-      </form>
-
-      {showFilters && (
+      </div>
+      <div className={`filter-panel ${showFilters ? "open" : ""}`}>
+        <h1 id = "panel-title">Explore This Neighborhood
+         <button id="close-filters2" onClick={()=>{closeFilters();handleClick()}}>Close Filters</button></h1>
+         
+         &nbsp;<span> Price </span>
         <div style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
         <div style={{ display: "flex", alignItems: "center"}}>
-          <p> Price </p> &nbsp;
+          
           <span>$</span>
           <input
             type="text"
@@ -256,15 +328,16 @@ const Home = () => {
             placeholder="MAX"
             style={{ fontSize: "14px", width: "100px", height: "35px" }}
           />
-          &nbsp;
         </div>
-        &nbsp;&nbsp;
-        <div style={{ display: "flex", alignItems: "center"}}>
-        <span>Beds</span>&nbsp;
+        
+      </div>
+      <span>Beds</span>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "30px"}}>
+      <div style={{ display: "flex", alignItems: "center"}}>
             <select
               value={bedroom1}
               onChange={(e) => setBedroom1(e.target.value)}
-              style={{ fontSize: "14px", width: "65px", height: "35px" }}
+              style={{ fontSize: "14px", width: "75px", height: "35px" }}
             >
               {Array.from({ length: 11 }, (_, i) => i).map((number) => (
                 <option key={number} value={number}>
@@ -278,7 +351,104 @@ const Home = () => {
             <select
               value={bedroom2}
               onChange={(e) => setBedroom2(e.target.value)}
-              style={{ fontSize: "14px", width: "65px", height: "35px" }}
+              style={{ fontSize: "14px", width: "75px", height: "35px" }}
+            >
+              <option>10</option>
+              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+          </div>
+          <span>Baths</span>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+          
+            <button onClick={handleDecrementBathrooms}
+            style={{width: "50px", height: "35px", border: "1px solid" }}
+            >-</button>
+            <input
+              type="text"
+              value={bathroomCount}
+              readOnly
+              style={{ width: "400px", height: "35px", textAlign: "center",fontSize: "14px"
+              }}
+            />
+            <button onClick={handleIncrementBathrooms} 
+            style={{width: "50px", height: "35px", border: "1px solid" }}
+            >+</button>
+          </div>
+            <div style={{ fontWeight: "bold", marginTop: "20px" }}><span>Property Facts</span></div>
+          
+      <div style={{ marginTop: "10px"}}><span >Square Feet</span></div>
+       <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
+        <div style={{ display: "flex", alignItems: "center"}}>
+          <input
+            type="text"
+            value={land1}
+            onChange={(e) => setLand(e.target.value)}
+            placeholder="MIN"
+            style={{ fontSize: "14px", width: "170px", height: "35px" }}
+          />
+        </div>
+        &nbsp;<span> - </span>&nbsp;
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <input
+            type="text"
+            value={land2}
+            onChange={(e) => setLand2(e.target.value)}
+            placeholder="MAX"
+            style={{ fontSize: "14px", width: "170px", height: "35px" }}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginTop: "10px"}}><span >Year Built</span></div>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
+        <div style={{ display: "flex", alignItems: "center"}}>
+          <input
+            type="text"
+            value={year1}
+            onChange={(e) => setYear1(e.target.value)}
+            placeholder="MIN"
+            style={{ fontSize: "14px", width: "170px", height: "35px" }}
+          />
+        </div>
+        &nbsp;<span> - </span>&nbsp;
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <input
+            type="text"
+            value={year2}
+            onChange={(e) => setYear2(e.target.value)}
+            placeholder="MAX"
+            style={{ fontSize: "14px", width: "170px", height: "35px" }} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: "10px", fontWeight: "bold"}}><span >Schools</span></div>
+      <span>GreatSchools Rating</span>
+      <div>
+            <select
+              value={schoolRating}
+              onChange={(e) => setSchoolRating(e.target.value)}
+              style={{ fontSize: "14px", width: "170px", height: "35px" }} >
+              <option>10</option>
+              {Array.from({ length: 10 }, (_, i) => i).map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ marginTop: "10px"}}><span >Stories</span></div>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "30px"}}>
+      <div style={{ display: "flex", alignItems: "center"}}>
+            <select
+              value={story1}
+              onChange={(e) => setstory1(e.target.value)}
+              style={{ fontSize: "14px", width: "170px", height: "35px" }}
             >
               {Array.from({ length: 11 }, (_, i) => i).map((number) => (
                 <option key={number} value={number}>
@@ -287,34 +457,96 @@ const Home = () => {
               ))}
             </select>
           </div>
-      </div>
+          &nbsp; <span>-</span>&nbsp;
+          <div>
+            <select
+              value={story2}
+              onChange={(e) => setStory2(e.target.value)}
+              style={{ fontSize: "14px", width: "170px", height: "35px" }}
+            >
+              <option>10</option>
+              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+                <option key={number} value={number}>
+                  {number}
+                </option>
+              ))}
+            </select>
+          </div>
+          </div>
 
-          <div style={{ display: "flex", alignItems: "center" }}>
-          <span>Baths</span>&nbsp;
-            <button onClick={handleDecrementBathrooms}
-            style={{width: "20px", height: "35px", border: "1px solid" }}
-            >-</button>
-            <input
-              type="text"
-              value={bathroomCount}
-              readOnly
-              style={{ width: "200px", height: "35px", textAlign: "center",fontSize: "14px"
-              }}
-            />
-            <button onClick={handleIncrementBathrooms} 
-            style={{width: "20px", height: "35px", border: "1px solid" }}
-            >+</button>
-            <div style={{ marginLeft: "60px" }}>
+          <div style={{marginBottom: "10px"}}>
             <label>
-              Parking: &nbsp;
               <input
+                type="checkbox"
+                checked={privateOutdoorSpace}
+                onChange={handlePrivateOutdoorSpace}
+              />&nbsp; Must Have Private Outdoor Space
+            </label>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
                 type="checkbox"
                 checked={parkingChecked}
                 onChange={handleParkingCheckboxChange}
-              />
+              />&nbsp; Must Have Parking Space
             </label>
             </div>
-          </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={doorMan}
+                onChange={handleDoorman}
+              />&nbsp; Must Have Doorman
+            </label>
+            </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={pool}
+                onChange={handlePool}
+              />&nbsp; Must Have Pool
+            </label>
+            </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={basement}
+                onChange={handleBasement}
+              />&nbsp; Must Have Basement
+            </label>
+            </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={elevator}
+                onChange={handleElevator}
+              />&nbsp; Must Have Elevator
+            </label>
+            </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={garage}
+                onChange={handleGarage}
+              />&nbsp; Must Have Garage
+            </label>
+            </div>
+            <div style={{marginTop: "10px"}}>
+            <label>
+            <input
+                type="checkbox"
+                checked={airCondition}
+                onChange={HandleAircondition}
+              />&nbsp; Must Have Air Conditioning
+            </label>
+            </div>
+            </div>
+
           <div style={{ marginTop: "10px" }}>
           <button
               className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -328,7 +560,7 @@ const Home = () => {
             </button>
             </div>
         </div>
-      )}
+        </div>
       </section>
 
       {/* Search results (only displays when results are found) */}
