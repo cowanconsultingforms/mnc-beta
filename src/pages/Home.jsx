@@ -18,8 +18,8 @@ const Home = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [input1Value, setInput1Value] = useState("");
   const [input2Value, setInput2Value] = useState("");
-  const [bedroom1, setBedroom1] = useState(1);
-  const [bedroom2, setBedroom2] = useState(1);
+  const [bedroom1, setBedroom1] = useState();
+  const [bedroom2, setBedroom2] = useState();
   const [bathroomCount, setBathroomCount] = useState(1);
   const [land1, setLand] = useState("");
   const [land2, setLand2] = useState("");
@@ -41,14 +41,14 @@ const Home = () => {
   const [clicked, setClicked] = useState(false);
   const [buttonText, setButtonText] = useState("Filters");
   
-useEffect(() =>{
-  setBedroom2(10);
-}, []);
+// useEffect(() =>{
+//   setBedroom2(10);
+// }, []);
 
   const handleClick = () => {
     setClicked(!clicked);
     if (clicked) {
-      setButtonText("Filters");
+      setButtonText("Search Filters");
     } else {
       setButtonText("Close Filters");
     }
@@ -144,29 +144,30 @@ useEffect(() =>{
 
     const filteredProperties = listings.filter((listing) => {
     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
-                    (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
-    const beds = (!bedroom1 || !bedroom2 ||
-      (listing.data.bedrooms >= parseInt(bedroom1, 10) && listing.data.bedrooms <= parseInt(bedroom2, 10)));
+                   (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
+    const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
+                 (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
-    const meetsLandFilter = (!land1 || !land2 ||
-      (listing.data.landSize >= parseInt(land1, 10) && listing.data.landSize <= parseInt(land2, 10)));
-    const meetsYearBuiltFilter = (!year1 || !year2 ||
-        (listing.data.yearBuilt >= parseInt(year1, 10) && listing.data.yearBuilt <= parseInt(year2, 10)));
-    const meetsSchoolFilter = (!schoolRating || listing.data.schoolRating >= parseInt(schoolRating, 10));
-    const meetsStoriesFilter = (!story1 || !story2 ||
-          (listing.data.stories >= parseInt(story1, 10) && listing.data.stories <= parseInt(story2, 10)));
-    
-    
-    const meetsParkingFilter = !parkingChecked || listing.data.parking;
-    const meetsOutdoorSpaceFilter =  !privateOutdoorSpace || listing.data.privateOutdoorSpace;
-    const meetsPoolFilter = !parkingChecked || listing.data.pool;
-    const meetsschoolRatingFilter = !parkingChecked || listing.data.schoolRating;
-    const meetsDoormanFilter = !parkingChecked || listing.data.doorMan;
-    const meetsBasementFilter = !parkingChecked || listing.data.basement;
-    const meetsGarageFilter = !parkingChecked || listing.data.garage;
-    const meetsAirFilter = !parkingChecked || listing.data.airCondition;
-
-    return prices || meetsSchoolFilter || meetsStoriesFilter || meetsYearBuiltFilter || meetsLandFilter || beds || meetsBathroomFilter || meetsParkingFilter || meetsOutdoorSpaceFilter || meetsPoolFilter || meetsschoolRatingFilter || meetsDoormanFilter || meetsBasementFilter || meetsGarageFilter || meetsAirFilter;
+    const meetsLandFilter = (!land1 || listing.data.landSize >= parseInt(land1, 10)) &&
+                            (!land2 || listing.data.landSize <= parseInt(land2, 10));
+    const meetsYearBuiltFilter = (!year1 || listing.data.yearBuilt >= parseInt(year1, 10)) &&
+                                 (!year2 || listing.data.yearBuilt <= parseInt(year2, 10));
+    const meetsStoriesFilter = (!story1 || listing.data.stories >= parseInt(story1, 10)) &&
+                               (!story2 || listing.data.stories <= parseInt(story2, 10));
+    const meetsSchoolFilter = !schoolRating || listing.data.schoolRating >= parseInt(schoolRating,10);
+   
+    const meetsParkingFilter = (listing) => !parkingChecked || listing.data.parking;
+    const meetsOutdoorSpaceFilter = (listing) => !privateOutdoorSpace || listing.data.privateOutdoorSpace;
+    const meetsPoolFilter = (listing) => !pool || listing.data.pool;
+    const meetsDoormanFilter = (listing) => !doorMan || listing.data.doorMan;
+    const meetsBasementFilter = (listing) => !basement || listing.data.basement;
+    const meetsGarageFilter = (listing) => !garage || listing.data.garage;
+    const meetsAirFilter = (listing) => !airCondition || listing.data.airConditioning;
+// return prices && beds && meetsschoolRatingFilter && meetsBathroomFilter && meetsLandFilter && meetsYearBuiltFilter && meetsStoriesFilter;
+    return prices && meetsSchoolFilter && meetsStoriesFilter && meetsYearBuiltFilter &&
+     meetsLandFilter && beds && meetsBathroomFilter && meetsParkingFilter(listing) && 
+     meetsOutdoorSpaceFilter(listing) && meetsPoolFilter(listing) && meetsSchoolFilter &&
+      meetsDoormanFilter(listing) && meetsBasementFilter(listing) && meetsGarageFilter(listing) && meetsAirFilter(listing);
     });
        setFilteredProperties(filteredProperties);
   }
@@ -261,14 +262,14 @@ useEffect(() =>{
             </button>
           </div>
         </div>
-<div style={{display: "flex"}}>
+<div style={{}}>
         {/* Search bar + button */}
         <form
           onSubmit={handleSearch}
           className="max-w-md mt-6 w-full text flex justify-center"
         >
           {/* Search bar */}
-          <div className="w-full px-3 relative">
+          <div className="w-full px-3 relative" style={{ width: "400px"}}>
             <input
               type="search"
               placeholder={"Search by location or point of interest"}
@@ -288,14 +289,14 @@ useEffect(() =>{
           </div>
       </form>
 {/* filters */}
-<div style={{ marginTop: "25px" }}>
+<div style={{ marginTop: "25px", marginLeft: "120px" }}>
          <button
          id="close-button"
         className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
           buttonText === "Close Filters" ? "bg-gray-600 text-white" : "bg-white text-black"
         }`}
         onClick={() => {handleClick(); setApplyFilt("false"); setFilter("true"); {toggleFilters()}}}
-        style={{ width: "120px", height: "auto" }} >
+        style={{ width: "160px", height: "auto" }} >
         {buttonText}
       </button>
       </div>
@@ -315,10 +316,10 @@ useEffect(() =>{
             value={input1Value}
             onChange={(e) => setInput1Value(e.target.value)}
             placeholder="MIN"
-            style={{ fontSize: "14px", width: "100px", height: "35px" }}
+            style={{ fontSize: "14px", width: "170px", height: "35px" }}
           />
         </div>
-        &nbsp;<span> - </span>&nbsp;
+        &nbsp;<span> - </span>
         <div style={{ display: "flex", alignItems: "center" }}>
           <span>$</span>
           <input
@@ -326,7 +327,7 @@ useEffect(() =>{
             value={input2Value}
             onChange={(e) => setInput2Value(e.target.value)}
             placeholder="MAX"
-            style={{ fontSize: "14px", width: "100px", height: "35px" }}
+            style={{ fontSize: "14px", width: "170px", height: "35px" }}
           />
         </div>
         
@@ -336,10 +337,18 @@ useEffect(() =>{
       <div style={{ display: "flex", alignItems: "center"}}>
             <select
               value={bedroom1}
-              onChange={(e) => setBedroom1(e.target.value)}
-              style={{ fontSize: "14px", width: "75px", height: "35px" }}
+              onChange={(e) =>{ 
+                const selectedValue = e.target.value;
+                if(selectedValue !== "NO MIN"){
+                  setBedroom1(selectedValue)
+                }else{
+                  setBedroom1('')
+                  value="NO MIN"
+                }}}
+              style={{ fontSize: "14px", width: "170px", height: "35px" }}
             >
-              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+              <option>NO MIN</option>
+              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -350,11 +359,18 @@ useEffect(() =>{
           <div>
             <select
               value={bedroom2}
-              onChange={(e) => setBedroom2(e.target.value)}
-              style={{ fontSize: "14px", width: "75px", height: "35px" }}
+              onChange={(e) =>{ 
+                const selectedValue = e.target.value;
+                if(selectedValue !== "NO MAX"){
+                  setBedroom2(selectedValue)
+                }else{
+                  setBedroom2('')
+                  value="NO MAX"
+                }}}
+              style={{ fontSize: "14px", width: "170px", height: "35px" }}
             >
-              <option>10</option>
-              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+              <option>NO MAX</option>
+              {Array.from({ length: 11 }, (_, i) => i+1).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -431,10 +447,17 @@ useEffect(() =>{
       <div>
             <select
               value={schoolRating}
-              onChange={(e) => setSchoolRating(e.target.value)}
+              onChange={(e) =>{ 
+                const selectedValue = e.target.value;
+                if(selectedValue !== "None"){
+                  setSchoolRating(selectedValue)
+                }else{
+                  setSchoolRating('')
+                  value="None"
+                }}}
               style={{ fontSize: "14px", width: "170px", height: "35px" }} >
-              <option>10</option>
-              {Array.from({ length: 10 }, (_, i) => i).map((number) => (
+              <option>None</option>
+              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -447,10 +470,19 @@ useEffect(() =>{
       <div style={{ display: "flex", alignItems: "center"}}>
             <select
               value={story1}
-              onChange={(e) => setstory1(e.target.value)}
+              onChange={(e) =>{ 
+                const selectedValue = e.target.value;
+                if(selectedValue !== "NO MIN"){
+                setstory1(selectedValue)
+              }else{
+                setstory1('')
+                value="NO MIN"
+              }
+              } }
               style={{ fontSize: "14px", width: "170px", height: "35px" }}
             >
-              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+              <option>NO MIN</option>
+              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -461,11 +493,18 @@ useEffect(() =>{
           <div>
             <select
               value={story2}
-              onChange={(e) => setStory2(e.target.value)}
+              onChange={(e) =>{ 
+                const selectedValue = e.target.value;
+                if(selectedValue !== "NO MAX"){
+                  setStory2(selectedValue)
+                }else{
+                  setStory2('')
+                  value="NO MAX"
+                }}}
               style={{ fontSize: "14px", width: "170px", height: "35px" }}
             >
-              <option>10</option>
-              {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+              <option>NO MAX</option>
+              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
                 <option key={number} value={number}>
                   {number}
                 </option>
@@ -584,7 +623,12 @@ useEffect(() =>{
           {images.map((img, i) => (
             <li
               key={i}
-              className="w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              style={{
+                backgroundImage: `url(${img})`, // Set the background image here
+                backgroundRepeat: 'no-repeat', // Prevent background image from repeating
+                backgroundSize: 'cover', // Adjust background image size as needed
+              }}
             >
               <img
                 className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
