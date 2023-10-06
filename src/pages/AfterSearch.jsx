@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
-const Home = () => {
+const AfterSearch = () => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
@@ -43,12 +43,9 @@ const Home = () => {
   const [applyFilt, setApplyFilt] = useState();
   const [clicked, setClicked] = useState(false);
   const [buttonText, setButtonText] = useState("Filters");
-  const [zipcode, setZip] = useState(false);
-  const [city, setCity] = useState(false);
   
 // useEffect(() =>{
-//   setZip("false");
-//   setCity("false");
+//   setBedroom2(10);
 // }, []);
 
   const handleClick = () => {
@@ -63,13 +60,12 @@ const Home = () => {
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
-    if(searchTerm !== ""){
     // Displays results after 500ms delay
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
       fetchProperties(searchTerm);
     }, 500);
-    setTimer(newTimer);}
+    setTimer(newTimer);
   };
 
   // Get the category based on the selectedButton
@@ -98,7 +94,6 @@ const Home = () => {
 
   // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm) => {
-    if(searchTerm !== ""){
     const listingRef = collection(db, "propertyListings");
 
     // Get the category based on the selectedButton
@@ -129,40 +124,30 @@ const Home = () => {
         
 
         // setInputValue(searchTerm);
-const filteredSuggestions = listings.filter((listing) =>{
-        const regexZipCode = /^\d{1,5}$/;
-        const regexCity = /^[a-zA-Z\s]+$/;
-      
-        if(regexZipCode.test(searchTerm)){
-          setZip("true");
-          setCity("false");
-          // console.log("zip", {zipcode});
-          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-         if(regexCity.test(searchTerm)){
-          setCity("true");
-          setZip("false");
-          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
-        }
+      const filteredSuggestions = listings.filter((listing) =>
+      listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+// Extract unique cities using a Set
+  const uniqueCitiesSet = new Set();
+  const uniqueSuggestions = filteredSuggestions.filter((suggestion) => {
+  const addressParts = suggestion.data.address.split(',');
+  const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
+      const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State'; // Extract state
+      const arr = stateAndZip.split(' ');
+      const state = arr[0];
+      const cityStatePair = `${city}, ${state}`;
+      if (!uniqueCitiesSet.has(cityStatePair)) {
+        uniqueCitiesSet.add(cityStatePair);
+    return true;
+  }
+  return false;
+});
 
-        setZip("false");
-        setCity("false");
-        return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
-      });
-
-  
-
-
-// setSuggestions(uniqueSuggestions);
+setSuggestions(uniqueSuggestions);
     // setFilteredProperties(filteredProperties);
-    if (searchTerm == ""){
-      setSuggestions([]);
-    }else{
-      setSuggestions(filteredSuggestions);
-    }
-   
+    // setSuggestions(filteredSuggestions);
     
-  }};
+  };
 
 
   //Filters
@@ -331,26 +316,8 @@ const filteredSuggestions = listings.filter((listing) =>{
         onChange={onChange}
       />
       <div>
-        {/* {city === "true" ? ( */}
-      {/* <ul className="suggestions-list"> */}
-      {/* {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
-          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
-          const stateAndZipParts = stateAndZip.split(' ');
-          const state = stateAndZipParts[0];
-          return `${city}, ${state}`;
-        }))).map((cityStatePair, index) => (
-      <li key={index}>
-        <Link to="/afterSearch">{cityStatePair}</Link>
-      </li>
-    ))} */}
-
-{city === "true" ? (
-  <>
-  {searchTerm && suggestions.length > 0 && (
       <ul className="suggestions-list">
-        {Array.from(new Set(suggestions.map((suggestion) => {
+      {Array.from(new Set(suggestions.map((suggestion) => {
           const addressParts = suggestion.data.address.split(',');
           const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
           const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
@@ -362,43 +329,7 @@ const filteredSuggestions = listings.filter((listing) =>{
         <Link to="/afterSearch">{cityStatePair}</Link>
       </li>
     ))}
-      </ul>
-  )}
-      </>
-    ) : zipcode === "true" ? (
-      <>
-      {searchTerm && suggestions.length > 0 && (
-      <ul className="suggestions-list" >
-        {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
-          return `${stateAndZip}`;
-        }))).map((cityStatePair, index) => (
-          <li key={index}>
-            <Link to="/afterSearch">{cityStatePair}</Link>
-          </li>
-        ))}
-      </ul>
-      )}
-      </>) : (
-        <>
-        {searchTerm && suggestions.length > 0 && (
-      <ul className="suggestions-list" >
-        {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          return `${addressParts}`;
-        }))).map((cityStatePair, index) => (
-          <li key={index}>
-            <Link to="/afterSearch">{cityStatePair}</Link>
-          </li>
-        ))}
-      </ul>
-        )}
-      </>
-    )
-       }
-
-</div>
+</ul></div>
             {/* Search button */}
             <button
               type="submit"
@@ -737,29 +668,6 @@ const filteredSuggestions = listings.filter((listing) =>{
         </div>
       )}
 
-      {/* Thumbnail images */}
-      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
-          {images.map((img, i) => (
-            <li
-              key={i}
-              className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
-              style={{
-                backgroundImage: `url(${img})`, // Set the background image here
-                backgroundRepeat: 'no-repeat', // Prevent background image from repeating
-                backgroundSize: 'cover', // Adjust background image size as needed
-              }}
-            >
-              <img
-                className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
-                loading="lazy"
-                src={img}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* Footer Information */}
       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <p>info@mncdevelopment.com</p>
@@ -789,4 +697,4 @@ const filteredSuggestions = listings.filter((listing) =>{
   );
 };
 
-export default Home;
+export default AfterSearch;

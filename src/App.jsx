@@ -21,6 +21,7 @@ import Vip from "./pages/Vip";
 import CreateVipListing from "./pages/VipCreateListing";
 import VipEditListing from "./pages/VipEditListing";
 import VipListing from "./pages/VipListing";
+import AfterSearch from "./pages/AfterSearch";
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
           <Route
             path="/sign-in"
             element={<SignIn />}
+          />
+          <Route
+            path="/afterSearch"
+            element={<AfterSearch />}
           />
           <Route
             path="/sign-up"
