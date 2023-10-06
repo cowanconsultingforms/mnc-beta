@@ -39,7 +39,7 @@ function App() {
             element={<SignIn />}
           />
           <Route
-            path="/afterSearch"
+            path="/afterSearch/:location"
             element={<AfterSearch />}
           />
           <Route

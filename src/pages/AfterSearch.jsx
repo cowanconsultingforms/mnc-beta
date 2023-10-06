@@ -9,8 +9,10 @@ import { Link } from "react-router-dom";
 
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
+import { useParams } from "react-router-dom";
 
-const AfterSearch = () => {
+const Home = () => {
+  const { location } = useParams();
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
@@ -43,10 +45,33 @@ const AfterSearch = () => {
   const [applyFilt, setApplyFilt] = useState();
   const [clicked, setClicked] = useState(false);
   const [buttonText, setButtonText] = useState("Filters");
+  const [zipcode, setZip] = useState(false);
+  const [city, setCity] = useState(false);
   
-// useEffect(() =>{
-//   setBedroom2(10);
-// }, []);
+useEffect(() =>{
+  console.log("selecteed: ", location)
+  async function fetchData() {
+  const listingRef = collection(db, "propertyListings");
+  const category = getCategory(selectedButton);
+  let q = query(listingRef, where("type", "==", category));
+  const querySnap = await getDocs(q);
+
+  let listings = [];
+  querySnap.forEach((doc) => {
+    //if searchTerm != null, only return properties that contian the search term in the address
+    return listings.push({
+      id: doc.id,
+      data: doc.data(),
+    });
+  });
+
+const filteredProperties = listings.filter((listing) =>
+    listing.data.address.toLowerCase().includes(location.toLowerCase())
+  );
+  setSuggestions(filteredProperties);
+}
+fetchData();
+}, []);
 
   const handleClick = () => {
     setClicked(!clicked);
@@ -60,12 +85,13 @@ const AfterSearch = () => {
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
+    if(searchTerm !== ""){
     // Displays results after 500ms delay
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
       fetchProperties(searchTerm);
     }, 500);
-    setTimer(newTimer);
+    setTimer(newTimer);}
   };
 
   // Get the category based on the selectedButton
@@ -94,60 +120,54 @@ const AfterSearch = () => {
 
   // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm) => {
+    if(searchTerm !== ""){
     const listingRef = collection(db, "propertyListings");
-
-    // Get the category based on the selectedButton
     const category = getCategory(selectedButton);
-
-    // Build the query based on the selectedButton and the searchTerm
     let q = query(listingRef, where("type", "==", category));
-
-    // If there's a searchTerm, add the where clause for address field
-    // If there's a searchTerm, create an array of address tokens and query against it
-
     const querySnap = await getDocs(q);
-
-    // Adds all listings from query to 'listings' variable
     let listings = [];
     querySnap.forEach((doc) => {
-      //if searchTerm != null, only return properties that contian the search term in the address
-
+ 
       return listings.push({
         id: doc.id,
         data: doc.data(),
       });
     });
 
-    // const filteredProperties = listings.filter((listing) =>
-    //   listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-        
+const filteredSuggestions = listings.filter((listing) =>{
+        const regexZipCode = /^\d{1,5}$/;
+        const regexCity = /^[a-zA-Z\s]+$/;
+      
+        if(regexZipCode.test(searchTerm)){
+          setZip("true");
+          setCity("false");
+          // console.log("zip", {zipcode});
+          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+         if(regexCity.test(searchTerm)){
+          setCity("true");
+          setZip("false");
+          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+        }
 
-        // setInputValue(searchTerm);
-      const filteredSuggestions = listings.filter((listing) =>
-      listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-// Extract unique cities using a Set
-  const uniqueCitiesSet = new Set();
-  const uniqueSuggestions = filteredSuggestions.filter((suggestion) => {
-  const addressParts = suggestion.data.address.split(',');
-  const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
-      const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State'; // Extract state
-      const arr = stateAndZip.split(' ');
-      const state = arr[0];
-      const cityStatePair = `${city}, ${state}`;
-      if (!uniqueCitiesSet.has(cityStatePair)) {
-        uniqueCitiesSet.add(cityStatePair);
-    return true;
-  }
-  return false;
-});
+        setZip("false");
+        setCity("false");
+        return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+      });
 
-setSuggestions(uniqueSuggestions);
+  
+
+
+// setSuggestions(uniqueSuggestions);
     // setFilteredProperties(filteredProperties);
-    // setSuggestions(filteredSuggestions);
+    if (searchTerm == ""){
+      setSuggestions([]);
+    }else{
+      setSuggestions(filteredSuggestions);
+    }
+   
     
-  };
+}};
 
 
   //Filters
@@ -197,7 +217,7 @@ setSuggestions(uniqueSuggestions);
      meetsOutdoorSpaceFilter(listing) && meetsPoolFilter(listing) && meetsSchoolFilter &&
       meetsDoormanFilter(listing) && meetsBasementFilter(listing) && meetsGarageFilter(listing) && meetsAirFilter(listing);
     });
-       setFilteredProperties(filteredProperties);
+       setSuggestions(filteredProperties);
   }
 
   const handleIncrementBathrooms = () => {
@@ -245,6 +265,27 @@ setSuggestions(uniqueSuggestions);
     setShowFilters(false); // Close the filter panel
   };
 
+  const handleItemClick = async(item)=>{
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedButton);
+    let q = query(listingRef, where("type", "==", category));
+    const querySnap = await getDocs(q);
+
+    let listings = [];
+    querySnap.forEach((doc) => {
+      //if searchTerm != null, only return properties that contian the search term in the address
+      return listings.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+console.log("handle:")
+const filteredProperties = listings.filter((listing) =>
+      listing.data.address.toLowerCase().includes(item.toLowerCase())
+    );
+    setSuggestions(filteredProperties);
+  }
+
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -291,21 +332,7 @@ setSuggestions(uniqueSuggestions);
           </div>
         </div>
 <div style={{}}>
-        {/* Search bar + button */}
-        {/* <form
-          onSubmit={handleSearch}
-          className="max-w-md mt-6 w-full text flex justify-center"
-        > */}
-          {/* Search bar */}
           <div className="w-full px-3 relative" style={{ width: "400px"}}>
-            {/* <input
-              type="search"
-              placeholder={"Search by location or point of interest"}
-              value={searchTerm}
-              onChange={onChange}
-              onSubmit={handleSearch}
-              className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
-            ></input> */}
             <input
         type="text"
         id="location-lookup-input"
@@ -316,8 +343,12 @@ setSuggestions(uniqueSuggestions);
         onChange={onChange}
       />
       <div>
+        
+{city === "true" ? (
+  <>
+  {searchTerm && suggestions.length > 0 && (
       <ul className="suggestions-list">
-      {Array.from(new Set(suggestions.map((suggestion) => {
+        {Array.from(new Set(suggestions.map((suggestion) => {
           const addressParts = suggestion.data.address.split(',');
           const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
           const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
@@ -325,11 +356,47 @@ setSuggestions(uniqueSuggestions);
           const state = stateAndZipParts[0];
           return `${city}, ${state}`;
         }))).map((cityStatePair, index) => (
-      <li key={index}>
-        <Link to="/afterSearch">{cityStatePair}</Link>
+      <li role="option" class="cx-optionsMenu-item uc-typeahead-option is-hovered" aria-selected="true" key={index}  >
+        <button onSubmit={() => handleItemClick(cityStatePair)}>{cityStatePair}</button>
       </li>
     ))}
-</ul></div>
+      </ul>
+  )}
+      </>
+    ) : zipcode === "true" ? (
+      <>
+      {searchTerm && suggestions.length > 0 && (
+      <ul className="suggestions-list" >
+        {Array.from(new Set(suggestions.map((suggestion) => {
+          const addressParts = suggestion.data.address.split(',');
+          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
+          return `${stateAndZip}`;
+        }))).map((cityStatePair, index) => (
+            <li role="option" class="cx-optionsMenu-item uc-typeahead-option is-hovered" aria-selected="true" key={index}  >
+            <button style={{borderBlock: "2px"}} onSubmit={() => handleItemClick(cityStatePair)}>{cityStatePair}</button>
+          </li>
+        ))}
+      </ul>
+      )}
+      </>) : (
+        <>
+        {searchTerm && suggestions.length > 0 && (
+      <ul className="suggestions-list" >
+        {Array.from(new Set(suggestions.map((suggestion) => {
+          const addressParts = suggestion.data.address.split(',');
+          return `${addressParts}`;
+        }))).map((cityStatePair, index) => (
+            <li role="option" class="cx-optionsMenu-item uc-typeahead-option is-hovered" aria-selected="true" key={index}  >
+            <button onSubmit={() => handleItemClick(cityStatePair)}>{cityStatePair}</button>
+          </li>
+        ))}
+      </ul>
+        )}
+      </>
+    )
+       }
+
+</div>
             {/* Search button */}
             <button
               type="submit"
@@ -654,10 +721,10 @@ setSuggestions(uniqueSuggestions);
       </section>
 
       {/* Search results (only displays when results are found) */}
-      {filteredProperties.length > 0 && (
+      {suggestions.length > 0 && (
         <div className=" w-full max-w-6xl mx-auto flex items-center justify-center">
           <ul className="w-full sm:grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
-            {filteredProperties.map((listing) => (
+            {suggestions.map((listing) => (
               <ListingItem
                 key={listing.id}
                 id={listing.id}
@@ -668,8 +735,11 @@ setSuggestions(uniqueSuggestions);
         </div>
       )}
 
+
       {/* Footer Information */}
-      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
+      style={{backgroundColor: "#4a5568", color: "white"}}
+      >
         <p>info@mncdevelopment.com</p>
         <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
           <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
@@ -697,4 +767,4 @@ setSuggestions(uniqueSuggestions);
   );
 };
 
-export default AfterSearch;
+export default Home;
