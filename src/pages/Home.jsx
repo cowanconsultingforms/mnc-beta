@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
@@ -10,9 +10,9 @@ import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
-
 const Home = () => {
   // const [inputValue, setInputValue] = useState('');
+  
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
@@ -46,11 +46,11 @@ const Home = () => {
   // const [buttonText, setButtonText] = useState("Filters");
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
-  
-// useEffect(() =>{
-//   setZip("false");
-//   setCity("false");
-// }, []);
+
+  // useEffect(() =>{
+  //   setZip("false");
+  //   setCity("false");
+  // }, []);
 
   // const handleClick = () => {
   //   setClicked(!clicked);
@@ -64,13 +64,14 @@ const Home = () => {
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
-    if(searchTerm !== ""){
-    // Displays results after 500ms delay
-    clearTimeout(timer);
-    const newTimer = setTimeout(() => {
-      fetchProperties(searchTerm);
-    }, 500);
-    setTimer(newTimer);}
+    if (searchTerm !== "") {
+      // Displays results after 500ms delay
+      clearTimeout(timer);
+      const newTimer = setTimeout(() => {
+        fetchProperties(searchTerm);
+      }, 500);
+      setTimer(newTimer);
+    }
   };
 
   // Get the category based on the selectedButton
@@ -84,9 +85,11 @@ const Home = () => {
         return "sold";
     }
   };
- const handleItemClick = (selectedItem) => {
+  const handleItemClick = (selectedItem) => {
     // Navigate to the target page with the selected item as a URL parameter
-    history.push(`/afterSearch?selectedItem=${encodeURIComponent(selectedItem)}`);
+    history.push(
+      `/afterSearch?selectedItem=${encodeURIComponent(selectedItem)}`
+    );
   };
   const createAddressTokens = (searchTerm) => {
     // Split the searchTerm into individual tokens (words) and filter out empty strings
@@ -102,167 +105,167 @@ const Home = () => {
 
   // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm) => {
-    if(searchTerm !== ""){
-    const listingRef = collection(db, "propertyListings");
+    if (searchTerm !== "") {
+      const listingRef = collection(db, "propertyListings");
 
-    // Get the category based on the selectedButton
-    const category = getCategory(selectedButton);
+      // Get the category based on the selectedButton
+      const category = getCategory(selectedButton);
 
-    // Build the query based on the selectedButton and the searchTerm
-    let q = query(listingRef, where("type", "==", category));
+      // Build the query based on the selectedButton and the searchTerm
+      let q = query(listingRef, where("type", "==", category));
 
-    // If there's a searchTerm, add the where clause for address field
-    // If there's a searchTerm, create an array of address tokens and query against it
+      // If there's a searchTerm, add the where clause for address field
+      // If there's a searchTerm, create an array of address tokens and query against it
 
-    const querySnap = await getDocs(q);
+      const querySnap = await getDocs(q);
 
-    // Adds all listings from query to 'listings' variable
-    let listings = [];
-    querySnap.forEach((doc) => {
-      //if searchTerm != null, only return properties that contian the search term in the address
+      // Adds all listings from query to 'listings' variable
+      let listings = [];
+      querySnap.forEach((doc) => {
+        //if searchTerm != null, only return properties that contian the search term in the address
 
-      return listings.push({
-        id: doc.id,
-        data: doc.data(),
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
       });
-    });
 
-    // const filteredProperties = listings.filter((listing) =>
-    //   listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-        
+      // const filteredProperties = listings.filter((listing) =>
+      //   listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      // );
 
-        // setInputValue(searchTerm);
-const filteredSuggestions = listings.filter((listing) =>{
+      // setInputValue(searchTerm);
+      const filteredSuggestions = listings.filter((listing) => {
         const regexZipCode = /^\d{1,5}$/;
         const regexCity = /^[a-zA-Z\s]+$/;
-      
-        if(regexZipCode.test(searchTerm)){
+
+        if (regexZipCode.test(searchTerm)) {
           setZip("true");
           setCity("false");
           // console.log("zip", {zipcode});
-          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+          return listing.data.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
         }
-         if(regexCity.test(searchTerm)){
+        if (regexCity.test(searchTerm)) {
           setCity("true");
           setZip("false");
-          return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+          return listing.data.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
         }
 
         setZip("false");
         setCity("false");
-        return listing.data.address.toLowerCase().includes(searchTerm.toLowerCase());
+        return listing.data.address
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
       });
 
-  
-
-
-// setSuggestions(uniqueSuggestions);
-    // setFilteredProperties(filteredProperties);
-    if (searchTerm == ""){
-      setSuggestions([]);
-    }else{
-      setSuggestions(filteredSuggestions);
+      // setSuggestions(uniqueSuggestions);
+      // setFilteredProperties(filteredProperties);
+      if (searchTerm == "") {
+        setSuggestions([]);
+      } else {
+        setSuggestions(filteredSuggestions);
+      }
     }
-   
-    
-}};
-
+  };
 
   //Filters
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
-//   const applyFilters = async() =>{
-//     const listingRef = collection(db, "propertyListings");
-//     const category = getCategory(selectedButton);
-//     let q = query(listingRef, where("type", "==", category));
-//     const querySnap = await getDocs(q);
+  //   const applyFilters = async() =>{
+  //     const listingRef = collection(db, "propertyListings");
+  //     const category = getCategory(selectedButton);
+  //     let q = query(listingRef, where("type", "==", category));
+  //     const querySnap = await getDocs(q);
 
-//     let listings = [];
-//     querySnap.forEach((doc) => {
-//       //if searchTerm != null, only return properties that contian the search term in the address
-//       return listings.push({
-//         id: doc.id,
-//         data: doc.data(),
-//       });
-//     });
+  //     let listings = [];
+  //     querySnap.forEach((doc) => {
+  //       //if searchTerm != null, only return properties that contian the search term in the address
+  //       return listings.push({
+  //         id: doc.id,
+  //         data: doc.data(),
+  //       });
+  //     });
 
-//     const filteredProperties = listings.filter((listing) => {
-//     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
-//                    (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
-//     const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
-//                  (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
-//     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
-//     const meetsLandFilter = (!land1 || listing.data.landSize >= parseInt(land1, 10)) &&
-//                             (!land2 || listing.data.landSize <= parseInt(land2, 10));
-//     const meetsYearBuiltFilter = (!year1 || listing.data.yearBuilt >= parseInt(year1, 10)) &&
-//                                  (!year2 || listing.data.yearBuilt <= parseInt(year2, 10));
-//     const meetsStoriesFilter = (!story1 || listing.data.stories >= parseInt(story1, 10)) &&
-//                                (!story2 || listing.data.stories <= parseInt(story2, 10));
-//     const meetsSchoolFilter = !schoolRating || listing.data.schoolRating >= parseInt(schoolRating,10);
-   
-//     const meetsParkingFilter = (listing) => !parkingChecked || listing.data.parking;
-//     const meetsOutdoorSpaceFilter = (listing) => !privateOutdoorSpace || listing.data.privateOutdoorSpace;
-//     const meetsPoolFilter = (listing) => !pool || listing.data.pool;
-//     const meetsDoormanFilter = (listing) => !doorMan || listing.data.doorMan;
-//     const meetsBasementFilter = (listing) => !basement || listing.data.basement;
-//     const meetsGarageFilter = (listing) => !garage || listing.data.garage;
-//     const meetsAirFilter = (listing) => !airCondition || listing.data.airConditioning;
-// // return prices && beds && meetsschoolRatingFilter && meetsBathroomFilter && meetsLandFilter && meetsYearBuiltFilter && meetsStoriesFilter;
-//     return prices && meetsSchoolFilter && meetsStoriesFilter && meetsYearBuiltFilter &&
-//      meetsLandFilter && beds && meetsBathroomFilter && meetsParkingFilter(listing) && 
-//      meetsOutdoorSpaceFilter(listing) && meetsPoolFilter(listing) && meetsSchoolFilter &&
-//       meetsDoormanFilter(listing) && meetsBasementFilter(listing) && meetsGarageFilter(listing) && meetsAirFilter(listing);
-//     });
-//        setFilteredProperties(filteredProperties);
-//   }
+  //     const filteredProperties = listings.filter((listing) => {
+  //     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
+  //                    (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
+  //     const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
+  //                  (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
+  //     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
+  //     const meetsLandFilter = (!land1 || listing.data.landSize >= parseInt(land1, 10)) &&
+  //                             (!land2 || listing.data.landSize <= parseInt(land2, 10));
+  //     const meetsYearBuiltFilter = (!year1 || listing.data.yearBuilt >= parseInt(year1, 10)) &&
+  //                                  (!year2 || listing.data.yearBuilt <= parseInt(year2, 10));
+  //     const meetsStoriesFilter = (!story1 || listing.data.stories >= parseInt(story1, 10)) &&
+  //                                (!story2 || listing.data.stories <= parseInt(story2, 10));
+  //     const meetsSchoolFilter = !schoolRating || listing.data.schoolRating >= parseInt(schoolRating,10);
 
-//   const handleIncrementBathrooms = () => {
-//     setBathroomCount(bathroomCount + 1);
-//   };
+  //     const meetsParkingFilter = (listing) => !parkingChecked || listing.data.parking;
+  //     const meetsOutdoorSpaceFilter = (listing) => !privateOutdoorSpace || listing.data.privateOutdoorSpace;
+  //     const meetsPoolFilter = (listing) => !pool || listing.data.pool;
+  //     const meetsDoormanFilter = (listing) => !doorMan || listing.data.doorMan;
+  //     const meetsBasementFilter = (listing) => !basement || listing.data.basement;
+  //     const meetsGarageFilter = (listing) => !garage || listing.data.garage;
+  //     const meetsAirFilter = (listing) => !airCondition || listing.data.airConditioning;
+  // // return prices && beds && meetsschoolRatingFilter && meetsBathroomFilter && meetsLandFilter && meetsYearBuiltFilter && meetsStoriesFilter;
+  //     return prices && meetsSchoolFilter && meetsStoriesFilter && meetsYearBuiltFilter &&
+  //      meetsLandFilter && beds && meetsBathroomFilter && meetsParkingFilter(listing) &&
+  //      meetsOutdoorSpaceFilter(listing) && meetsPoolFilter(listing) && meetsSchoolFilter &&
+  //       meetsDoormanFilter(listing) && meetsBasementFilter(listing) && meetsGarageFilter(listing) && meetsAirFilter(listing);
+  //     });
+  //        setFilteredProperties(filteredProperties);
+  //   }
 
-//   const handleDecrementBathrooms = () => {
-//     if (bathroomCount > 1) {
-//       setBathroomCount(bathroomCount - 1);
-//     }
-//   };
+  //   const handleIncrementBathrooms = () => {
+  //     setBathroomCount(bathroomCount + 1);
+  //   };
 
-//   const handleDoorman = () => {
-//     setDoorman(!doorMan);
-//   };
+  //   const handleDecrementBathrooms = () => {
+  //     if (bathroomCount > 1) {
+  //       setBathroomCount(bathroomCount - 1);
+  //     }
+  //   };
 
-//   const handlePrivateOutdoorSpace = () => {
-//     setPrivateOutdoorSpace(!privateOutdoorSpace);
-//   };
+  //   const handleDoorman = () => {
+  //     setDoorman(!doorMan);
+  //   };
 
-//   const handlePool = () => {
-//     setPool(!pool);
-//   };
+  //   const handlePrivateOutdoorSpace = () => {
+  //     setPrivateOutdoorSpace(!privateOutdoorSpace);
+  //   };
 
-//   const handleBasement = () => {
-//     setBasement(!basement);
-//   };
+  //   const handlePool = () => {
+  //     setPool(!pool);
+  //   };
 
-//   const handleElevator = () => {
-//     setElevator(!elevator);
-//   };
+  //   const handleBasement = () => {
+  //     setBasement(!basement);
+  //   };
 
-//   const handleGarage = () => {
-//     setGarage(!garage);
-//   };
+  //   const handleElevator = () => {
+  //     setElevator(!elevator);
+  //   };
 
-//   const HandleAircondition = () => {
-//     setAirCondition(!airCondition);
-//   };
-//   const handleParkingCheckboxChange = () => {
-//     setParkingChecked(!parkingChecked);
-//   };
+  //   const handleGarage = () => {
+  //     setGarage(!garage);
+  //   };
 
-//   const closeFilters = () => {
-//     setShowFilters(false); // Close the filter panel
-//   };
+  //   const HandleAircondition = () => {
+  //     setAirCondition(!airCondition);
+  //   };
+  //   const handleParkingCheckboxChange = () => {
+  //     setParkingChecked(!parkingChecked);
+  //   };
+
+  //   const closeFilters = () => {
+  //     setShowFilters(false); // Close the filter panel
+  //   };
 
   return (
     <>
@@ -309,14 +312,14 @@ const filteredSuggestions = listings.filter((listing) =>{
             </button>
           </div>
         </div>
-<div style={{}}>
-        {/* Search bar + button */}
-        {/* <form
+        <div style={{}}>
+          {/* Search bar + button */}
+          {/* <form
           onSubmit={handleSearch}
           className="max-w-md mt-6 w-full text flex justify-center"
         > */}
           {/* Search bar */}
-          <div className="w-full px-3 relative" style={{ width: "400px"}}>
+          <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
             {/* <input
               type="search"
               placeholder={"Search by location or point of interest"}
@@ -326,18 +329,19 @@ const filteredSuggestions = listings.filter((listing) =>{
               className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
             ></input> */}
             <input
-        type="text"
-        id="location-lookup-input"
-        className="uc-omnibox-input cx-textField"
-        placeholder="City, Neighborhood, Address, School, ZIP, Agent, MLS #"
-        aria-label="city, zip, address, school"
-        // value={searchTerm}
-        onChange={onChange}
-      />
-      <div>
-        {/* {city === "true" ? ( */}
-      {/* <ul className="suggestions-list"> */}
-      {/* {Array.from(new Set(suggestions.map((suggestion) => {
+              type="text"
+              id="location-lookup-input"
+              className="uc-omnibox-input cx-textField"
+              placeholder="City, Neighborhood, Address, School, ZIP"
+              aria-label="city, zip, address, school"
+              // value={searchTerm}
+              onChange={onChange}
+              style={{ width: "380px" }}
+            />
+            <div>
+              {/* {city === "true" ? ( */}
+              {/* <ul className="suggestions-list"> */}
+              {/* {Array.from(new Set(suggestions.map((suggestion) => {
           const addressParts = suggestion.data.address.split(',');
           const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
           const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
@@ -350,59 +354,97 @@ const filteredSuggestions = listings.filter((listing) =>{
       </li>
     ))} */}
 
-{city === "true" ? (
-  <>
-  {searchTerm && suggestions.length > 0 && (
-      <ul className="suggestions-list">
-        {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
-          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
-          const stateAndZipParts = stateAndZip.split(' ');
-          const state = stateAndZipParts[0];
-          return `${city}, ${state}`;
-        }))).map((cityStatePair, index) => (
-      <li key={index}>
-        <Link to={`/afterSearch/${encodeURIComponent(cityStatePair)}`}>{cityStatePair}</Link>
-      </li>
-    ))}
-      </ul>
-  )}
-      </>
-    ) : zipcode === "true" ? (
-      <>
-      {searchTerm && suggestions.length > 0 && (
-      <ul className="suggestions-list" >
-        {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
-          return `${stateAndZip}`;
-        }))).map((cityStatePair, index) => (
-          <li key={index}>
-        <Link to={`/afterSearch/${encodeURIComponent(cityStatePair)}`}>{cityStatePair}</Link>
-      </li>
-        ))}
-      </ul>
-      )}
-      </>) : (
-        <>
-        {searchTerm && suggestions.length > 0 && (
-      <ul className="suggestions-list" >
-        {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          return `${addressParts}`;
-        }))).map((cityStatePair, index) => (
-          <li key={index}>
-            <Link to={`/afterSearch/${encodeURIComponent(cityStatePair)}`}>{cityStatePair}</Link>
-          </li>
-        ))}
-      </ul>
-        )}
-      </>
-    )
-       }
-
-</div>
+              {city === "true" ? (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {Array.from(
+                        new Set(
+                          suggestions.map((suggestion) => {
+                            const addressParts =
+                              suggestion.data.address.split(",");
+                            const city =
+                              addressParts[addressParts.length - 2]?.trim() ||
+                              "Unknown City";
+                            const stateAndZip =
+                              addressParts[addressParts.length - 1]?.trim() ||
+                              "Unknown State";
+                            const stateAndZipParts = stateAndZip.split(" ");
+                            const state = stateAndZipParts[0];
+                            return `${city}, ${state}`;
+                          })
+                        )
+                      ).map((cityStatePair, index) => (
+                        <li key={index}>
+                          <Link
+                            to={`/afterSearch/${encodeURIComponent(
+                              cityStatePair
+                            )}`}
+                          >
+                            {cityStatePair}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : zipcode === "true" ? (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {Array.from(
+                        new Set(
+                          suggestions.map((suggestion) => {
+                            const addressParts =
+                              suggestion.data.address.split(",");
+                            const stateAndZip =
+                              addressParts[addressParts.length - 1]?.trim() ||
+                              "Unknown State";
+                            return `${stateAndZip}`;
+                          })
+                        )
+                      ).map((cityStatePair, index) => (
+                        <li key={index}>
+                          <Link
+                            to={`/afterSearch/${encodeURIComponent(
+                              cityStatePair
+                            )}`}
+                          >
+                            {cityStatePair}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {Array.from(
+                        new Set(
+                          suggestions.map((suggestion) => {
+                            const addressParts =
+                              suggestion.data.address.split(",");
+                            return `${addressParts}`;
+                          })
+                        )
+                      ).map((cityStatePair, index) => (
+                        <li key={index}>
+                          <Link
+                            to={`/afterSearch/${encodeURIComponent(
+                              cityStatePair
+                            )}`}
+                          >
+                            {cityStatePair}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </div>
             {/* Search button */}
             <button
               type="submit"
@@ -411,9 +453,9 @@ const filteredSuggestions = listings.filter((listing) =>{
               <AiOutlineSearch className="text-gray-700 text-2xl" />
             </button>
           </div>
-      {/* </form> */}
-{/* filters */}
-{/* <div style={{ marginTop: "25px", marginLeft: "120px" }}>
+          {/* </form> */}
+          {/* filters */}
+          {/* <div style={{ marginTop: "25px", marginLeft: "120px" }}>
          <button
          id="close-button"
         className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -722,7 +764,7 @@ const filteredSuggestions = listings.filter((listing) =>{
               Apply Filters
             </button>
             </div> */}
-        {/* </div> */}
+          {/* </div> */}
         </div>
       </section>
 
@@ -742,16 +784,18 @@ const filteredSuggestions = listings.filter((listing) =>{
       )} */}
 
       {/* Thumbnail images */}
-      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
+      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white" style={{position: "relative", bottom: "0PX", left: "0px", right: "0px"}}>
+        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0"
+        >
           {images.map((img, i) => (
             <li
               key={i}
               className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
               style={{
                 backgroundImage: `url(${img})`, // Set the background image here
-                backgroundRepeat: 'no-repeat', // Prevent background image from repeating
-                backgroundSize: 'cover', // Adjust background image size as needed
+                backgroundRepeat: "no-repeat", // Prevent background image from repeating
+                backgroundSize: "cover", // Adjust background image size as needed
+                height: "200px",
               }}
             >
               <img
@@ -765,8 +809,10 @@ const filteredSuggestions = listings.filter((listing) =>{
       </div>
 
       {/* Footer Information */}
-      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
-      style={{backgroundColor: "#4a5568", color: "white"}}>
+      <div
+        className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
+        style={{ backgroundColor: "#4a5568", color: "white", bottom: "0px", position: "relative", left: "0px", right: "0px"}}
+      >
         <p>info@mncdevelopment.com</p>
         <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
           <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">

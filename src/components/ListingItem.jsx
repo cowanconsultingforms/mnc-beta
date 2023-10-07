@@ -2,15 +2,24 @@ import { FaMapMarkerAlt, FaTrash } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import Moment from "react-moment";
 import { Link } from "react-router-dom";
-
+// import Listing from "../pages/Listing";
+import { useState } from "react";
 // Listing Item component
 const ListingItem = ({ listing, id, onEdit, onDelete }) => {
+  const [showListing, setShowListing] = useState(false);
+
+  // const handleShowListing = () => {
+  //   setShowListing(true);
+  // };
   return (
-    <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
+    <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]"
+    // onClick={handleShowListing}
+    >
       {/* Clicking on listing component redirects user to full listing page */}
       <Link
         className="contents"
         to={`/category/${listing.type}/${id}`}
+      
       >
         {/* Displays first selected image when listing was created */}
         <img
@@ -92,6 +101,7 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
           <MdEdit className="text-lg" />
         </button>
       )}
+      {/* {showListing && <Listing lisitngId={listing.id}/>} */}
     </li>
   );
 };
