@@ -71,6 +71,16 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
                   : "1 Bath"}
               </p>
             </div>
+            <div className="flex items-center space-x-1">
+              <p className="font-bold text-xs">
+                  {`${listing.landSize} Square Ft`}
+              </p>
+            </div>
+            <div className="flex items-center space-x-1">
+              <p className="font-bold text-xs">
+                  {` Year Built:${listing.yearBuilt}`}
+              </p>
+            </div>
           </div>
         </div>
       </Link>

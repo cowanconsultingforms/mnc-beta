@@ -1131,7 +1131,7 @@ const Home = () => {
           {isSortOpen && (
             <div
               className=" ring-1 bg-white absolute z-10 w-48 grid grid-cols-2 gap-2  shadow-lg  ring-2 ring-black ring-opacity-5"
-              style={{ marginLeft: "90px" }}
+              style={{ marginLeft: "125px" }}
             >
               <button className="ring-1 px-4  text-left text-sm text-gray-700 hover:bg-gray-100">
                 Ascending

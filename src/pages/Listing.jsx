@@ -13,6 +13,17 @@ import {
   FaMapMarkerAlt,
   FaParking,
   FaShare,
+  FaTree,
+  FaRuler,
+  FaCalendar,
+  FaGraduationCap,
+  FaBook,
+  FaHome,
+  FaBuilding,
+  FaSwimmingPool,
+  FaElevator,
+  FaCar,
+  FaSnowflake,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -46,11 +57,6 @@ const Listing = () => {
     const fetchListing = async () => {
       const docRef = doc(db, "propertyListings", params.listingId);
       const docSnap = await getDoc(docRef);
-      // sessionStorage.setItem('listingData', JSON.stringify(params.listingId));
-      const timestamp = new Date().getTime();
-      sessionStorage.setItem('sourceListingItem', 'ListingItem');
-      sessionStorage.setItem('timestampListingItem', timestamp);
-      sessionStorage.setItem('dataListingItem', params.listingId);
       if (docSnap.exists()) {
         setListing(docSnap.data());
         setLoading(false);
@@ -106,7 +112,7 @@ const Listing = () => {
 
       {/* Information section */}
       <div className="lg:m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
-        <div className="w-full">
+        <div className="w-full flex-container">
           <p className="text-2xl font-bold mb-3 text-gray-800">
             {/* Name and price */}
             {listing.name} - $
@@ -153,12 +159,13 @@ const Listing = () => {
             <span className="font-semibold">Description - </span>
             {listing.description}
           </p>
-
+          <div className="flex flex-wrap">
           {/* Beds, baths, parking, furnished */}
-          <ul className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
+          <ul className="items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
             {/* Bedrooms */}
-            <li className="flex items-center whitespace-nowrap">
-              <FaBed className="text-lg mr-1" />
+            <div></div>
+            <li className="flex items-center ">
+              <FaBed className="text-lg mr-1 " />
               {+listing.bedrooms > 1
                 ? `${listing.bedrooms} Beds`
                 : `${listing.bedrooms} Bed`}
@@ -183,8 +190,51 @@ const Listing = () => {
               <FaChair className="text-lg mr-1" />
               {listing.furnished ? "Furnished" : "Not furnished"}
             </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaRuler className="text-lg mr-1" />
+                {`${listing.landSize} Square Ft`}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaCalendar className="text-lg mr-1" />
+                {`Year Built: ${listing.yearBuilt}`}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaGraduationCap className="text-lg mr-1" />
+                {`${listing.schoolRating} School Rating`}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaBath className="text-lg mr-1" />
+              {+listing.stories > 1
+                ? `${listing.bathrooms} Stories`
+                : `${listing.bathrooms} Story`}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaTree className="text-lg mr-1" />
+              {listing.privateOutdoorSpace ? "Outdoor space" : "No outdoor space"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaHome className="text-lg mr-1" />
+              {listing.basement ? "Basement" : "No basement"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaBuilding className="text-lg mr-1" />
+              {listing.doorMan ? "Doorman" : "No doorman"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaSwimmingPool className="text-lg mr-1" />
+              {listing.pool ? "Pool" : "No pool"}
+            </li>
+            
+            <li className="flex items-center whitespace-nowrap">
+              <FaCar className="text-lg mr-1" />
+              {listing.garage ? "Garage" : "No garage"}
+            </li>
+            <li className="flex items-center whitespace-nowrap">
+              <FaSnowflake className="text-lg mr-1"/>
+              {listing.airConditioning ? "Air conditioning" : "No air conditioning"}
+            </li>
           </ul>
-
+          </div>
           {/* Contact button */}
           {!contactCreator && (
             <div className="mt-6">
