@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import SavedSearches from "./pages/SavedSearches";
 // Regular site imports
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
@@ -70,7 +70,10 @@ function App() {
             path="/map"
             element={<Map />}
           />
-
+         <Route
+            path="/savedSearches"
+            element={<SavedSearches />}
+          />
           {/* Navigates to dynamic listing URL */}
           <Route
             path="/category/:categoryName/:listingId"

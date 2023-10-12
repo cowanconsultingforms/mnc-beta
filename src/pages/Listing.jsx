@@ -5,7 +5,7 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Link, useNavigate } from "react";
 import {
   FaBath,
   FaBed,
@@ -32,6 +32,7 @@ const Listing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contactCreator, setContactCreator] = useState(false);
+  const [listingData, setListingData] = useState('');
 
   // Loads google maps api script
   const { isLoaded } = useLoadScript({
@@ -45,6 +46,11 @@ const Listing = () => {
     const fetchListing = async () => {
       const docRef = doc(db, "propertyListings", params.listingId);
       const docSnap = await getDoc(docRef);
+      // sessionStorage.setItem('listingData', JSON.stringify(params.listingId));
+      const timestamp = new Date().getTime();
+      sessionStorage.setItem('sourceListingItem', 'ListingItem');
+      sessionStorage.setItem('timestampListingItem', timestamp);
+      sessionStorage.setItem('dataListingItem', params.listingId);
       if (docSnap.exists()) {
         setListing(docSnap.data());
         setLoading(false);

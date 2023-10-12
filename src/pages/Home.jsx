@@ -11,56 +11,15 @@ import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
 
 const Home = () => {
-  // const [inputValue, setInputValue] = useState('');
-  
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
-  // const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const images = [img1, img2, img3];
   const [showFilters, setShowFilters] = useState(false);
-  // const [input1Value, setInput1Value] = useState("");
-  // const [input2Value, setInput2Value] = useState("");
-  // const [bedroom1, setBedroom1] = useState();
-  // const [bedroom2, setBedroom2] = useState();
-  // const [bathroomCount, setBathroomCount] = useState(1);
-  // const [land1, setLand] = useState("");
-  // const [land2, setLand2] = useState("");
-  // const [year1, setYear1] = useState("");
-  // const [year2, setYear2] = useState("");
-  // const [schoolRating, setSchoolRating] = useState("");
-  // const [story1, setstory1] = useState("");
-  // const [story2, setStory2] = useState("");
-  // const [doorMan, setDoorman] = useState("");
-  // const [pool, setPool] = useState("");
-  // const [basement, setBasement] = useState("");
-  // const [privateOutdoorSpace, setPrivateOutdoorSpace] = useState("");
-  // const [elevator, setElevator] = useState("");
-  // const [garage, setGarage] = useState("");
-  // const [airCondition, setAirCondition] = useState("");
-  // const [parkingChecked, setParkingChecked] = useState(false);
-  // const [filter, setFilter] = useState();
-  // const [applyFilt, setApplyFilt] = useState();
-  // const [clicked, setClicked] = useState(false);
-  // const [buttonText, setButtonText] = useState("Filters");
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
 
-  // useEffect(() =>{
-  //   setZip("false");
-  //   setCity("false");
-  // }, []);
-
-  // const handleClick = () => {
-  //   setClicked(!clicked);
-  //   if (clicked) {
-  //     setButtonText("Search Filters");
-  //   } else {
-  //     setButtonText("Close Filters");
-  //   }
-  // };
-  // Updates search bar data when user types
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
@@ -177,96 +136,6 @@ const Home = () => {
     setShowFilters(!showFilters);
   };
 
-  //   const applyFilters = async() =>{
-  //     const listingRef = collection(db, "propertyListings");
-  //     const category = getCategory(selectedButton);
-  //     let q = query(listingRef, where("type", "==", category));
-  //     const querySnap = await getDocs(q);
-
-  //     let listings = [];
-  //     querySnap.forEach((doc) => {
-  //       //if searchTerm != null, only return properties that contian the search term in the address
-  //       return listings.push({
-  //         id: doc.id,
-  //         data: doc.data(),
-  //       });
-  //     });
-
-  //     const filteredProperties = listings.filter((listing) => {
-  //     const prices = (!input1Value || listing.data.regularPrice >= parseInt(input1Value, 10)) &&
-  //                    (!input2Value || listing.data.regularPrice <= parseInt(input2Value, 10));
-  //     const beds = (!bedroom1 || listing.data.bedrooms >= parseInt(bedroom1, 10)) &&
-  //                  (!bedroom2 || listing.data.bedrooms <= parseInt(bedroom2, 10));
-  //     const meetsBathroomFilter = (!bathroomCount || listing.data.bathrooms >= bathroomCount);
-  //     const meetsLandFilter = (!land1 || listing.data.landSize >= parseInt(land1, 10)) &&
-  //                             (!land2 || listing.data.landSize <= parseInt(land2, 10));
-  //     const meetsYearBuiltFilter = (!year1 || listing.data.yearBuilt >= parseInt(year1, 10)) &&
-  //                                  (!year2 || listing.data.yearBuilt <= parseInt(year2, 10));
-  //     const meetsStoriesFilter = (!story1 || listing.data.stories >= parseInt(story1, 10)) &&
-  //                                (!story2 || listing.data.stories <= parseInt(story2, 10));
-  //     const meetsSchoolFilter = !schoolRating || listing.data.schoolRating >= parseInt(schoolRating,10);
-
-  //     const meetsParkingFilter = (listing) => !parkingChecked || listing.data.parking;
-  //     const meetsOutdoorSpaceFilter = (listing) => !privateOutdoorSpace || listing.data.privateOutdoorSpace;
-  //     const meetsPoolFilter = (listing) => !pool || listing.data.pool;
-  //     const meetsDoormanFilter = (listing) => !doorMan || listing.data.doorMan;
-  //     const meetsBasementFilter = (listing) => !basement || listing.data.basement;
-  //     const meetsGarageFilter = (listing) => !garage || listing.data.garage;
-  //     const meetsAirFilter = (listing) => !airCondition || listing.data.airConditioning;
-  // // return prices && beds && meetsschoolRatingFilter && meetsBathroomFilter && meetsLandFilter && meetsYearBuiltFilter && meetsStoriesFilter;
-  //     return prices && meetsSchoolFilter && meetsStoriesFilter && meetsYearBuiltFilter &&
-  //      meetsLandFilter && beds && meetsBathroomFilter && meetsParkingFilter(listing) &&
-  //      meetsOutdoorSpaceFilter(listing) && meetsPoolFilter(listing) && meetsSchoolFilter &&
-  //       meetsDoormanFilter(listing) && meetsBasementFilter(listing) && meetsGarageFilter(listing) && meetsAirFilter(listing);
-  //     });
-  //        setFilteredProperties(filteredProperties);
-  //   }
-
-  //   const handleIncrementBathrooms = () => {
-  //     setBathroomCount(bathroomCount + 1);
-  //   };
-
-  //   const handleDecrementBathrooms = () => {
-  //     if (bathroomCount > 1) {
-  //       setBathroomCount(bathroomCount - 1);
-  //     }
-  //   };
-
-  //   const handleDoorman = () => {
-  //     setDoorman(!doorMan);
-  //   };
-
-  //   const handlePrivateOutdoorSpace = () => {
-  //     setPrivateOutdoorSpace(!privateOutdoorSpace);
-  //   };
-
-  //   const handlePool = () => {
-  //     setPool(!pool);
-  //   };
-
-  //   const handleBasement = () => {
-  //     setBasement(!basement);
-  //   };
-
-  //   const handleElevator = () => {
-  //     setElevator(!elevator);
-  //   };
-
-  //   const handleGarage = () => {
-  //     setGarage(!garage);
-  //   };
-
-  //   const HandleAircondition = () => {
-  //     setAirCondition(!airCondition);
-  //   };
-  //   const handleParkingCheckboxChange = () => {
-  //     setParkingChecked(!parkingChecked);
-  //   };
-
-  //   const closeFilters = () => {
-  //     setShowFilters(false); // Close the filter panel
-  //   };
-
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -277,7 +146,7 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -289,7 +158,7 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -301,7 +170,7 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium ring-1 uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -331,7 +200,7 @@ const Home = () => {
             <input
               type="text"
               id="location-lookup-input"
-              className="uc-omnibox-input cx-textField"
+              className="uc-omnibox-input cx-textField ring-1"
               placeholder="City, Neighborhood, Address, School, ZIP"
               aria-label="city, zip, address, school"
               // value={searchTerm}
@@ -377,9 +246,12 @@ const Home = () => {
                       ).map((cityStatePair, index) => (
                         <li key={index}>
                           <Link
-                            to={`/afterSearch/${encodeURIComponent(
-                              cityStatePair
-                            )}`}
+                            to={{
+                              pathname: `/afterSearch/${encodeURIComponent(
+                                cityStatePair.replace(/ /g, "%20")
+                              )}`,
+                              state: { fromListing: false, },
+                            }}
                           >
                             {cityStatePair}
                           </Link>
@@ -767,26 +639,18 @@ const Home = () => {
           {/* </div> */}
         </div>
       </section>
-
-      {/* Search results (only displays when results are found) */}
-      {/* {suggestions.length > 0 && (
-        <div className=" w-full max-w-6xl mx-auto flex items-center justify-center">
-          <ul className="w-full sm:grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
-            {suggestions.map((listing) => (
-              <ListingItem
-                key={listing.id}
-                id={listing.id}
-                listing={listing.data}
-              />
-            ))}
-          </ul>
-        </div>
-      )} */}
-
+      
       {/* Thumbnail images */}
-      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white" style={{position: "relative", bottom: "0PX", left: "0px", right: "0px"}}>
-        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0"
-        >
+      <div
+        className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
+        style={{
+          position: "relative",
+          bottom: "0PX",
+          left: "0px",
+          right: "0px",
+        }}
+      >
+        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
           {images.map((img, i) => (
             <li
               key={i}
@@ -809,10 +673,7 @@ const Home = () => {
       </div>
 
       {/* Footer Information */}
-      <div
-        className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
-        style={{ backgroundColor: "#4a5568", color: "white", bottom: "0px", position: "relative", left: "0px", right: "0px"}}
-      >
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <p>info@mncdevelopment.com</p>
         <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
           <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">

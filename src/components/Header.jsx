@@ -3,7 +3,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
-import Filter from "./Filter"
 
 import MncLogo from "../assets/svg/mnc-logo.svg";
 import { db } from "../firebase";
@@ -18,11 +17,41 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = getAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [user, setUser] = useState();
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const navigateToSavedSearches = () => {
+    setIsDropdownOpen(false);
+    navigate('/savedSearches');
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+    // Listen for changes in authentication state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is logged in
+        setUser("true");
+      } else {
+        // No user is logged in
+        setUser("false");
+      }
+    });
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
 
   // Dynamically changes Sign in button text depending on if user is signed in or not
   useEffect(() => {
     // Gets user role
     const fetchUserRole = async () => {
+      if (!auth || !auth.currentUser || !auth.currentUser.uid) {
+        return; // Return early if not defined
+      }
       const docRef = doc(db, "users", auth?.currentUser?.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -38,6 +67,8 @@ const Header = () => {
       fetchUserRole();
     });
   }, [role]);
+
+
 
   // Highlights respective button on navigation bar depending on current page
   const pathMatchRoute = (route) => {
@@ -111,7 +142,37 @@ const Header = () => {
             >
               Map
             </li>
-
+{/* saved searches */}
+  {user==="true" && ( 
+  <ul>
+  <li
+          className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+            !pathMatchRoute("/savedSearches") &&
+            "text-gray-400 border-b-transparent"
+          } ${
+            pathMatchRoute("/savedSearches") && "text-black border-b-gray-900"
+          }`}
+          onClick={toggleDropdown}
+        >
+          Go To
+        </li>
+        {isDropdownOpen && (
+        <li className="relative">
+            <ul className="absolute left-0 mt-2 bg-white border border-gray-300 shadow-lg">
+              <li
+                className="cursor-pointer py-2 px-4 hover:bg-gray-100"
+                onClick={()=>{ setIsDropdownOpen(false); navigate('/savedSearches'); {setMobileMenuOpen(false)}}}
+                style={{
+                  width: "145px"
+                }}
+             > Saved Searches
+              </li>
+              {/* Add more dropdown items here */}
+            </ul>
+        </li>
+        )}
+        </ul>
+        )}
             {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
@@ -126,7 +187,7 @@ const Header = () => {
             </li>
             
             {/* Devak's Filter Componenet*/}
-            <Filter/>
+            {/* <Filter/> */}
 
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
@@ -209,7 +270,36 @@ const Header = () => {
             >
               Map
             </li>
-
+{/* saved searches */}
+{user==="true" && (
+  <ul>
+    <div style={{display: "flex"}}>
+      <li
+          className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+            !pathMatchRoute("/savedSearches") &&
+            "text-gray-400 border-b-transparent"
+          } ${
+            pathMatchRoute("/savedSearches") && "text-black border-b-gray-900"
+          }`}
+          onClick={toggleDropdown}
+        >
+          Go To
+        </li>
+        <li className="relative" style={{marginLeft: "20px"}}>
+          {isDropdownOpen && (
+            <ul className="absolute left-0 mt-2 bg-white border border-gray-300 shadow-lg">
+              <li
+                className="cursor-pointer py-2 px-4 hover:bg-gray-100"
+                onClick={()=>{ setIsDropdownOpen(false); navigate('/savedSearches'); {setMobileMenuOpen(false)}}}
+              style={{width: "145px"}}
+              >
+                Saved Searches
+              </li>
+            </ul>
+          )}
+        </li></div>
+        </ul>
+)}
             {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
@@ -223,6 +313,7 @@ const Header = () => {
             >
               Contact Us
             </li>
+
 
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (

@@ -6,17 +6,17 @@ import {
   where,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, createContext, useState } from "react";
+import { arrayUnion } from "firebase/firestore";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
-import { Link } from "react-router-dom";
-import React, { useContext } from "react";
+import React from "react";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../css/PopUp.css";
 import {
@@ -46,7 +46,7 @@ const Home = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(location);
   const images = [img1, img2, img3];
   const [showFilters, setShowFilters] = useState(false);
   const [input1Value, setInput1Value] = useState("");
@@ -76,13 +76,16 @@ const Home = () => {
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
   const navigate = useNavigate();
-  const [typed, setTyped] = useState(false);
   const [save, setSave] = useState("false");
   const [showPopup, setShowPopup] = useState(false);
   const [signUP, setSignUp] = useState(false);
   const [signIn, setSignIn] = useState(false);
   const [propertiesToAdd, setPropertiesToAdd] = useState([]);
-  const [saved, setSaved] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortName, setSortName] = useState("");
+  const DataContext = createContext();
+  const [notification, setNotification] = useState("");
+  const location2 = useLocation();
 
   useEffect(() => {
     async function fetchData() {
@@ -101,11 +104,11 @@ const Home = () => {
       });
 
       const filteredProperties = listings.filter((listing) =>
-        listing.data.address.toLowerCase().includes(location.toLowerCase())
+        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      //   navigate(`/category/${filteredProperties.type}/${filteredProperties.id}`)
       setSuggestions(filteredProperties);
     }
+
     fetchData();
   }, []);
 
@@ -135,6 +138,13 @@ const Home = () => {
     }
   };
 
+  // notification
+  const handleSaveClick = () => {
+    setTimeout(() => {
+      setNotification("Saved");
+    }, 1000);
+  };
+
   const onSubmitSignIn = async (e) => {
     e.preventDefault();
     try {
@@ -146,7 +156,8 @@ const Home = () => {
       );
       if (userCredentials.user) {
         // navigate("/");
-        handleCloseSignUp();
+        saveFilters();
+        handleCloseSignIn();
         closePopup();
       }
     } catch (error) {
@@ -355,40 +366,47 @@ const Home = () => {
     setShowPopup(false);
   };
 
+  const flattenArray = (arr) => {
+    return arr.reduce((acc, val) => {
+      return Array.isArray(val)
+        ? acc.concat(flattenArray(val))
+        : acc.concat(val);
+    }, []);
+  };
+
   const saveFilters = async () => {
     const auth = getAuth();
     // Check if the user is authenticated
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const newProperties = suggestions.map((listing) => ({ listing }));
-          setPropertiesToAdd([...propertiesToAdd, ...newProperties]);
-        // setSaved(true);
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnapshot = await getDoc(userDocRef);
-
+    
         if (userDocSnapshot.exists()) {
-          const existingSavedProperties =
-            userDocSnapshot.data().savedProperties || [];
-
-          
-
-          console.log("prp: ", propertiesToAdd);
-
-          // existingSavedProperties.push(newProperties);
-
-          const updatedSavedProperties =
-            existingSavedProperties.concat(propertiesToAdd);
-
+          const existingSavedProperties = userDocSnapshot.data().savedProperties || [];
+          const flattenedSavedProperties = existingSavedProperties.map((property) => property);
+    
+          // Extract the IDs from the existing properties for deduplication
+          const existingPropertyIds = new Set(flattenedSavedProperties.map((property) => property.id));
+    
+          // Deduplicate the new properties and filter out existing ones
+          const uniqueNewProperties = suggestions.filter((listing) => !existingPropertyIds.has(listing.id));
+    
+          // Merge the unique new properties with the existing properties
+          const updatedSavedProperties = flattenedSavedProperties.concat(uniqueNewProperties);
+    
           await updateDoc(userDocRef, {
             savedProperties: updatedSavedProperties,
           });
+    
+          handleSaveClick();
+          toast.success("The search results got saved into Go To / Save Searches!");
         } else {
           console.log("User document does not exist.");
         }
       } else {
-        console.log("false");
+        console.log("User is not authenticated.");
         setShowPopup(true);
-        // Set a state variable to show the popup
       }
     });
   };
@@ -429,6 +447,7 @@ const Home = () => {
       // Adds account credentials to firestore database
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       // navigate("/");
+      saveFilters();
       handleCloseSignUp();
       closePopup();
     } catch (error) {
@@ -471,6 +490,76 @@ const Home = () => {
   const handleSignUP = () => {
     setSignUp(true);
   };
+  const sort = () => {
+    setIsSortOpen(!isSortOpen);
+  };
+
+  const sortByInput = async (input) => {
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedButton);
+    let q = query(listingRef, where("type", "==", category));
+    const querySnap = await getDocs(q);
+
+    let listings = [];
+    querySnap.forEach((doc) => {
+      return listings.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+    const filteredProperties = listings
+      .filter((listing) =>
+        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => {
+        const propertyA = parseInt(a.data[input], 10);
+        const propertyB = parseInt(b.data[input], 10);
+
+        if (propertyA < propertyB) {
+          return -1;
+        }
+        if (propertyA > propertyB) {
+          return 1;
+        }
+        return 0;
+      });
+    setSuggestions(filteredProperties);
+  };
+
+  const sortByInputDescending = async (input) => {
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedButton);
+    let q = query(listingRef, where("type", "==", category));
+    const querySnap = await getDocs(q);
+
+    let listings = [];
+    querySnap.forEach((doc) => {
+      return listings.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+    const filteredProperties = listings
+      .filter((listing) =>
+        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => {
+        const propertyA = parseInt(a.data[input], 10);
+        const propertyB = parseInt(b.data[input], 10);
+
+        if (propertyA < propertyB) {
+          return 1;
+        }
+        if (propertyA > propertyB) {
+          return -1;
+        }
+        return 0;
+      });
+    setSuggestions(filteredProperties);
+  };
+
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -481,7 +570,7 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -493,7 +582,7 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -505,7 +594,7 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium ring-1 uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -516,20 +605,23 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div style={{}}>
+        <div>
           <form
             onSubmit={handleSearch}
             className="max-w-md mt-6 w-full text flex justify-center"
           >
             {/* Search bar */}
-            <div className="w-full px-3 relative" style={{ width: "400px" }}>
+            <div
+              className="w-full px-3 relative"
+              style={{ width: "400px", marginLeft: "5px" }}
+            >
               <input
                 type="search"
                 placeholder={"Search by location or point of interest"}
                 value={searchTerm}
                 onChange={onChange}
                 onSubmit={handleSearch}
-                className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
+                className="text-lg w-full px-4 ring-1 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
               ></input>
 
               {/* Search button */}
@@ -542,10 +634,10 @@ const Home = () => {
             </div>
           </form>
           {/* filters */}
-          <div style={{ marginTop: "25px" }}>
+          <div style={{ marginTop: "20px", marginLeft: "55px" }}>
             <button
               id="close-button"
-              className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 buttonText === "Close Filters"
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -563,22 +655,24 @@ const Home = () => {
               {buttonText}
             </button>
           </div>
-
-          <button
-            className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-              save === "false"
-                ? "bg-gray-600 text-white"
-                : "bg-white text-black"
-            }`}
-            onClick={() => {
-              {
-                saveFilters();
-              }
-            }}
-            style={{ marginLeft: "150px", width: "140px", height: "auto" }}
-          >
-            Save Search
-          </button>
+          {/* save search */}
+          <div>
+            <button
+              className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+                save === "false"
+                  ? "bg-gray-600 text-white"
+                  : "bg-white text-black"
+              }`}
+              onClick={() => {
+                {
+                  saveFilters();
+                }
+              }}
+              style={{ marginLeft: "225px", width: "140px", height: "auto" }}
+            >
+              Save Search
+            </button>
+          </div>
           {showPopup && (
             <div className="popup-container">
               <div className="popup">
@@ -610,383 +704,546 @@ const Home = () => {
               </div>
             </div>
           )}
-        </div>
-        <div className={`filter-panel ${showFilters ? "open" : ""}`}>
-          <h1 id="panel-title">
-            Explore This Neighborhood
-            <button
-              id="close-filters2"
-              onClick={() => {
-                closeFilters();
-                handleClick();
-              }}
-            >
-              Close Filters
-            </button>
-          </h1>
-          &nbsp;<span> Price </span>
-          <div
-            style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <span>$</span>
-                <input
-                  type="text"
-                  value={input1Value}
-                  onChange={(e) => setInput1Value(e.target.value)}
-                  placeholder="MIN"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-              &nbsp;<span> - </span>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <span>$</span>
-                <input
-                  type="text"
-                  value={input2Value}
-                  onChange={(e) => setInput2Value(e.target.value)}
-                  placeholder="MAX"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-            </div>
-            <span>Beds</span>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "30px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <select
-                  value={bedroom1}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    if (selectedValue !== "NO MIN") {
-                      setBedroom1(selectedValue);
-                    } else {
-                      setBedroom1("");
-                      value = "NO MIN";
-                    }
-                  }}
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                >
-                  <option>NO MIN</option>
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
-                    <option key={number} value={number}>
-                      {number}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              &nbsp; <span>-</span>&nbsp;
-              <div>
-                <select
-                  value={bedroom2}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    if (selectedValue !== "NO MAX") {
-                      setBedroom2(selectedValue);
-                    } else {
-                      setBedroom2("");
-                      value = "NO MAX";
-                    }
-                  }}
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                >
-                  <option>NO MAX</option>
-                  {Array.from({ length: 11 }, (_, i) => i + 1).map((number) => (
-                    <option key={number} value={number}>
-                      {number}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <span>Baths</span>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
+
+          <div className={`filter-panel ${showFilters ? "open" : ""}`}>
+            <h1 id="panel-title">
+              Explore This Neighborhood
               <button
-                onClick={handleDecrementBathrooms}
-                style={{ width: "50px", height: "35px", border: "1px solid" }}
-              >
-                -
-              </button>
-              <input
-                type="text"
-                value={bathroomCount}
-                readOnly
-                style={{
-                  width: "400px",
-                  height: "35px",
-                  textAlign: "center",
-                  fontSize: "14px",
-                }}
-              />
-              <button
-                onClick={handleIncrementBathrooms}
-                style={{ width: "50px", height: "35px", border: "1px solid" }}
-              >
-                +
-              </button>
-            </div>
-            <div style={{ fontWeight: "bold", marginTop: "20px" }}>
-              <span>Property Facts</span>
-            </div>
-
-            <div style={{ marginTop: "10px" }}>
-              <span>Square Feet</span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="text"
-                  value={land1}
-                  onChange={(e) => setLand(e.target.value)}
-                  placeholder="MIN"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-              &nbsp;<span> - </span>&nbsp;
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="text"
-                  value={land2}
-                  onChange={(e) => setLand2(e.target.value)}
-                  placeholder="MAX"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginTop: "10px" }}>
-              <span>Year Built</span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="text"
-                  value={year1}
-                  onChange={(e) => setYear1(e.target.value)}
-                  placeholder="MIN"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-              &nbsp;<span> - </span>&nbsp;
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="text"
-                  value={year2}
-                  onChange={(e) => setYear2(e.target.value)}
-                  placeholder="MAX"
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginTop: "10px", fontWeight: "bold" }}>
-              <span>Schools</span>
-            </div>
-            <span>GreatSchools Rating</span>
-            <div>
-              <select
-                value={schoolRating}
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  if (selectedValue !== "None") {
-                    setSchoolRating(selectedValue);
-                  } else {
-                    setSchoolRating("");
-                    value = "None";
-                  }
-                }}
-                style={{ fontSize: "14px", width: "170px", height: "35px" }}
-              >
-                <option>None</option>
-                {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
-                  <option key={number} value={number}>
-                    {number}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ marginTop: "10px" }}>
-              <span>Stories</span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "30px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <select
-                  value={story1}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    if (selectedValue !== "NO MIN") {
-                      setstory1(selectedValue);
-                    } else {
-                      setstory1("");
-                      value = "NO MIN";
-                    }
-                  }}
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                >
-                  <option>NO MIN</option>
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
-                    <option key={number} value={number}>
-                      {number}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              &nbsp; <span>-</span>&nbsp;
-              <div>
-                <select
-                  value={story2}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    if (selectedValue !== "NO MAX") {
-                      setStory2(selectedValue);
-                    } else {
-                      setStory2("");
-                      value = "NO MAX";
-                    }
-                  }}
-                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
-                >
-                  <option>NO MAX</option>
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
-                    <option key={number} value={number}>
-                      {number}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: "10px" }}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={privateOutdoorSpace}
-                  onChange={handlePrivateOutdoorSpace}
-                />
-                &nbsp; Must Have Private Outdoor Space
-              </label>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={parkingChecked}
-                    onChange={handleParkingCheckboxChange}
-                  />
-                  &nbsp; Must Have Parking Space
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={doorMan}
-                    onChange={handleDoorman}
-                  />
-                  &nbsp; Must Have Doorman
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input type="checkbox" checked={pool} onChange={handlePool} />
-                  &nbsp; Must Have Pool
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={basement}
-                    onChange={handleBasement}
-                  />
-                  &nbsp; Must Have Basement
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={elevator}
-                    onChange={handleElevator}
-                  />
-                  &nbsp; Must Have Elevator
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={garage}
-                    onChange={handleGarage}
-                  />
-                  &nbsp; Must Have Garage
-                </label>
-              </div>
-              <div style={{ marginTop: "10px" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={airCondition}
-                    onChange={HandleAircondition}
-                  />
-                  &nbsp; Must Have Air Conditioning
-                </label>
-              </div>
-            </div>
-
-            <div style={{ marginTop: "10px" }}>
-              <button
-                className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                  applyFilt === "true"
-                    ? "bg-gray-600 text-white"
-                    : "bg-white text-black"
-                }`}
+                id="close-filters2"
                 onClick={() => {
-                  applyFilters();
-                  setApplyFilt("true");
+                  closeFilters();
+                  handleClick();
                 }}
               >
-                Apply Filters
+                Close Filters
               </button>
+            </h1>
+            &nbsp;<span> Price </span>
+            <div
+              style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span>$</span>
+                  <input
+                    type="text"
+                    value={input1Value}
+                    onChange={(e) => setInput1Value(e.target.value)}
+                    placeholder="MIN"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+                &nbsp;<span> - </span>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span>$</span>
+                  <input
+                    type="text"
+                    value={input2Value}
+                    onChange={(e) => setInput2Value(e.target.value)}
+                    placeholder="MAX"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+              </div>
+              <span>Beds</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "30px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <select
+                    value={bedroom1}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      if (selectedValue !== "NO MIN") {
+                        setBedroom1(selectedValue);
+                      } else {
+                        setBedroom1("");
+                        value = "NO MIN";
+                      }
+                    }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  >
+                    <option>NO MIN</option>
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                      (number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+                &nbsp; <span>-</span>&nbsp;
+                <div>
+                  <select
+                    value={bedroom2}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      if (selectedValue !== "NO MAX") {
+                        setBedroom2(selectedValue);
+                      } else {
+                        setBedroom2("");
+                        value = "NO MAX";
+                      }
+                    }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  >
+                    <option>NO MAX</option>
+                    {Array.from({ length: 11 }, (_, i) => i + 1).map(
+                      (number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+              <span>Baths</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "20px",
+                }}
+              >
+                <button
+                  onClick={handleDecrementBathrooms}
+                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={bathroomCount}
+                  readOnly
+                  style={{
+                    width: "400px",
+                    height: "35px",
+                    textAlign: "center",
+                    fontSize: "14px",
+                  }}
+                />
+                <button
+                  onClick={handleIncrementBathrooms}
+                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                >
+                  +
+                </button>
+              </div>
+              <div style={{ fontWeight: "bold", marginTop: "20px" }}>
+                <span>Property Facts</span>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <span>Square Feet</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={land1}
+                    onChange={(e) => setLand(e.target.value)}
+                    placeholder="MIN"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+                &nbsp;<span> - </span>&nbsp;
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={land2}
+                    onChange={(e) => setLand2(e.target.value)}
+                    placeholder="MAX"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <span>Year Built</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={year1}
+                    onChange={(e) => setYear1(e.target.value)}
+                    placeholder="MIN"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+                &nbsp;<span> - </span>&nbsp;
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={year2}
+                    onChange={(e) => setYear2(e.target.value)}
+                    placeholder="MAX"
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: "10px", fontWeight: "bold" }}>
+                <span>Schools</span>
+              </div>
+              <span>GreatSchools Rating</span>
+              <div>
+                <select
+                  value={schoolRating}
+                  onChange={(e) => {
+                    const selectedValue = e.target.value;
+                    if (selectedValue !== "None") {
+                      setSchoolRating(selectedValue);
+                    } else {
+                      setSchoolRating("");
+                      value = "None";
+                    }
+                  }}
+                  style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                >
+                  <option>None</option>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
+                    <option key={number} value={number}>
+                      {number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <span>Stories</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "30px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <select
+                    value={story1}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      if (selectedValue !== "NO MIN") {
+                        setstory1(selectedValue);
+                      } else {
+                        setstory1("");
+                        value = "NO MIN";
+                      }
+                    }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  >
+                    <option>NO MIN</option>
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                      (number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+                &nbsp; <span>-</span>&nbsp;
+                <div>
+                  <select
+                    value={story2}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      if (selectedValue !== "NO MAX") {
+                        setStory2(selectedValue);
+                      } else {
+                        setStory2("");
+                        value = "NO MAX";
+                      }
+                    }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                  >
+                    <option>NO MAX</option>
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                      (number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "10px" }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={privateOutdoorSpace}
+                    onChange={handlePrivateOutdoorSpace}
+                  />
+                  &nbsp; Must Have Private Outdoor Space
+                </label>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={parkingChecked}
+                      onChange={handleParkingCheckboxChange}
+                    />
+                    &nbsp; Must Have Parking Space
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={doorMan}
+                      onChange={handleDoorman}
+                    />
+                    &nbsp; Must Have Doorman
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={pool}
+                      onChange={handlePool}
+                    />
+                    &nbsp; Must Have Pool
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={basement}
+                      onChange={handleBasement}
+                    />
+                    &nbsp; Must Have Basement
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={elevator}
+                      onChange={handleElevator}
+                    />
+                    &nbsp; Must Have Elevator
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={garage}
+                      onChange={handleGarage}
+                    />
+                    &nbsp; Must Have Garage
+                  </label>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={airCondition}
+                      onChange={HandleAircondition}
+                    />
+                    &nbsp; Must Have Air Conditioning
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <button
+                  className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+                    applyFilt === "true"
+                      ? "bg-gray-600 text-white"
+                      : "bg-white text-black"
+                  }`}
+                  onClick={() => {
+                    applyFilters();
+                    setApplyFilt("true");
+                  }}
+                >
+                  Apply Filters
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* sort by */}
+          <div>
+            <button
+              onClick={sort}
+              className={`px-2 py-1 font-medium uppercase hover:underline focus:underline transition duration-150 ease-in-out flex items-center ${
+                isSortOpen === "false"
+                  ? "bg-gray-600 text-white"
+                  : "bg-white text-black"
+              }`}
+              style={{
+                width: "auto",
+                display: "flex",
+                height: "30px",
+                marginTop: "5px",
+                marginLeft: "145px",
+                border: "none",
+                background: "none",
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                <span className="mr-2">Sort by</span>
+                <svg
+                  className={`w-4 h-4 fill-current hover:underline focus:underline transform transition-transform duration-300 ${
+                    isSortOpen ? "rotate-180" : ""
+                  }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M8 12l-6-6 1.41-1.41L8 9.17l4.59-4.58L14 6z" />
+                </svg>
+                <span className="mr-2"> {sortName}</span>
+              </div>
+            </button>
+          </div>
+          {isSortOpen && (
+            <div
+              className=" ring-1 bg-white absolute z-10 w-48 grid grid-cols-2 gap-2  shadow-lg  ring-2 ring-black ring-opacity-5"
+              style={{ marginLeft: "90px" }}
+            >
+              <button className="ring-1 px-4  text-left text-sm text-gray-700 hover:bg-gray-100">
+                Ascending
+              </button>
+              <button className="ring-1 px-4  text-left text-sm  text-gray-700 hover:bg-gray-100">
+                Descending
+              </button>
+              <button
+                onClick={() => {
+                  sortByInput("regularPrice");
+                  setIsSortOpen(false);
+                  setSortName("PRICE");
+                }}
+                className="px-4 py-2  text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Price
+              </button>
+              <button
+                onClick={() => {
+                  sortByInputDescending("regularPrice");
+                  setIsSortOpen(false);
+                  setSortName("PRICE");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Price
+              </button>
+              <button
+                onClick={() => {
+                  sortByInput("bedrooms");
+                  setIsSortOpen(false);
+                  setSortName("BEDS");
+                }}
+                className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Beds
+              </button>
+              <button
+                onClick={() => {
+                  sortByInputDescending("bedrooms");
+                  setIsSortOpen(false);
+                  setSortName("BEDS");
+                }}
+                className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Beds
+              </button>
+              <button
+                onClick={() => {
+                  sortByInput("bathrooms");
+                  setIsSortOpen(false);
+                  setSortName("BATHS");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Baths
+              </button>
+              <button
+                onClick={() => {
+                  sortByInputDescending("bathrooms");
+                  setIsSortOpen(false);
+                  setSortName("BATHS");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Baths
+              </button>
+
+              <button
+                onClick={() => {
+                  sortByInput("landSize");
+                  setIsSortOpen(false);
+                  setSortName("SQ. FT.");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Square Feet
+              </button>
+              <button
+                onClick={() => {
+                  sortByInputDescending("landSize");
+                  setIsSortOpen(false);
+                  setSortName("SQ. FT.");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Square Feet
+              </button>
+              <button
+                onClick={() => {
+                  sortByInput("yearBuilt");
+                  setIsSortOpen(false);
+                  setSortName("YR. BLT.");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Year Built
+              </button>
+              <button
+                onClick={() => {
+                  sortByInputDescending("yearBuilt");
+                  setIsSortOpen(false);
+                  setSortName("YR. BLT.");
+                }}
+                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Year Built
+              </button>
+            </div>
+          )}
         </div>
+        {/* </div> */}
       </section>
 
       {signUP && (
@@ -1062,7 +1319,7 @@ const Home = () => {
               <input
                 className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
                 type="email"
-                id="email"
+                id="email2"
                 value={email2}
                 onChange={onChange3}
                 placeholder="Email address"
@@ -1074,7 +1331,7 @@ const Home = () => {
                   // className="w-full text-lg px-4 py-2 text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
                   className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
                   type={showPassword ? "text" : "password"}
-                  id="password"
+                  id="password2"
                   value={password2}
                   onChange={onChange3}
                   placeholder="Password"
@@ -1121,17 +1378,7 @@ const Home = () => {
       )}
 
       {/* Footer Information */}
-      <div
-        className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
-        style={{
-          backgroundColor: "#4a5568",
-          color: "white",
-          position: "relative",
-          bottom: "0px",
-          left: "0px",
-          right: "0px",
-        }}
-      >
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <p>info@mncdevelopment.com</p>
         <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
           <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
