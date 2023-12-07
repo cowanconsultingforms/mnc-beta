@@ -33,12 +33,13 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import Contact from "../components/Contact";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
 const Listing = () => {
+  let lat1 = "";
+  let lang1 = "";
   const params = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +70,11 @@ const Listing = () => {
     return <Spinner />;
   }
 
+  const handleDirection = (lat, lang)=>{
+    const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lang}`;
+
+    window.open(directionsLink, '_blank');
+  }
   return (
     <main>
       {/* Image carousel using Swiper component */}
@@ -278,6 +284,8 @@ const Listing = () => {
             >
               {/* Displays listing name and address on top of marker when marker is clicked */}
               {selectedMarker && (
+                <>
+                
                 <InfoWindowF
                   onCloseClick={() => setSelectedMarker(null)}
                   position={{
@@ -286,6 +294,7 @@ const Listing = () => {
                   }}
                 >
                   <div>
+                    <button className="bg-gray-600 p-1 font-semibold text-white" onClick={()=>{handleDirection(listing.geolocation.lat, listing.geolocation.lng)}}>Directions</button>
                     <p className=" text-gray-800 text-sm font-medium mb-1">
                       {listing.name}
                     </p>
@@ -294,6 +303,7 @@ const Listing = () => {
                     </p>
                   </div>
                 </InfoWindowF>
+                </>
               )}
             </MarkerF>
           </GoogleMap>

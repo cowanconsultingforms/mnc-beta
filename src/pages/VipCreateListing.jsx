@@ -10,7 +10,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-
+import {
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { addNotificationToCollection } from "../components/Notification";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
@@ -74,6 +79,28 @@ const createVIPListing = () => {
     longitude,
     images,
   } = formData;
+
+  const handleAddNotificationClick = (notification) => {
+    return async () => {
+      addNotificationToCollection(notification);
+      const usersCollectionRef = collection(db, "users");
+      try {
+        const querySnapshot = await getDocs(usersCollectionRef);
+        querySnapshot.forEach(async (userDoc) => {
+          const userData = userDoc.data();
+          if (userData.clear !== undefined) {
+            const userRef = doc(db, "users", userDoc.id);
+            await updateDoc(userRef, { clear: false });
+          } else {
+            const userRef = doc(db, "users", userDoc.id);
+            await updateDoc(userRef, { clear: false });
+          }
+        });
+      } catch (error) {
+        console.error("Error updating clear field:", error);
+      }
+    };
+  };
 
   // Update all form data
   const onChange = (e) => {
@@ -671,6 +698,7 @@ const createVIPListing = () => {
 
         {/* Submit form data button */}
         <button
+        onClick={handleAddNotificationClick(`Vip ${name} is added!`)}
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
         >

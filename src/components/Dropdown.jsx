@@ -1,14 +1,16 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, serverTimestamp} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
 import { toast } from "react-toastify";
-
+import axios from "axios";
 import { db } from "../firebase";
 import Spinner from "./Spinner";
+import fetch from 'node-fetch';
 
 const Dropdown = ({ userId, selected }) => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+ 
   const [userName, setUserName] = useState({
     name: "",
   });
@@ -45,6 +47,10 @@ const Dropdown = ({ userId, selected }) => {
     setIsOpen(false);
   };
 
+    const RefreshButton = () => {
+      window.location.reload();
+    }
+
   // Submits changed role to firestore database
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -55,11 +61,37 @@ const Dropdown = ({ userId, selected }) => {
       ...formData,
     };
 
+    if(role === "vip"){
+      const timestamp = serverTimestamp();
+      formDataCopy.subscription = timestamp;
+    }
+
     // Adds form data to firestore database
     const docRef = doc(db, "users", userId);
     await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success(`Changed ${name}'s role to ${formDataCopy.role}!`);
+  };
+
+  const deleteUser = async (userId) => {
+    try {
+      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/deleteUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+  
+      if (response.ok) {
+        RefreshButton();
+        console.log('User deleted successfully');
+      } else {
+        console.error('Failed to delete user');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   return (
@@ -108,6 +140,16 @@ const Dropdown = ({ userId, selected }) => {
               Apply
             </button>
           </div>
+{/* delete */}
+          <div className="relative w-full">
+            <button
+              type="submit"
+              className={`w-full ml-2 flex justify-center items-center p-3 z-10 bg-white text-gray-600  hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 rounded`}
+           onClick={()=>deleteUser(userId)}
+           >
+              Delete
+            </button>
+          </div>
 
           {/* Displays role options when dropdown menu is clicked */}
           {isOpen && selected && (
@@ -118,6 +160,20 @@ const Dropdown = ({ userId, selected }) => {
             >
               {/* user role option */}
               <div className="flex flex-col z-30 w-full shadow-2xl ">
+                {/* admin role option */}
+                <button
+                  value="admin"
+                  type="button"
+                  onClick={onChange}
+                  className={`p-3 ${
+                    role === "admin"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                  }`}
+                >
+                  admin
+                </button>
+
                 <button
                   value="user"
                   type="button"
@@ -159,18 +215,58 @@ const Dropdown = ({ userId, selected }) => {
                   agent
                 </button>
 
-                {/* admin role option */}
+                
                 <button
-                  value="admin"
+                  value="client"
                   type="button"
                   onClick={onChange}
                   className={`p-3 ${
-                    role === "admin"
+                    role === "client"
                       ? "bg-gray-300 text-gray-800"
                       : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
-                  admin
+                  client
+                </button>
+
+                <button
+                  value="tenant"
+                  type="button"
+                  onClick={onChange}
+                  className={`p-3 ${
+                    role === "tenant"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                  }`}
+                >
+                  tenant
+                </button>
+
+
+                <button
+                  value="vendor"
+                  type="button"
+                  onClick={onChange}
+                  className={`p-3 ${
+                    role === "vendor"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                  }`}
+                >
+                  vendor
+                </button>
+
+                <button
+                  value="partner"
+                  type="button"
+                  onClick={onChange}
+                  className={`p-3 ${
+                    role === "partner"
+                      ? "bg-gray-300 text-gray-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                  }`}
+                >
+                  partner
                 </button>
               </div>
             </div>

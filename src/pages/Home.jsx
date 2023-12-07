@@ -1,24 +1,245 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState, useContext } from "react";
+import {
+  collection,
+  getDoc,
+  getDocs,
+  query,
+  doc,
+  where,
+  setDoc,
+  updateDoc,
+  orderBy,
+  limit,
+} from "firebase/firestore";
+import { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
 import { Link } from "react-router-dom";
-
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
+import { app } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ToastContainer, toast } from "react-toastify";
+import { getMessaging } from "firebase/messaging";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import notification from "../assets/img/notification.png";
 
+// import { createNotification } from "../firebase";
+// import { getFirebaseToken, onForegroundMessage } from "../firebase";
+import { useContext } from "react";
 const Home = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const images = [img1, img2, img3];
-  const [showFilters, setShowFilters] = useState(false);
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = useState("");
+  const [signed, setSigned] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
+  const [notFound, setNotFound] = useState(false);
+
+  const [showToDoIcon, setShowToDoIcon] = useState(true);
+ 
+  const [userId, setUserId] = useState("");
+
+  const notFoundRef = useRef(null);
+
+  const handleNotFoundRef = (e) => {
+    if (notFoundRef.current && !notFoundRef.current.contains(e.target)) {
+      setNotFound(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleNotFoundRef);
+    return () => {
+      document.removeEventListener("click", handleNotFoundRef);
+    };
+  }, []);
+
+  const getUserRole = async (uid) => {
+    const userRef = doc(db, "users", uid);
+
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserRole(userData.role);
+      } else {
+        setUserRole(null); // Handle the case when the user document doesn't exist
+      }
+    } catch (error) {
+      console.error("Error getting user document:", error);
+      setUserRole(null); // Handle errors by setting userRole to a fallback value
+    }
+  };
+
+  useEffect(() => {
+    const call = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUserId(user.uid);
+          await getUserRole(user.uid);
+          setSigned(true);
+          if (userRole == "admin") {
+            const userRef = doc(db, "users", user.uid);
+            const userSnapshot = await getDoc(userRef);
+
+            if (userSnapshot.exists()) {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            } else {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            }
+            copyNotificationsToUserNotifications(userId);
+            fetchUserNotifications(userId);
+          }
+        } else {
+          console.log("User is not authenticated.");
+        }
+      });
+    };
+
+    call();
+  }, [userRole, userId]);
+
+  const fetchUserNotifications = async (userId) => {
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+
+    if (!userSnapshot.empty) {
+      const userNotificationsData = userSnapshot.get("userNotifications");
+      setNotifications(userNotificationsData);
+    } else {
+      console.log("emptu");
+    }
+  };
+  const copyNotificationsToUserNotifications = async (userId) => {
+    const notificationsRef = collection(db, "notifications");
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      if (userData.clear === false) {
+        const userNotificationsData =
+          userSnapshot.data().userNotifications || [];
+        if (userNotificationsData.length === 0) {
+          const latestTimestamp = await getLatestTimestamp();
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", "==", latestTimestamp))
+          );
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        } else {
+          // Get the latest timestamp from the userNotificationsData
+          const latestTimestamp = userNotificationsData.reduce(
+            (latest, notification) =>
+              notification.timestamp > latest ? notification.timestamp : latest,
+            userNotificationsData[0].timestamp
+          );
+          // Query for notifications newer than the latestTimestamp
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", ">", latestTimestamp))
+          );
+          // Append new notifications to userNotificationsData
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          // Update the userNotifications field with the combined data
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        }
+      }
+    }
+  };
+
+  const getLatestTimestamp = async () => {
+    const notificationsCollectionRef = collection(db, "notifications");
+    const latestTimestampQuery = query(
+      notificationsCollectionRef,
+      orderBy("timestamp", "desc"),
+      limit(1)
+    );
+    try {
+      const querySnapshot = await getDocs(latestTimestampQuery);
+      if (!querySnapshot.empty) {
+        const latestNotification = querySnapshot.docs[0].data();
+        return latestNotification.timestamp;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting the latest timestamp:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showNotifications &&
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        toggleNotifications();
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  // // Function to retrieve user role from Firebase Firestore
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const clearNotifications = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, { clear: true });
+    try {
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        if (userData && userData.userNotifications) {
+          const clearedUserNotifications = [];
+          await updateDoc(userRef, {
+            userNotifications: clearedUserNotifications,
+          });
+        }
+      }
+      setNotifications("");
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
 
   const onChange = (e) => {
     setSearchTerm(e.target.value);
@@ -31,6 +252,14 @@ const Home = () => {
       }, 500);
       setTimer(newTimer);
     }
+  };
+
+  const onChangeTask = (e) => {
+    const { id, value } = e.target;
+    setTask((prevTask) => ({
+      ...prevTask,
+      [id]: value,
+    }));
   };
 
   // Get the category based on the selectedButton
@@ -131,10 +360,43 @@ const Home = () => {
     }
   };
 
-  //Filters
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
+  const handleVip = () => {
+    navigate("/faqPage");
   };
+
+  const handleNotFound = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && suggestions.length == 0) {
+      setNotFound(!notFound);
+    }
+    console.log('sdfsf')
+  };
+
+  const handleNotFound2 = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && suggestions.length == 0) {
+      setNotFound(!notFound);
+    }
+  };
+  const hangleToggleToDoList = () => {
+    setToDoListOpen(!toDoListOpen);
+    setShowToDoIcon(false);
+    setShowToDoIcon(false);
+  };
+
+  const handleAddTask = async () => {
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      const currentToDoList = userData.toDoList || [];
+      const updatedToDoList = [...currentToDoList, task];
+      await updateDoc(userRef, { toDoList: updatedToDoList });
+      toast.success("Your task has been added successfully!");
+    }
+  };
+
 
   return (
     <>
@@ -181,48 +443,111 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div style={{}}>
-          {/* Search bar + button */}
-          {/* <form
-          onSubmit={handleSearch}
-          className="max-w-md mt-6 w-full text flex justify-center"
-        > */}
+        <div>
           {/* Search bar */}
           <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
-            {/* <input
-              type="search"
-              placeholder={"Search by location or point of interest"}
-              value={searchTerm}
-              onChange={onChange}
-              onSubmit={handleSearch}
-              className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
-            ></input> */}
-            <input
-              type="text"
-              id="location-lookup-input"
-              className="uc-omnibox-input cx-textField ring-1"
-              placeholder="City, Neighborhood, Address, School, ZIP"
-              aria-label="city, zip, address, school"
-              // value={searchTerm}
-              onChange={onChange}
-              style={{ width: "380px" }}
-            />
+            <form onSubmit={(e) => handleNotFound(e)}>
+              <input
+                type="text"
+                id="location-lookup-input"
+                className="uc-omnibox-input cx-textField ring-1"
+                placeholder="City, Neighborhood, Address, School, ZIP"
+                aria-label="city, zip, address, school"
+                // value={searchTerm}
+                onChange={onChange}
+                style={{ width: "380px" }}
+              />
+              {notFound && (
+                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                    <div className="flex">
+                      <p className="font-semibold">
+                        We couldn't find '{searchTerm}'
+                      </p>
+                      {console.log('sssss3')}
+                      <button
+                        className="mx-0 font-semibold text-xl ml-auto"
+                        onClick={() => {
+                          setNotFound(false);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <br></br>
+                    <p>
+                      Please check the spelling, try clearing the search box, or
+                      try reformatting to match these examples:
+                    </p>
+                    <br></br>
+                    <span className="font-semibold">Address:</span> 123 Main St,
+                    Seattle, WA <br></br>
+                    <span className="font-semibold">Neighborhood: </span>
+                    Downtown
+                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                    <br></br>
+                    <span className="font-semibold">City: </span> 'Seattle' or
+                    'Seattle, WA' <br></br>
+                    <br></br> Don't see what you're looking for? Your search
+                    might be outside our service areas.
+                  </div>
+                </div>
+              )}
+              <button
+              type="submit"
+              className="absolute right-[20px] top-[12px] cursor-pointer"
+            >
+              <AiOutlineSearch className="text-gray-700 text-2xl" />
+            </button>
+            </form>
+             {/* Search button */}
+             
+            {/* {notFound && (
+                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                    <div className="flex">
+                      <p className="font-semibold">
+                        We couldn't find '{searchTerm}'
+                      </p>
+                      <button
+                        className="mx-0 font-semibold text-xl ml-auto"
+                        onClick={() => {
+                          setNotFound(false);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <br></br>
+                    <p>
+                      Please check the spelling, try clearing the search box, or
+                      try reformatting to match these examples:
+                    </p>
+                    <br></br>
+                    <span className="font-semibold">Address:</span> 123 Main St,
+                    Seattle, WA <br></br>
+                    <span className="font-semibold">Neighborhood: </span>
+                    Downtown
+                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                    <br></br>
+                    <span className="font-semibold">City: </span> 'Seattle' or
+                    'Seattle, WA' <br></br>
+                    <br></br> Don't see what you're looking for? Your search
+                    might be outside our service areas.
+                    {console.log('sssss')}
+                  </div>
+                </div>
+              )} */}
+              
             <div>
-              {/* {city === "true" ? ( */}
-              {/* <ul className="suggestions-list"> */}
-              {/* {Array.from(new Set(suggestions.map((suggestion) => {
-          const addressParts = suggestion.data.address.split(',');
-          const city = addressParts[addressParts.length - 2]?.trim() || 'Unknown City';
-          const stateAndZip = addressParts[addressParts.length - 1]?.trim() || 'Unknown State';
-          const stateAndZipParts = stateAndZip.split(' ');
-          const state = stateAndZipParts[0];
-          return `${city}, ${state}`;
-        }))).map((cityStatePair, index) => (
-      <li key={index}>
-        <Link to="/afterSearch">{cityStatePair}</Link>
-      </li>
-    ))} */}
-
+              {!searchTerm && (
+                <button
+                  onClick={handleVip}
+                  className="ml-8 underline mouse-cursor"
+                >
+                  Interested in VIP access to exclusive listings?
+                </button>
+              )}
               {city === "true" ? (
                 <>
                   {searchTerm && suggestions.length > 0 && (
@@ -250,7 +575,7 @@ const Home = () => {
                               pathname: `/afterSearch/${encodeURIComponent(
                                 cityStatePair.replace(/ /g, "%20")
                               )}`,
-                              state: { fromListing: false, },
+                              state: { fromListing: false },
                             }}
                           >
                             {cityStatePair}
@@ -292,354 +617,39 @@ const Home = () => {
               ) : (
                 <>
                   {searchTerm && suggestions.length > 0 && (
-                    <ul className="suggestions-list">
-                      {Array.from(
-                        new Set(
-                          suggestions.map((suggestion) => {
-                            const addressParts =
-                              suggestion.data.address.split(",");
-                            return `${addressParts}`;
-                          })
-                        )
-                      ).map((cityStatePair, index) => (
-                        <li key={index}>
-                          <Link
-                            to={`/afterSearch/${encodeURIComponent(
-                              cityStatePair
-                            )}`}
-                          >
-                            {cityStatePair}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    <>
+                      <ul className="suggestions-list">
+                        {Array.from(
+                          new Set(
+                            suggestions.map((suggestion) => {
+                              const addressParts =
+                                suggestion.data.address.split(",");
+                              return `${addressParts}`;
+                            })
+                          )
+                        ).map((cityStatePair, index) => (
+                          <li key={index}>
+                            <Link
+                              to={`/afterSearch/${encodeURIComponent(
+                                cityStatePair
+                              )}`}
+                            >
+                              {cityStatePair}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
                   )}
                 </>
               )}
             </div>
-            {/* Search button */}
-            <button
-              type="submit"
-              className="absolute right-[20px] top-[12px] cursor-pointer"
-            >
-              <AiOutlineSearch className="text-gray-700 text-2xl" />
-            </button>
-          </div>
-          {/* </form> */}
-          {/* filters */}
-          {/* <div style={{ marginTop: "25px", marginLeft: "120px" }}>
-         <button
-         id="close-button"
-        className={`px-4 py-2 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-          buttonText === "Close Filters" ? "bg-gray-600 text-white" : "bg-white text-black"
-        }`}
-        onClick={() => {handleClick(); setApplyFilt("false"); setFilter("true"); {toggleFilters()}}}
-        style={{ width: "160px", height: "auto" }} >
-        {buttonText}
-      </button>
-      </div>
-      </div>
-      <div className={`filter-panel ${showFilters ? "open" : ""}`}>
-        <h1 id = "panel-title">Explore This Neighborhood
-         <button id="close-filters2" onClick={()=>{closeFilters();handleClick()}}>Close Filters</button></h1>
-         
-         &nbsp;<span> Price </span>
-        <div style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
-        <div style={{ display: "flex", alignItems: "center"}}>
-          
-          <span>$</span>
-          <input
-            type="text"
-            value={input1Value}
-            onChange={(e) => setInput1Value(e.target.value)}
-            placeholder="MIN"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }}
-          />
-        </div>
-        &nbsp;<span> - </span>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span>$</span>
-          <input
-            type="text"
-            value={input2Value}
-            onChange={(e) => setInput2Value(e.target.value)}
-            placeholder="MAX"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }}
-          />
-        </div>
-        
-      </div>
-      <span>Beds</span>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "30px"}}>
-      <div style={{ display: "flex", alignItems: "center"}}>
-            <select
-              value={bedroom1}
-              onChange={(e) =>{ 
-                const selectedValue = e.target.value;
-                if(selectedValue !== "NO MIN"){
-                  setBedroom1(selectedValue)
-                }else{
-                  setBedroom1('')
-                  value="NO MIN"
-                }}}
-              style={{ fontSize: "14px", width: "170px", height: "35px" }}
-            >
-              <option>NO MIN</option>
-              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
-                <option key={number} value={number}>
-                  {number}
-                </option>
-              ))}
-            </select>
-          </div>
-          &nbsp; <span>-</span>&nbsp;
-          <div>
-            <select
-              value={bedroom2}
-              onChange={(e) =>{ 
-                const selectedValue = e.target.value;
-                if(selectedValue !== "NO MAX"){
-                  setBedroom2(selectedValue)
-                }else{
-                  setBedroom2('')
-                  value="NO MAX"
-                }}}
-              style={{ fontSize: "14px", width: "170px", height: "35px" }}
-            >
-              <option>NO MAX</option>
-              {Array.from({ length: 11 }, (_, i) => i+1).map((number) => (
-                <option key={number} value={number}>
-                  {number}
-                </option>
-              ))}
-            </select>
-          </div>
-          </div>
-          <span>Baths</span>
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-          
-            <button onClick={handleDecrementBathrooms}
-            style={{width: "50px", height: "35px", border: "1px solid" }}
-            >-</button>
-            <input
-              type="text"
-              value={bathroomCount}
-              readOnly
-              style={{ width: "400px", height: "35px", textAlign: "center",fontSize: "14px"
-              }}
-            />
-            <button onClick={handleIncrementBathrooms} 
-            style={{width: "50px", height: "35px", border: "1px solid" }}
-            >+</button>
-          </div>
-            <div style={{ fontWeight: "bold", marginTop: "20px" }}><span>Property Facts</span></div>
-          
-      <div style={{ marginTop: "10px"}}><span >Square Feet</span></div>
-       <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
-        <div style={{ display: "flex", alignItems: "center"}}>
-          <input
-            type="text"
-            value={land1}
-            onChange={(e) => setLand(e.target.value)}
-            placeholder="MIN"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }}
-          />
-        </div>
-        &nbsp;<span> - </span>&nbsp;
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <input
-            type="text"
-            value={land2}
-            onChange={(e) => setLand2(e.target.value)}
-            placeholder="MAX"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }}
-          />
-        </div>
-      </div>
 
-      <div style={{ marginTop: "10px"}}><span >Year Built</span></div>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "10px"}}>
-        <div style={{ display: "flex", alignItems: "center"}}>
-          <input
-            type="text"
-            value={year1}
-            onChange={(e) => setYear1(e.target.value)}
-            placeholder="MIN"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }}
-          />
-        </div>
-        &nbsp;<span> - </span>&nbsp;
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <input
-            type="text"
-            value={year2}
-            onChange={(e) => setYear2(e.target.value)}
-            placeholder="MAX"
-            style={{ fontSize: "14px", width: "170px", height: "35px" }} />
-        </div>
-      </div>
-
-      <div style={{ marginTop: "10px", fontWeight: "bold"}}><span >Schools</span></div>
-      <span>GreatSchools Rating</span>
-      <div>
-            <select
-              value={schoolRating}
-              onChange={(e) =>{ 
-                const selectedValue = e.target.value;
-                if(selectedValue !== "None"){
-                  setSchoolRating(selectedValue)
-                }else{
-                  setSchoolRating('')
-                  value="None"
-                }}}
-              style={{ fontSize: "14px", width: "170px", height: "35px" }} >
-              <option>None</option>
-              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
-                <option key={number} value={number}>
-                  {number}
-                </option>
-              ))}
-            </select>
+           
           </div>
-
-          <div style={{ marginTop: "10px"}}><span >Stories</span></div>
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "30px"}}>
-      <div style={{ display: "flex", alignItems: "center"}}>
-            <select
-              value={story1}
-              onChange={(e) =>{ 
-                const selectedValue = e.target.value;
-                if(selectedValue !== "NO MIN"){
-                setstory1(selectedValue)
-              }else{
-                setstory1('')
-                value="NO MIN"
-              }
-              } }
-              style={{ fontSize: "14px", width: "170px", height: "35px" }}
-            >
-              <option>NO MIN</option>
-              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
-                <option key={number} value={number}>
-                  {number}
-                </option>
-              ))}
-            </select>
-          </div>
-          &nbsp; <span>-</span>&nbsp;
-          <div>
-            <select
-              value={story2}
-              onChange={(e) =>{ 
-                const selectedValue = e.target.value;
-                if(selectedValue !== "NO MAX"){
-                  setStory2(selectedValue)
-                }else{
-                  setStory2('')
-                  value="NO MAX"
-                }}}
-              style={{ fontSize: "14px", width: "170px", height: "35px" }}
-            >
-              <option>NO MAX</option>
-              {Array.from({ length: 10 }, (_, i) => i+1).map((number) => (
-                <option key={number} value={number}>
-                  {number}
-                </option>
-              ))}
-            </select>
-          </div>
-          </div>
-
-          <div style={{marginBottom: "10px"}}>
-            <label>
-              <input
-                type="checkbox"
-                checked={privateOutdoorSpace}
-                onChange={handlePrivateOutdoorSpace}
-              />&nbsp; Must Have Private Outdoor Space
-            </label>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={parkingChecked}
-                onChange={handleParkingCheckboxChange}
-              />&nbsp; Must Have Parking Space
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={doorMan}
-                onChange={handleDoorman}
-              />&nbsp; Must Have Doorman
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={pool}
-                onChange={handlePool}
-              />&nbsp; Must Have Pool
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={basement}
-                onChange={handleBasement}
-              />&nbsp; Must Have Basement
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={elevator}
-                onChange={handleElevator}
-              />&nbsp; Must Have Elevator
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={garage}
-                onChange={handleGarage}
-              />&nbsp; Must Have Garage
-            </label>
-            </div>
-            <div style={{marginTop: "10px"}}>
-            <label>
-            <input
-                type="checkbox"
-                checked={airCondition}
-                onChange={HandleAircondition}
-              />&nbsp; Must Have Air Conditioning
-            </label>
-            </div>
-            </div>
-
-          <div style={{ marginTop: "10px" }}>
-          <button
-              className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                applyFilt === "true"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
-              onClick={() => {applyFilters(); setApplyFilt("true")}}
-            >
-              Apply Filters
-            </button>
-            </div> */}
-          {/* </div> */}
         </div>
       </section>
-      
+
       {/* Thumbnail images */}
       <div
         className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"

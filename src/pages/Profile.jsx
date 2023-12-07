@@ -1,4 +1,3 @@
-import { getAuth } from "firebase/auth";
 import {
   collection,
   deleteDoc,
@@ -9,16 +8,23 @@ import {
   orderBy,
   query,
   where,
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { deleteObject, getStorage, ref } from "firebase/storage";
 import ListingItem from "../components/ListingItem";
 import VipListingItem from "../components/VipListingItem";
 import { db } from "../firebase";
+// import { getFirebaseToken, onForegroundMessage } from "../firebase";
+import { ToastContainer, toast } from "react-toastify";
+import { getMessaging, onMessage } from "firebase/messaging";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import { createNotification } from "../firebase";
+import { addNotificationToCollection } from "../components/Notification";
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -26,6 +32,15 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
   const [showVIPCreateListing, setShowVIPCreateListing] = useState(false); // VIP
+
+  const [signed, setSigned] = useState("false");
+  // const [notificationMessage, setNotificationMessage] = useState('');
+  // const [notificationSent, setNotificationSent] = useState(false);
+  // const [initialized, setInitialized] = useState(false);
+  const [userRole, setUserRole] = useState("");
+  const [added, setAdded] = useState(false);
+  const [userId, setUserId] = useState("");
+  const messaging = getMessaging();
 
   const auth = getAuth();
   const [formData, setFormData] = useState({
@@ -39,6 +54,59 @@ const Profile = () => {
   const onLogout = () => {
     auth.signOut();
     window.location.assign("/");
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserId(user.uid);
+        getUserRole(user.uid);
+
+        setSigned("true");
+        // handleGetFirebaseToken();
+        setAdded(true);
+      }
+    });
+  }, []);
+
+  // Example of calling the function when a button is clicked
+  const handleAddNotificationClick = (notification) => {
+    return async () => {
+      addNotificationToCollection(notification);
+      const usersCollectionRef = collection(db, "users");
+      try {
+        const querySnapshot = await getDocs(usersCollectionRef);
+        querySnapshot.forEach(async (userDoc) => {
+          const userData = userDoc.data();
+          if (userData.clear !== undefined) {
+            const userRef = doc(db, "users", userDoc.id);
+            await updateDoc(userRef, { clear: false });
+          } else {
+            const userRef = doc(db, "users", userDoc.id);
+            await updateDoc(userRef, { clear: false });
+          }
+        });
+      } catch (error) {
+        console.error("Error updating clear field:", error);
+      }
+    };
+  };
+  // // Function to retrieve user role from Firebase Firestore
+  const getUserRole = async (uid) => {
+    const userRef = doc(db, "users", uid);
+
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserRole(userData.role);
+      } else {
+        console.log("User document not found.");
+      }
+    } catch (error) {
+      console.error("Error getting user document:", error);
+    }
   };
 
   // Get user account role
@@ -104,7 +172,6 @@ const Profile = () => {
 
       const docRef = doc(db, "propertyListings", listingID);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const deletedListing = docSnap.data();
         deletedListing.imgs.forEach((img) => {
@@ -117,6 +184,9 @@ const Profile = () => {
         (listing) => listing.id !== listingID
       );
       setListings(updatedListings);
+      // handleAddNotificationClick(`A listing is removed!`);
+      // sendNotification("Listing deleted");
+      // sendNotification();
       toast.success("The listing was deleted!");
     }
   };
@@ -127,14 +197,13 @@ const Profile = () => {
 
       const docRef = doc(db, "vipPropertyListings", viplistingID);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const vipDeletedListing = docSnap.data();
         vipDeletedListing.imgs.forEach((img) => {
           deleteObject(ref(storage, img.path));
         });
       }
-
+      // handleAddNotificationClick(`${listingName} is removed!`);
       await deleteDoc(doc(db, "vipPropertyListings", viplistingID));
       const vipUpdatedListings = vipListings.filter(
         (vipListing) => vipListing.id !== viplistingID
@@ -153,11 +222,22 @@ const Profile = () => {
     navigate(`/edit-listing/${listingID}`);
   };
 
+  const manageClients = () => {
+    navigate(`/manageRequests/${userId}`);
+  };
+
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-3xl text-center mt-6 font-bold">My Profile</h1>
+        <button onClick={()=>{navigate("/myProfile")}} className="shadow border p-1 hover:ring-2 text-xl text-center mt-6 font-bold">View Your Profile</button>
         <div className="w-full max-w-md mt-6 px-3">
+          {/* {signed === "true" && userRole === "admin" && (
+            <div>
+              <button onClick={handleAddNotificationClick(`removed!`)}>
+                Send Notification
+              </button>
+            </div>
+          )} */}
           <form>
             {/* Name input */}
             <input
@@ -207,7 +287,7 @@ const Profile = () => {
           {showVIPCreateListing && (
             <button
               type="submit"
-              className="mt-6 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+              className="mt-6 mb-8 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               <Link
                 to="/vip-create-listing"
@@ -215,6 +295,33 @@ const Profile = () => {
               >
                 <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
                 Create a VIP Listing
+              </Link>
+            </button>
+          )}
+
+          {userRole === "agent" ||
+          userRole === "admin" ||
+          userRole === "superadmin" ? (
+            <button
+              type="button"
+              onClick={manageClients}
+              className="flex justify-center items-center mb-9 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+            >
+              <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
+              Manage Requests
+            </button>
+          ) : null}
+          {showCreateListing && (
+            <button
+              type="submit"
+              className=" w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+            >
+              <Link
+                to="/manageUsersProfile"
+                className="flex justify-center items-center"
+              >
+                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
+                Relationship Management
               </Link>
             </button>
           )}
@@ -236,6 +343,7 @@ const Profile = () => {
                   listing={listing.data}
                   onDelete={() => onDelete(listing.id)}
                   onEdit={() => onEdit(listing.id)}
+                  // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
                 />
               ))}
             </ul>

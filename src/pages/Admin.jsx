@@ -58,7 +58,7 @@ const Admin = () => {
           setUsers(users);
         } else {
           // Does not allow access to user management data if user does not have admin role
-          toast.error("You cannot access this page.");
+          // toast.error("You cannot access this page.");
           navigate("/");
         }
         setLoading(false);
@@ -105,7 +105,6 @@ const Admin = () => {
                     <td
                       onClick={() => {
                         setSelectedRow(user.id);
-                        console.log(user.id);
                       }}
                       className="p-3 md:p-6"
                     >

@@ -14,6 +14,7 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
     // onClick={handleShowListing}
     >
       {/* Clicking on listing component redirects user to full listing page */}
+      <div style={{marginBottom: "25px"}}>
       <Link
         className="contents"
         to={`/category/${listing.type}/${id}`}
@@ -56,7 +57,8 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             {listing.type === "rent" && " / Month"}
           </p>
-
+          </div>
+          </Link>
           {/* Displays number of bedrooms and bathrooms */}
           <div className="flex items-center mt-[10px] space-x-3">
             <div className="flex items-center space-x-1">
@@ -83,9 +85,10 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
             </div>
           </div>
         </div>
-      </Link>
-
+      
+      
       {/* Displays delete icon with listing on profile page */}
+      <div style={{}}>
       {onDelete && (
         <button
           type="button"
@@ -107,7 +110,7 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
           <span>Edit</span>
           <MdEdit className="text-lg" />
         </button>
-      )}
+      )}</div>
       {/* {showListing && <Listing lisitngId={listing.id}/>} */}
     </li>
   );

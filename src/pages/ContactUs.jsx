@@ -1,35 +1,45 @@
 import emailjs from "@emailjs/browser";
 import React, { useRef, useState } from "react";
 import ContactImage from "../assets/img/contact.jpeg";
+import fetch from 'node-fetch';
+// import { sendEmail } from "../../functions/server";
 
 const ContactUs = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
+  const [message2, setMessage] = useState("");
   const [sent, setSent] = useState("Send Message");
   const form = useRef();
 
-  const handleSubmit = (e) => {
+
+  const contactUs = async(e) => {
     e.preventDefault();
     setSent("Sent!");
 
     // Send the form data to the server
-    emailjs
-      .sendForm(
-        "service_pr7qyvs",
-        "template_je5nkis",
-        form.current,
-        "7avGOyYSCKf7Kx45h"
-      )
-      .then(
-        (result) => {
-          console.log(result.text);
+    const subject = "Contact request";
+    const to = "team@mncdevelopment.com";
+    const phone2 = phone;
+    const message = `Name: ${name}\nPhone: ${phone2}\nEmail: ${email}\nMessage: ${message2}`;
+
+    try {
+      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/contactUs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        (error) => {
-          console.log(error.text);
-        }
-      );
+        body: JSON.stringify({ to, message, subject }),
+      });
+  
+      if (response.ok) {
+        console.log('Email sent successfully');
+      } else {
+        console.error('Failed to send email', response);
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
   };
 
   return (
@@ -38,6 +48,7 @@ const ContactUs = () => {
       style={{
         backgroundImage: `url(${ContactImage})`,
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <h1 className="text-3xl text-center py-12 font-bold">Contact Us</h1>
@@ -46,7 +57,7 @@ const ContactUs = () => {
       <div className="max-w-md mx-auto bg-gray-100 rounded px-6 py-6">
         <form
           ref={form}
-          onSubmit={handleSubmit}
+          onSubmit={contactUs}
         >
           <input
             placeholder="Name"
@@ -78,7 +89,7 @@ const ContactUs = () => {
           <textarea
             placeholder="Message"
             type="text"
-            value={message}
+            value={message2}
             onChange={(e) => setMessage(e.target.value)}
             className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             required

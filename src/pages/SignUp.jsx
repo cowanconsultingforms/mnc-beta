@@ -1,9 +1,9 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  updateProfile,
+  updateProfile, 
 } from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp , setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
 import OAuth from "../components/OAuth";
 import { db } from "../firebase";
+import emailjs from "@emailjs/browser";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,9 +21,44 @@ const SignUp = () => {
     email: "",
     password: "",
     role: "user",
+    requestStatus: "completed",
   });
   const navigate = useNavigate();
   const { name, email, password } = formData;
+  const [isTenant, setIsTenant] = useState(false);
+  const [sent, setSent] = useState(false);
+  const handleCheckboxChange = (e) => {
+    setIsTenant(e.target.checked);
+  };
+
+  const handleSent =()=>{
+    setSent(!sent);
+  }
+  const sendEmail = async() => {
+    // Send the form data to the server
+    const subject = "New Tenant Application";
+    const to = "team@mncdevelopment.com";
+   
+    const message = `User with email ${email} wants to become a tenant.`;
+
+    try {
+      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/contactUs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ to, message, subject }),
+      });
+  
+      if (response.ok) {
+        console.log('Email sent successfully');
+      } else {
+        console.error('Failed to send email', response);
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  };
 
   // Update text when typing in form data
   const onChange = (e) => {
@@ -35,7 +71,6 @@ const SignUp = () => {
   // Add new account to authenticated users and firestore database
   const onSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const auth = getAuth();
       // Adds user to authenticated accounts
@@ -44,20 +79,18 @@ const SignUp = () => {
         email,
         password
       );
-
+      
       // Update displayName with name field
       updateProfile(auth.currentUser, {
         displayName: name,
       });
-
       const user = userCredentials.user;
       const formDataCopy = { ...formData };
 
-      delete formDataCopy.password; // Prevent unencrypted password from being stored in database
-      formDataCopy.timestamp = serverTimestamp(); // Adds time of account creation
-
-      // Adds account credentials to firestore database
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp(); 
       await setDoc(doc(db, "users", user.uid), formDataCopy);
+      await sendEmail();
       navigate("/");
     } catch (error) {
       toast.error("Something went wrong with the registration.");
@@ -117,6 +150,24 @@ const SignUp = () => {
                   onClick={() => setShowPassword((prevState) => !prevState)}
                 />
               )}
+              <h1>Are you a tenant?</h1>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isTenant}
+                  onChange={handleCheckboxChange}
+                />{" "}
+                Yes
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={!isTenant}
+                  onChange={(e) => setIsTenant(!e.target.checked)}
+                />{" "}
+                No
+              </label>
+              <p>You are a {isTenant ? "tenant." : "not a tenant."}</p>
             </div>
             <div className="flex justify-between whitespace-nowrap text-sm">
               {/* Sign Up (Register) button */}
@@ -143,6 +194,7 @@ const SignUp = () => {
 
             {/* Sign up button */}
             <button
+            onClick={handleSent}
               className="w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
               type="submit"
             >
