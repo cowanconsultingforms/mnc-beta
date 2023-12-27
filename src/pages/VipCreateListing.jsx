@@ -271,11 +271,20 @@ const createVIPListing = () => {
     return <Spinner />;
   }
 
+  const cancelUpdate =(e)=>{
+    e.preventDefault();
+    navigate(-1);
+  }
+  
   return (
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">
+      <div className="flex flex-col">
+        <h1 className="text-3xl text-center py-4 font-bold">
         Create a VIP Listing
-      </h1>
+        </h1>
+        
+          </div>
+  
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -540,7 +549,7 @@ const createVIPListing = () => {
               min="1"
               required
               className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
-            /> <span> Squre Feet</span>
+            /> <span> Square Feet</span>
 </div>
 <div style={{  marginTop: "20px", display: "flex", justifyContent: "space-between"}} >
             <div style={{ width: "100px", height: "35px" }}>
@@ -695,7 +704,12 @@ const createVIPListing = () => {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
           />
         </div>
-
+        <button
+            onClick={cancelUpdate}
+            className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+          >
+            Cancel
+          </button>
         {/* Submit form data button */}
         <button
         onClick={handleAddNotificationClick(`Vip ${name} is added!`)}

@@ -1,9 +1,9 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  updateProfile, 
+  updateProfile,
 } from "firebase/auth";
-import { doc, serverTimestamp , setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
@@ -31,32 +31,35 @@ const SignUp = () => {
     setIsTenant(e.target.checked);
   };
 
-  const handleSent =()=>{
+  const handleSent = () => {
     setSent(!sent);
-  }
-  const sendEmail = async() => {
+  };
+  const sendEmail = async () => {
     // Send the form data to the server
     const subject = "New Tenant Application";
     const to = "team@mncdevelopment.com";
-   
-    const message = `User with email ${email} wants to become a tenant.`;
+
+    const message = `User with email ${email} wants to become a tenant.\n\nThank You\nTeam MNC Development`;
 
     try {
-      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/contactUs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ to, message, subject }),
-      });
-  
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/contactUs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to, message, subject }),
+        }
+      );
+
       if (response.ok) {
-        console.log('Email sent successfully');
+        console.log("Email sent successfully");
       } else {
-        console.error('Failed to send email', response);
+        console.error("Failed to send email", response);
       }
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error("Error sending email:", error);
     }
   };
 
@@ -79,7 +82,7 @@ const SignUp = () => {
         email,
         password
       );
-      
+
       // Update displayName with name field
       updateProfile(auth.currentUser, {
         displayName: name,
@@ -88,9 +91,11 @@ const SignUp = () => {
       const formDataCopy = { ...formData };
 
       delete formDataCopy.password;
-      formDataCopy.timestamp = serverTimestamp(); 
+      formDataCopy.timestamp = serverTimestamp();
       await setDoc(doc(db, "users", user.uid), formDataCopy);
-      await sendEmail();
+      if (isTenant) {
+        await sendEmail();
+      }
       navigate("/");
     } catch (error) {
       toast.error("Something went wrong with the registration.");
@@ -194,7 +199,7 @@ const SignUp = () => {
 
             {/* Sign up button */}
             <button
-            onClick={handleSent}
+              onClick={handleSent}
               className="w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
               type="submit"
             >

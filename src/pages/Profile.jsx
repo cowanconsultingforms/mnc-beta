@@ -299,7 +299,7 @@ const Profile = () => {
             </button>
           )}
 
-          {userRole === "agent" ||
+          {/* {userRole === "agent" ||
           userRole === "admin" ||
           userRole === "superadmin" ? (
             <button
@@ -308,9 +308,9 @@ const Profile = () => {
               className="flex justify-center items-center mb-9 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-              Manage Requests
+              Request Tracker
             </button>
-          ) : null}
+          ) : null} */}
           {showCreateListing && (
             <button
               type="submit"

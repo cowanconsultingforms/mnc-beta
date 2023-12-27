@@ -23,6 +23,7 @@ import {
   updateProfile,
   fetchSignInMethodsForEmail,
 } from "firebase/auth";
+import fetch from "node-fetch";
 import emailjs from "@emailjs/browser";
 
 const ManageRequests = () => {
@@ -36,7 +37,23 @@ const ManageRequests = () => {
   const handleDeleteRequest = async (customer, index) => {
     try {
       const userDocRef = doc(db, "users", customer.id);
-      await updateDoc(userDocRef, { requestStatus: "completed", dealStatus: "completed"});
+      await updateDoc(userDocRef, {
+        requestStatus: "completed",
+        dealStatus: "completed",
+        interested: "",
+        dealTimeline: "",
+        maxBudget: "",
+        houseldIncome: "",
+        lenderInfo: "",
+        preApprovalAmount: "",
+        hasPreApprovalLetter: false,
+        preApprovalExpiration: "",
+        agent: "",
+        agentEmail: "",
+        agentRequested: "",
+        agentEmailRequested: "",
+        role: customer.role === "client" ? "user" : customer.role,
+      });
       toast.success("You have successfully closed the request!");
     } catch (error) {
       console.error("Error deleting request:", error);
@@ -80,27 +97,41 @@ const ManageRequests = () => {
   };
 
   const sendEmail = async (name, email, password) => {
-    emailjs
-      .send(
-        "service_untmu1h",
-        "template_t618r9h",
+    const subject = "New Application";
+    const to = email;
+    const message = `Hi ${name}, I am your agent ${user.name}. I just want to let you know that I have initiated a deal for you.\n\nThank You\nTeam MNC Development`;
+
+    try {
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/contactUs",
         {
-          to_email: [email],
-          subject: "New Application",
-          message: `Hi ${name}, I am your agent ${user.name}. I just want to let you know that I have initiated a deal for you.`,
-        },
-        import.meta.env.VITE_APP_EMAILJS_API_KEY
-      )
-      .then((response) => {
-        console.log("Email sent:", response);
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error);
-      });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to, message, subject }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Email sent successfully");
+      } else {
+        console.error("Failed to send email", response);
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
 
   const handleCreateDeal = async (customer, index) => {
     const userDocRef = doc(db, "users", customer.id);
+    const role2 = customer.role;
+    let updatedRole;
+    if (["admin", "superadmin", "agent", "vendor", "partner", "vip", "tenant"].includes(role2)) {
+      updatedRole = role2;
+    } else {
+      updatedRole = "client";
+    }
     try {
       await updateDoc(userDocRef, {
         deal: [
@@ -182,7 +213,10 @@ const ManageRequests = () => {
             ],
           },
         ],
+        agent: customer.agentRequested,
+        agentEmail: customer.agentEmailRequested,
         dealStatus: "notCompleted",
+        role: updatedRole,
       });
       await sendEmail(customer.name, customer.email);
       toast.success("Deal is created successfully!");
@@ -203,108 +237,6 @@ const ManageRequests = () => {
       toast.error("Something went wrong with the registration.");
     }
   };
-
-  // const getUserRole = async (uid) => {
-  //   const userRef = doc(db, "users", uid);
-  //   try {
-  //     const userDoc = await getDoc(userRef);
-  //     if (userDoc.exists()) {
-  //       const userData = userDoc.data();
-  //       setRole(userData.role);
-  //     } else {
-  //       setRole(null); // Handle the case when the user document doesn't exist
-  //     }
-  //   } catch (error) {
-  //     console.error("Error getting user document:", error);
-  //     setRole(null); // Handle errors by setting userRole to a fallback value
-  //   }
-  // };
-
-  //   e.preventDefault();
-
-  //   try {
-  //     const userDocRef = doc(db, "users", uid);
-  //     const userDocSnapshot = await getDoc(userDocRef);
-
-  //     const existingUserData = userDocSnapshot.exists()
-  //       ? userDocSnapshot.data()
-  //       : {};
-  //     const nonEmptySpecialties = formData.specialities.filter(
-  //       (value) => value.trim() !== ""
-  //     );
-  //     const nonEmptyEducations = formData.educations.filter(
-  //       (value) => value.trim() !== ""
-  //     );
-  //     const updatedUserData = { ...existingUserData };
-
-  //     for (const key in formData) {
-  //       if (formData[key] !== "") {
-  //         if (key === "address") {
-  //           if (!updatedUserData.address) {
-  //             updatedUserData.address = {};
-  //           }
-  //           for (const addressKey in formData[key]) {
-  //             if (formData[key][addressKey] !== "") {
-  //               updatedUserData.address[addressKey] = formData[key][addressKey];
-  //             }
-  //           }
-  //         } else {
-  //           updatedUserData[key] = formData[key];
-  //         }
-  //       }
-  //     }
-  //     updatedUserData.specialities = [
-  //       ...existingUserData.specialities,
-  //       ...nonEmptySpecialties,
-  //     ];
-  //     updatedUserData.educations = [
-  //       ...existingUserData.educations,
-  //       ...nonEmptyEducations,
-  //     ];
-
-  //     updatedUserData.timestamp = serverTimestamp();
-  //     await setDoc(userDocRef, updatedUserData);
-
-  //     toast.success("Updated successfully!");
-  //     navigate("/manageUsersProfile");
-  //   } catch (error) {
-  //     toast.error("Something went wrong with the update.");
-  //   }
-  // };
-
-  // const handleImageUpload = async (e) => {
-  //   const file = e.target.files[0]; // Get the selected file
-  //   const storage = getStorage();
-  //   const uniqueFileName = `${file.name}-${uuidv4()}`;
-  //   const storageRef = ref(storage, `images/${uniqueFileName}`);
-
-  //   try {
-  //     const snapshot = await uploadBytes(storageRef, file); // Upload the file to Firebase Storage
-
-  //     // Get the download URL of the uploaded image
-  //     const downloadURL = await getDownloadURL(snapshot.ref);
-
-  //     // Update your formData with the download URL
-  //     setFormData({ ...formData, imageUrl: downloadURL });
-  //     setImage(URL.createObjectURL(file));
-  //   } catch (error) {
-  //     console.error("Error uploading image:", error);
-  //   }
-  // };
-
-  // const handleAddNewEducationInput = () => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     educations: [...prevData.educations, ""],
-  //   }));
-  // };
-
-  // const handleAddNewSpecialtyInput = () => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     specialities: [...prevData.specialities, ""],
-  //   }));
-  // };
 
   return (
     <div
@@ -331,8 +263,8 @@ const ManageRequests = () => {
           className=" relative  bg-gray-100 rounded px-6 py-6 mx-auto"
           style={{ width: "550px" }}
         >
-          <h1 className=" text-3xl text-center py-4 font-bold underline mb-5">
-            Requests
+          <h1 className=" text-3xl text-center py-4 font-semibold underline mb-5">
+            Request Tracker
           </h1>
           <div className="">
             <ul>

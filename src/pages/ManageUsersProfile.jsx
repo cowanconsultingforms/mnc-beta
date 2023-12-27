@@ -48,18 +48,21 @@ const UserGrid = ({ users, handleUpdate }) => {
                 {user.data.role}
               </p>
               {user.data.agent && (
-              <p className="mt-2 ml-5 text-left text-sm">
-                Agent: {user.data.agent}
-              </p>
+                <p className="mt-2 ml-5 text-left text-sm">
+                  <span className="font-semibold">Agent:</span> {user.data.agent}
+                </p>
               )}
-               {/* vip */}
-               {user.data.role === "vip" && (
+              {/* vip */}
+              {user.data.role === "vip" && (
                 <>
-                {user.data.numberOfDaysLeft && (
-                  <p><span className="font-semibold ml-5">Experies in </span> {user.data.numberOfDaysLeft} days</p>
-                )}
+                  {user.data.numberOfDaysLeft && (
+                    <p>
+                      <span className="font-semibold ml-5">Expires in </span>{" "}
+                      {user.data.numberOfDaysLeft} days
+                    </p>
+                  )}
                 </>
-              ) }
+              )}
               <p className="mt-2 ml-5 text-left text-sm">
                 Email: {user.data.email}
               </p>
@@ -98,6 +101,9 @@ const ManageUsersProfile = () => {
   const auth = getAuth();
   const [role, setRole] = useState("");
   const [filterRole, setFilterRole] = useState("");
+  const superadmin = Array.isArray(users)
+    ? users.filter((user) => user.data.role === "superadmin")
+    : [];
   const admins = Array.isArray(users)
     ? users.filter((user) => user.data.role === "admin")
     : [];
@@ -110,6 +116,7 @@ const ManageUsersProfile = () => {
   const clients = Array.isArray(users)
     ? users.filter((user) => user.data.role === "client")
     : [];
+
   const vendors = Array.isArray(users)
     ? users.filter((user) => user.data.role === "vendor")
     : [];
@@ -202,39 +209,44 @@ const ManageUsersProfile = () => {
 
       {role && role !== "agent" && (
         <>
-      <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
-        Admins
-      </h2>
-      <UserGrid users={admins} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Agents
-      </h2>
-      <UserGrid users={agents} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Users
-      </h2>
-      <UserGrid users={user} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Vips
-      </h2>
-      <UserGrid users={vips} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Clients
-      </h2>
-      <UserGrid users={clients} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-bold mt-5 mb-5">
-        Tenants
-      </h2>
-      <UserGrid users={tenants} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Vendors
-      </h2>
-      <UserGrid users={vendors} handleUpdate={handleUpdate} />
-      <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
-        Partners
-      </h2>
-      <UserGrid users={partners} handleUpdate={handleUpdate} />
-      </>
+          <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
+            Super Admin
+          </h2>
+          <UserGrid users={superadmin} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
+            Admins
+          </h2>
+          <UserGrid users={admins} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Agents
+          </h2>
+          <UserGrid users={agents} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Users
+          </h2>
+          <UserGrid users={user} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Vips
+          </h2>
+          <UserGrid users={vips} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Clients
+          </h2>
+          {/* <UserGrid users={clients} handleUpdate={handleUpdate} /> */}
+          <UserGrid users={clients} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-bold mt-5 mb-5">
+            Tenants
+          </h2>
+          <UserGrid users={tenants} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Vendors
+          </h2>
+          <UserGrid users={vendors} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
+            Partners
+          </h2>
+          <UserGrid users={partners} handleUpdate={handleUpdate} />
+        </>
       )}
     </div>
   );

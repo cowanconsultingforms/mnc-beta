@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import { db } from "../firebase";
 import emailjs from "@emailjs/browser";
 import { differenceInDays, addYears } from "date-fns";
+import fetch from "node-fetch";
 
 const ViewProfile = () => {
   const { uid } = useParams();
@@ -48,6 +49,7 @@ const ViewProfile = () => {
     hasPreApprovalLetter: false,
     preApprovalExpiration: "",
   });
+  const [id, setId] = useState("");
   const auth = getAuth();
   const [role, setRole] = useState("");
   const [showWorkWithAgent, setShowWorkWithAgent] = useState(false);
@@ -68,28 +70,28 @@ const ViewProfile = () => {
       setUser(userDocSnapshot.data());
       getUserRole();
 
-      if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
-        if (userData.subscription) {
-          const subscriptionData = userData.subscription;
-          const startDate = subscriptionData.toDate();
-          const endDate = addYears(startDate, 1);
-          const daysLeft = calculateRemainingDays(endDate);
-          setRemainingDays(daysLeft);
-        } else {
-          console.log("User document not found.");
-        }
-      }
+      // if (userDocSnapshot.exists()) {
+      //   const userData = userDocSnapshot.data();
+      //   if (userData.subscription) {
+      //     const subscriptionData = userData.subscription;
+      //     const startDate = subscriptionData.toDate();
+      //     const endDate = addYears(startDate, 1);
+      //     const daysLeft = calculateRemainingDays(endDate);
+      //     setRemainingDays(daysLeft);
+      //   } else {
+      //     console.log("User document not found.");
+      //   }
+      // }
     };
 
     fetchUser();
   }, [uid, role]);
 
-  const calculateRemainingDays = (endDate) => {
-    const currentDate = new Date();
-    const daysLeft = differenceInDays(endDate, currentDate);
-    return Math.max(0, daysLeft);
-  };
+  // const calculateRemainingDays = (endDate) => {
+  //   const currentDate = new Date();
+  //   const daysLeft = differenceInDays(endDate, currentDate);
+  //   return Math.max(0, daysLeft);
+  // };
 
   const getUserRole = async () => {
     const auth = getAuth();
@@ -145,30 +147,30 @@ const ViewProfile = () => {
     }, 200);
   };
 
-  const sendEmail = (email, message) => {
-    const formData = {
-      from_name: customer.name,
-      reply_to: customer.email,
-      email_to: email,
-      phone: customer.phone,
-      message: message,
-    };
+  const sendEmail = async (email, message) => {
+    const subject = "New Request";
+    const to = email;
 
-    emailjs
-      .send(
-        "service_7r8k2ww",
-        "template_ug10iu5",
-        formData,
-        "7avGOyYSCKf7Kx45h"
-      )
-      .then(
-        (result) => {
-          console.log("Email sent successfully:", result.text);
-        },
-        (error) => {
-          console.error("Error sending email:", error.text);
+    try {
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/contactUs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to, message, subject }),
         }
       );
+
+      if (response.ok) {
+        console.log("Email sent successfully");
+      } else {
+        console.error("Failed to send email", response);
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
 
   function generateRandomPassword() {
@@ -210,8 +212,8 @@ const ViewProfile = () => {
         const updatedData = {
           ...customer,
           role: "user",
-          agent: user.name,
-          agentEmail: user.email,
+          agentRequested: user.name,
+          agentEmailRequested: user.email,
           requestStatus: "notCompleted",
           timestamp: serverTimestamp(),
         };
@@ -219,11 +221,11 @@ const ViewProfile = () => {
         await setDoc(userDocRef, updatedData);
         sendEmail(
           user.email,
-          `${customer.name} wants to work with you in ${customer.interested}ing. Here's some information customer provided: ${customer.email}, Deal Timeline: ${customer.dealTimeline}, Max Budget: ${customer.maxBudget}, household Income: ${customer.houseldIncome}, Lender Info: ${customer.lenderInfo}, preApproval amount: ${customer.preApprovalAmount}`
+          `${customer.name} wants to work with you in ${customer.interested}ing. \nHere's some information customer provided: \nEmail:${customer.email}, \nPhone: ${customer.phone},\nDeal Timeline: ${customer.dealTimeline}, \nMax Budget: ${customer.maxBudget}, \nhousehold Income: ${customer.houseldIncome}, \nLender Info: ${customer.lenderInfo}, \npreApproval amount: ${customer.preApprovalAmount}\n\nThank You\nTeam MNC Development`
         );
         sendEmail(
           customer.email,
-          `Hello ${customer.name}, your account is created with MNC Development with email: ${customer.email} and a temporary password: ${password}.`
+          `Hello ${customer.name}, your account is created with MNC Development with email: ${customer.email} and a temporary password: ${password}\n\nThank You\nTeam MNC Development.`
         );
         toast.success("Deal is created successfully!");
         handlePopUp();
@@ -231,31 +233,38 @@ const ViewProfile = () => {
         const auth = getAuth();
         onAuthStateChanged(auth, async (user2) => {
           if (user2) {
+            setId(user2.uid);
             const q = query(
               collection(db, "users"),
               where("email", "==", customer.email)
             );
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.docs.length > 0) {
-              const userDoc = querySnapshot.docs[0];
-              const userUid = userDoc.id;
-              const updatedData = {
-                ...userDoc.data(),
-                ...customer,
-                agent: user.name,
-                agentEmail: user.email,
-                requestStatus: "notCompleted",
-                timestamp: serverTimestamp(),
-              };
-              await updateDoc(doc(db, "users", userUid), updatedData);
+
+            if (id && id.length > 1) {
+              if (querySnapshot.docs.length > 0) {
+                const userDoc = querySnapshot.docs[0];
+                const userUid = userDoc.id;
+                const updatedData = {
+                  ...userDoc.data(),
+                  ...customer,
+                  agentRequested: user.name,
+                  agentEmailRequested: user.email,
+                  requestStatus: "notCompleted",
+                  timestamp: serverTimestamp(),
+                };
+
+                await updateDoc(doc(db, "users", userUid), updatedData);
+              }
+              sendEmail(
+                user.email,
+                `${customer.name} wants to work with you in ${customer.interested}ing. \nHere's some information customer provided: \nEmail:${customer.email}, \nPhone: ${customer.phone},\nDeal Timeline: ${customer.dealTimeline}, \nMax Budget: ${customer.maxBudget}, \nhousehold Income: ${customer.houseldIncome}, \nLender Info: ${customer.lenderInfo}, \npreApproval amount: ${customer.preApprovalAmount}\n\nThank You\nTeam MNC Development`
+              );
+              toast.success(
+                "Thank you for your time. The agent will contact you soon."
+              );
+            } else {
+              // console.error("Not logged in")
             }
-            sendEmail(
-              user.email,
-              `${customer.name} wants to work with you in ${customer.interested}ing. Here's some information customer provided: ${customer.email}, Deal Timeline: ${customer.dealTimeline}, Max Budget: ${customer.maxBudget}, household Income: ${customer.houseldIncome}, Lender Info: ${customer.lenderInfo}, preApproval amount: ${customer.preApprovalAmount}`
-            );
-            toast.success(
-              "Thank you for your time. The agent will contact you soon."
-            );
             handlePopUp();
           } else {
             toast.error(
@@ -377,7 +386,7 @@ const ViewProfile = () => {
                 <>
                   {user.numberOfDaysLeft && (
                     <p>
-                      <span className="font-semibold">Subsctiption:</span>{" "}
+                      <span className="font-semibold">Subscription:</span>{" "}
                       {user.numberOfDaysLeft} days left
                     </p>
                   )}
@@ -465,10 +474,19 @@ const ViewProfile = () => {
                         <span className="font-semibold">Request Status: </span>
                         {user.requestStatus}
                       </p>
+                    </>
+                  )}
+                  {user.agent && (
+                    <>
                       <p className="pb-3">
                         <span className="font-semibold">Agent: </span>
                         {user.agent}
                       </p>
+                    </>
+                  )}
+
+                  {user.agentEmail && (
+                    <>
                       <p className="pb-3">
                         <span className="font-semibold">Agent Email: </span>
                         {user.agentEmail}
@@ -520,7 +538,10 @@ const ViewProfile = () => {
                     </div>
 
                     <div style={{}} className=" flex flex-col items-center">
-                      <form onSubmit={handleSubmit} className=" p-4 flex flex-col items-center">
+                      <form
+                        onSubmit={handleSubmit}
+                        className=" p-4 flex flex-col items-center"
+                      >
                         <input
                           type="text"
                           name="name"
@@ -618,7 +639,7 @@ const ViewProfile = () => {
                               value={customer.houseldIncome}
                               onChange={onChange}
                               className=" px-4 h-8 py-2 text-sm text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 focus:shadow-lg focus:text-gray-700 focus:bg-white hover:ring-1 focus:shadow-lg active:ring-1 focus:border-gray-300 mb-3"
-                              placeholder="houseld Income"
+                              placeholder="Houseld Amount"
                               required
                             />
                             <input
@@ -636,12 +657,12 @@ const ViewProfile = () => {
                               className=" px-4 h-8 py-2 text-sm text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 focus:shadow-lg focus:text-gray-700 focus:bg-white hover:ring-1 focus:shadow-lg active:ring-1 focus:border-gray-300 mb-3"
                               value={customer.preApprovalAmount}
                               onChange={onChange}
-                              placeholder="Preapproval Amount"
+                              placeholder="Pre-Approval Amount"
                               required
                             />
                             <div className="flex">
                               <label className="text-sm ml-4 ">
-                                Preapproval Letter:
+                                Pre-Approval Letter:
                               </label>
                               <input
                                 type="checkbox"
@@ -656,7 +677,7 @@ const ViewProfile = () => {
                               {customer.hasPreApprovalLetter && (
                                 <>
                                   <p className=" text-sm text-semibold">
-                                    PreApproval Expiration Date:
+                                    Pre-Approval Expiration Date:
                                   </p>
                                   <input
                                     type="date"

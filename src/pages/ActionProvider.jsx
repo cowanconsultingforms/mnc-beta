@@ -17,34 +17,88 @@ const ActionProvider = ({ createChatBotMessage, setState, children }) => {
   };
 
   const searchHouses = () => {
-    const message = createChatBotMessage(`Please use the following link to find housing:" https://mnc-development.web.app/ "`);
-    updateState(message, "zipCpdeInput");
-  };
+    const message = createChatBotMessage(
+      <p>
+        Please use the following link for housing:{" "}
+        <a href="https://mnc-development.web.app/" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">Housing</span>
+        </a>
+      </p>
+    );
+    updateState(message, "zipCodeInput");
+  }
 
   const signIn = () => {
-    const message = createChatBotMessage(`Please use the link to log in:" https://mnc-development.web.app/sign-in "`);
+    const message = createChatBotMessage(
+      <p>
+        Please use the link to sign in:{" "}
+        <a href="https://mnc-development.web.app/sign-in" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">Sign In</span>
+        </a>
+      </p>
+    );
     updateState(message, "scheduleViewing");
   };
 
   const signUp = () => {
-    const message = createChatBotMessage(`Please use the following link to sign up: " https://mnc-development.web.app/sign-up "`);
+    const message = createChatBotMessage(
+      <p>
+        Please use the following link to sign up:{" "}
+        <a href="https://mnc-development.web.app/sign-up" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">Sign Up</span>
+        </a>
+      </p>
+    );
     updateState(message, "askQuestion");
   };
-
+  
   const agents = () => {
-    const message = createChatBotMessage(`Please use the following link to find agents: " https://mnc-development.web.app/agents "`);
+    const message = createChatBotMessage(
+      <p>
+        Please use the following link to find agents:{" "}
+        <a href="https://mnc-development.web.app/agents" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">Find Agents</span>
+        </a>
+      </p>
+    );
     updateState(message, "requestContactInfo");
   };
-
+  
   const contact = () => {
-    const message = createChatBotMessage(`Please use the following link to contact us: " https://mnc-development.web.app/contact-us "`);
+    const message = createChatBotMessage(
+      <p>
+        Please use the following link to contact us:{" "}
+        <a href="https://mnc-development.web.app/contact-us" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">Contact Us</span>
+        </a>
+      </p>
+    );
     updateState(message, "confirmation");
   };
-
+  
   const vip = () => {
-    const message = createChatBotMessage(`Please use the following link to find the answer: "https://mnc-development.web.app/faqPage"`);
+    const message = createChatBotMessage(
+      <p>
+        Please use the following link to find the answer:{" "}
+        <a href="https://mnc-development.web.app/faqPage" target="_blank" rel="noopener noreferrer">
+          <span className="font-bold underline">FAQs</span>
+        </a>
+      </p>
+    );
     updateState(message, "hello");
   };
+
+const vipSubscription = ()=>{
+  const message = createChatBotMessage(
+    <p>
+      Please use the following link to learn about VIP Subscriptions:{" "}
+      <a href="https://mnc-development.web.app/faqPage" target="_blank" rel="noopener noreferrer">
+        <span className="font-bold underline">VIP Subscriptions</span>
+      </a>
+    </p>
+  );
+  updateState(message, "agew");
+}
 
   const updateState = (message, checker) => {
     setState((prev) => ({
@@ -67,6 +121,7 @@ const ActionProvider = ({ createChatBotMessage, setState, children }) => {
             contact,
             searchHouses,
             vip,
+            vipSubscription,
           },
         });
       })}

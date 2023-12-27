@@ -6,7 +6,7 @@ import {
   where,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, createContext, useState } from "react";
+import { useEffect, createContext, useState, useRef  } from "react";
 import { arrayUnion } from "firebase/firestore";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
@@ -81,8 +81,16 @@ const Home = () => {
   const [signIn, setSignIn] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortName, setSortName] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const notFoundRef = useRef(null);
 
-
+  const handleNotFound = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && suggestions.length == 0) {
+      setNotFound(!notFound);
+    }
+  };
+  
   useEffect(() => {
     async function fetchData() {
       const listingRef = collection(db, "propertyListings");
@@ -377,26 +385,36 @@ const Home = () => {
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnapshot = await getDoc(userDocRef);
-    
+
         if (userDocSnapshot.exists()) {
-          const existingSavedProperties = userDocSnapshot.data().savedProperties || [];
-          const flattenedSavedProperties = existingSavedProperties.map((property) => property);
-    
+          const existingSavedProperties =
+            userDocSnapshot.data().savedProperties || [];
+          const flattenedSavedProperties = existingSavedProperties.map(
+            (property) => property
+          );
+
           // Extract the IDs from the existing properties for deduplication
-          const existingPropertyIds = new Set(flattenedSavedProperties.map((property) => property.id));
-    
+          const existingPropertyIds = new Set(
+            flattenedSavedProperties.map((property) => property.id)
+          );
+
           // Deduplicate the new properties and filter out existing ones
-          const uniqueNewProperties = suggestions.filter((listing) => !existingPropertyIds.has(listing.id));
-    
+          const uniqueNewProperties = suggestions.filter(
+            (listing) => !existingPropertyIds.has(listing.id)
+          );
+
           // Merge the unique new properties with the existing properties
-          const updatedSavedProperties = flattenedSavedProperties.concat(uniqueNewProperties);
-    
+          const updatedSavedProperties =
+            flattenedSavedProperties.concat(uniqueNewProperties);
+
           await updateDoc(userDocRef, {
             savedProperties: updatedSavedProperties,
           });
-    
+
           handleSaveClick();
-          toast.success("The search results got saved into Go To / Save Searches!");
+          toast.success(
+            "The search results got saved into Go To / Save Searches!"
+          );
         } else {
           console.log("User document does not exist.");
         }
@@ -556,6 +574,8 @@ const Home = () => {
     setSuggestions(filteredProperties);
   };
 
+ 
+
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -603,7 +623,7 @@ const Home = () => {
         </div>
         <div>
           <form
-            onSubmit={handleSearch}
+           onSubmit={(e) => handleNotFound(e)}
             className="max-w-md mt-6 w-full text flex justify-center"
           >
             {/* Search bar */}
@@ -620,6 +640,41 @@ const Home = () => {
                 className="text-lg w-full px-4 ring-1 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
               ></input>
 
+              {notFound && (
+                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                    <div className="flex">
+                      <p className="font-semibold">
+                        We couldn't find '{searchTerm}'
+                      </p>
+                      <button
+                        className="mx-0 font-semibold text-xl ml-auto"
+                        onClick={() => {
+                          setNotFound(false);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <br></br>
+                    <p>
+                      Please check the spelling, try clearing the search box, or
+                      try reformatting to match these examples:
+                    </p>
+                    <br></br>
+                    <span className="font-semibold">Address:</span> 123 Main St,
+                    Seattle, WA <br></br>
+                    <span className="font-semibold">Neighborhood: </span>
+                    Downtown
+                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                    <br></br>
+                    <span className="font-semibold">City: </span> 'Seattle' or
+                    'Seattle, WA' <br></br>
+                    <br></br> Don't see what you're looking for? Your search
+                    might be outside our service areas.
+                  </div>
+                </div>
+              )}
               {/* Search button */}
               <button
                 type="submit"
@@ -631,7 +686,6 @@ const Home = () => {
           </form>
           {/* filters */}
           <div style={{ marginTop: "20px", marginLeft: "55px" }}>
-            
             <button
               id="close-button"
               className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -673,7 +727,10 @@ const Home = () => {
           {showPopup && (
             <div className="popup-container">
               <div className="popup">
-              <button  onClick={closePopup} className="mb-2 pl-2 pr-2 bg-gray-600 text-white">
+                <button
+                  onClick={closePopup}
+                  className="mb-2 pl-2 pr-2 bg-gray-600 text-white"
+                >
                   Close
                 </button>
                 <h2>Sign In or Create an Account</h2>
@@ -703,7 +760,8 @@ const Home = () => {
           )}
 
           <div className={`filter-panel ${showFilters ? "open" : ""}`}>
-              <span id="panel-title" className="font-sm ">Explore This Neighborhood 
+            <span id="panel-title" className="font-sm ">
+              Explore This Neighborhood
               <button
                 id="close-filters2"
                 onClick={() => {
@@ -713,159 +771,159 @@ const Home = () => {
               >
                 Close Filters
               </button>
-              </span>
-           
+            </span>
+
             <div
               style={{ padding: "10px", backgroundColor: "rgb(235, 232, 232)" }}
             >
-               {/* sort by */}
-          
-            <button
-              onClick={sort}
-              className={` font-medium uppercase hover:underline focus:underline transition duration-150 ease-in-out flex items-center ${
-                isSortOpen === "false"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
-              style={{
-                width: "auto",
-                display: "flex",
-                height: "30px",
-                marginTop: "-14px",
-                border: "none",
-                background: "none",
-              }}
-            >
-              <div style={{ display: "flex" }}>
-                <span className="mr-2">Sort by</span>
-                <svg
-                  className={`w-4 h-4 fill-current hover:underline focus:underline transform transition-transform duration-300 ${
-                    isSortOpen ? "rotate-180" : ""
-                  }`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
+              {/* sort by */}
+
+              <button
+                onClick={sort}
+                className={` font-medium uppercase hover:underline focus:underline transition duration-150 ease-in-out flex items-center ${
+                  isSortOpen === "false"
+                    ? "bg-gray-600 text-white"
+                    : "bg-white text-black"
+                }`}
+                style={{
+                  width: "auto",
+                  display: "flex",
+                  height: "30px",
+                  marginTop: "-14px",
+                  border: "none",
+                  background: "none",
+                }}
+              >
+                <div style={{ display: "flex" }}>
+                  <span className="mr-2">Sort by</span>
+                  <svg
+                    className={`w-4 h-4 fill-current hover:underline focus:underline transform transition-transform duration-300 ${
+                      isSortOpen ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 12l-6-6 1.41-1.41L8 9.17l4.59-4.58L14 6z" />
+                  </svg>
+                  <span className="mr-2"> {sortName}</span>
+                </div>
+              </button>
+
+              {isSortOpen && (
+                <div
+                  className=" ring-1 bg-white absolute z-10 w-48 grid grid-cols-2 gap-2  shadow-lg  ring-2 ring-black ring-opacity-5"
+                  style={{ marginLeft: "0px" }}
                 >
-                  <path d="M8 12l-6-6 1.41-1.41L8 9.17l4.59-4.58L14 6z" />
-                </svg>
-                <span className="mr-2"> {sortName}</span>
-              </div>
-            </button>
+                  <button className="ring-1 px-4  text-left text-sm text-gray-700 hover:bg-gray-100">
+                    Ascending
+                  </button>
+                  <button className="ring-1 px-4  text-left text-sm  text-gray-700 hover:bg-gray-100">
+                    Descending
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInput("regularPrice");
+                      setIsSortOpen(false);
+                      setSortName("PRICE");
+                    }}
+                    className="px-4 py-2  text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Price
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInputDescending("regularPrice");
+                      setIsSortOpen(false);
+                      setSortName("PRICE");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Price
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInput("bedrooms");
+                      setIsSortOpen(false);
+                      setSortName("BEDS");
+                    }}
+                    className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Beds
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInputDescending("bedrooms");
+                      setIsSortOpen(false);
+                      setSortName("BEDS");
+                    }}
+                    className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Beds
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInput("bathrooms");
+                      setIsSortOpen(false);
+                      setSortName("BATHS");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Baths
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInputDescending("bathrooms");
+                      setIsSortOpen(false);
+                      setSortName("BATHS");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Baths
+                  </button>
 
-            {isSortOpen && (
-            <div
-              className=" ring-1 bg-white absolute z-10 w-48 grid grid-cols-2 gap-2  shadow-lg  ring-2 ring-black ring-opacity-5"
-              style={{ marginLeft: "0px" }}
-            >
-              <button className="ring-1 px-4  text-left text-sm text-gray-700 hover:bg-gray-100">
-                Ascending
-              </button>
-              <button className="ring-1 px-4  text-left text-sm  text-gray-700 hover:bg-gray-100">
-                Descending
-              </button>
-              <button
-                onClick={() => {
-                  sortByInput("regularPrice");
-                  setIsSortOpen(false);
-                  setSortName("PRICE");
-                }}
-                className="px-4 py-2  text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Price
-              </button>
-              <button
-                onClick={() => {
-                  sortByInputDescending("regularPrice");
-                  setIsSortOpen(false);
-                  setSortName("PRICE");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Price
-              </button>
-              <button
-                onClick={() => {
-                  sortByInput("bedrooms");
-                  setIsSortOpen(false);
-                  setSortName("BEDS");
-                }}
-                className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Beds
-              </button>
-              <button
-                onClick={() => {
-                  sortByInputDescending("bedrooms");
-                  setIsSortOpen(false);
-                  setSortName("BEDS");
-                }}
-                className=" px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Beds
-              </button>
-              <button
-                onClick={() => {
-                  sortByInput("bathrooms");
-                  setIsSortOpen(false);
-                  setSortName("BATHS");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Baths
-              </button>
-              <button
-                onClick={() => {
-                  sortByInputDescending("bathrooms");
-                  setIsSortOpen(false);
-                  setSortName("BATHS");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Baths
-              </button>
-
-              <button
-                onClick={() => {
-                  sortByInput("landSize");
-                  setIsSortOpen(false);
-                  setSortName("SQ. FT.");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Square Feet
-              </button>
-              <button
-                onClick={() => {
-                  sortByInputDescending("landSize");
-                  setIsSortOpen(false);
-                  setSortName("SQ. FT.");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Square Feet
-              </button>
-              <button
-                onClick={() => {
-                  sortByInput("yearBuilt");
-                  setIsSortOpen(false);
-                  setSortName("YR. BLT.");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Year Built
-              </button>
-              <button
-                onClick={() => {
-                  sortByInputDescending("yearBuilt");
-                  setIsSortOpen(false);
-                  setSortName("YR. BLT.");
-                }}
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Year Built
-              </button>
-            </div>
-          )}
-            <span> Price </span>
+                  <button
+                    onClick={() => {
+                      sortByInput("landSize");
+                      setIsSortOpen(false);
+                      setSortName("SQ. FT.");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Square Feet
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInputDescending("landSize");
+                      setIsSortOpen(false);
+                      setSortName("SQ. FT.");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Square Feet
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInput("yearBuilt");
+                      setIsSortOpen(false);
+                      setSortName("YR. BLT.");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Year Built
+                  </button>
+                  <button
+                    onClick={() => {
+                      sortByInputDescending("yearBuilt");
+                      setIsSortOpen(false);
+                      setSortName("YR. BLT.");
+                    }}
+                    className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Year Built
+                  </button>
+                </div>
+              )}
+              <span> Price </span>
               <div
                 style={{
                   display: "flex",
@@ -1237,7 +1295,6 @@ const Home = () => {
               </div>
             </div>
           </div>
-
         </div>
         {/* </div> */}
       </section>

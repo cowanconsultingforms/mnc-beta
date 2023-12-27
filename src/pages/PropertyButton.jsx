@@ -90,6 +90,24 @@ const PropertyButton = (props) => {
           Contact
         </button></div>
         </div>
+        <div>
+        <button 
+        style={{
+            fontSize: "12px",
+            backgroundColor: "#4a5568",
+            width: "auto",
+            height: "auto",
+            padding: "7px",
+            color: "white",
+            marginTop: "5px"
+          }}
+          onClick={() => {
+            props.actions.vipSubscription();
+          }}
+        >
+          VIP Subscriptions
+        </button>
+        </div>
     </div>
   );
 };

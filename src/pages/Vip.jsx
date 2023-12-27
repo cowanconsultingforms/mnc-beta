@@ -6,7 +6,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -28,6 +28,15 @@ const Vip = () => {
   const [vipFilteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const images = [img1, img2, img3];
+  const [notFound, setNotFound] = useState(false);
+  const notFoundRef = useRef(null);
+
+  const handleNotFound = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && vipFilteredProperties.length == 0) {
+      setNotFound(!notFound);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -182,7 +191,7 @@ const Vip = () => {
 
         {/* Search bar + button */}
         <form
-          onSubmit={handleSearch}
+         onSubmit={(e) => handleNotFound(e)}
           className="max-w-md mt-6 w-full text flex justify-center"
         >
           {/* Search bar */}
@@ -195,6 +204,42 @@ const Vip = () => {
               onSubmit={handleSearch}
               className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
             ></input>
+
+            {notFound && (
+              <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                  <div className="flex">
+                    <p className="font-semibold">
+                      We couldn't find '{searchTerm}'
+                    </p>
+                    <button
+                      className="mx-0 font-semibold text-xl ml-auto"
+                      onClick={() => {
+                        setNotFound(false);
+                      }}
+                    >
+                      X
+                    </button>
+                  </div>
+                  <br></br>
+                  <p>
+                    Please check the spelling, try clearing the search box, or
+                    try reformatting to match these examples:
+                  </p>
+                  <br></br>
+                  <span className="font-semibold">Address:</span> 123 Main St,
+                  Seattle, WA <br></br>
+                  <span className="font-semibold">Neighborhood: </span>
+                  Downtown
+                  <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                  <br></br>
+                  <span className="font-semibold">City: </span> 'Seattle' or
+                  'Seattle, WA' <br></br>
+                  <br></br> Don't see what you're looking for? Your search might
+                  be outside our service areas.
+                </div>
+              </div>
+            )}
 
             {/* Search button */}
             <button
@@ -265,7 +310,6 @@ const Vip = () => {
                 key insights without your listing getting stale."
               </p>
               {/* No vertical line after the last div */}
-           
 
       {/* Thumbnail images */}
       {/* <div className="middle" style={{maxWidth:"100%"}}>
@@ -338,46 +382,64 @@ const Vip = () => {
           </div>
         </div>
       </div> */}
-      <div className="mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
-          {images.map((img, i) => (
-            <li
-              key={i}
-              className="w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
-            >
-              <img
-                className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
-                loading="lazy"
-                src={img}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-       {/* Footer Information */}
-       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <p>info@mncdevelopment.com</p>
-        <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
-          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-            <p>All rights reserved.</p>
-            <span className="hidden md:block">|</span>
-            <p>© MNC Development, Inc. 2008-present.</p>
+      {/* Thumbnail images */}
+      <div style={{maxWidth: "1150px", margin: "0 auto"}} className=" bg-white">
+        <div
+          className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg"
+          style={{
+            position: "relative",
+            bottom: "0PX",
+            left: "0px",
+            right: "0px",
+          }}
+        >
+          <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
+            {images.map((img, i) => (
+              <li
+                key={i}
+                className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+                style={{
+                  backgroundImage: `url(${img})`, // Set the background image here
+                  backgroundRepeat: "no-repeat", // Prevent background image from repeating
+                  backgroundSize: "cover", // Adjust background image size as needed
+                  height: "200px",
+                }}
+              >
+                <img
+                  className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
+                  loading="lazy"
+                  src={img}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Footer Information */}
+        <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg">
+          <p>info@mncdevelopment.com</p>
+          <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+            <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+              <p>All rights reserved.</p>
+              <span className="hidden md:block">|</span>
+              <p>© MNC Development, Inc. 2008-present.</p>
+            </div>
+            <span className="hidden lg:block">|</span>
+            <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
           </div>
-          <span className="hidden lg:block">|</span>
-          <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
+          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+            <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+            <span className="hidden md:block">|</span>
+            <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+          </div>
+          <p className=" text-justify [text-align-last:center] ">
+            MNC Development and the MNC Development logos are trademarks of MNC
+            Development, Inc. MNC Development, Inc. as a NYS licensed Real
+            Estate Broker fully supports the principles of the Fair Housing Act
+            and the Equal Opportunity Act. Listing information is deemed
+            reliable, but is not guaranteed.
+          </p>
         </div>
-        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-          <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
-          <span className="hidden md:block">|</span>
-          <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
-        </div>
-        <p className=" text-justify [text-align-last:center] ">
-          MNC Development and the MNC Development logos are trademarks of MNC
-          Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate
-          Broker fully supports the principles of the Fair Housing Act and the
-          Equal Opportunity Act. Listing information is deemed reliable, but is
-          not guaranteed.
-        </p>
       </div>
     </div>
   );

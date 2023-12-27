@@ -219,28 +219,6 @@ const Home = () => {
     setShowNotifications(!showNotifications);
   };
 
-  const clearNotifications = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const userRef = doc(db, "users", user.uid);
-    await updateDoc(userRef, { clear: true });
-    try {
-      const userSnapshot = await getDoc(userRef);
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-        if (userData && userData.userNotifications) {
-          const clearedUserNotifications = [];
-          await updateDoc(userRef, {
-            userNotifications: clearedUserNotifications,
-          });
-        }
-      }
-      setNotifications("");
-    } catch (error) {
-      console.error("Error clearing notifications:", error);
-    }
-  };
-
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
@@ -254,13 +232,7 @@ const Home = () => {
     }
   };
 
-  const onChangeTask = (e) => {
-    const { id, value } = e.target;
-    setTask((prevTask) => ({
-      ...prevTask,
-      [id]: value,
-    }));
-  };
+
 
   // Get the category based on the selectedButton
   const getCategory = (button) => {
@@ -273,17 +245,7 @@ const Home = () => {
         return "sold";
     }
   };
-  const handleItemClick = (selectedItem) => {
-    // Navigate to the target page with the selected item as a URL parameter
-    history.push(
-      `/afterSearch?selectedItem=${encodeURIComponent(selectedItem)}`
-    );
-  };
-  const createAddressTokens = (searchTerm) => {
-    // Split the searchTerm into individual tokens (words) and filter out empty strings
-    const tokens = searchTerm.split(" ").filter((token) => token.trim() !== "");
-    return tokens.map((token) => token.toLowerCase());
-  };
+  
 
   // Submit function for searchbar
   const handleSearch = (e) => {
@@ -369,32 +331,6 @@ const Home = () => {
     if (searchTerm !== "" && suggestions.length == 0) {
       setNotFound(!notFound);
     }
-    console.log('sdfsf')
-  };
-
-  const handleNotFound2 = (e) => {
-    e.preventDefault();
-    if (searchTerm !== "" && suggestions.length == 0) {
-      setNotFound(!notFound);
-    }
-  };
-  const hangleToggleToDoList = () => {
-    setToDoListOpen(!toDoListOpen);
-    setShowToDoIcon(false);
-    setShowToDoIcon(false);
-  };
-
-  const handleAddTask = async () => {
-    const userRef = doc(db, "users", userId);
-    const userSnapshot = await getDoc(userRef);
-
-    if (userSnapshot.exists()) {
-      const userData = userSnapshot.data();
-      const currentToDoList = userData.toDoList || [];
-      const updatedToDoList = [...currentToDoList, task];
-      await updateDoc(userRef, { toDoList: updatedToDoList });
-      toast.success("Your task has been added successfully!");
-    }
   };
 
 
@@ -464,7 +400,6 @@ const Home = () => {
                       <p className="font-semibold">
                         We couldn't find '{searchTerm}'
                       </p>
-                      {console.log('sssss3')}
                       <button
                         className="mx-0 font-semibold text-xl ml-auto"
                         onClick={() => {

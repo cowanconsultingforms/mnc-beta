@@ -4,6 +4,8 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  getDocs,
+  collection,
 } from "firebase/firestore";
 import {
   getDownloadURL,
@@ -28,8 +30,8 @@ import { useParams } from "react-router-dom";
 const EditUser = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [errorMessage2, setErrorMessage2] = useState("");
-
   const [formData, setFormData] = useState({
+    name: "",
     phone: "",
     address: {
       street: "",
@@ -45,9 +47,11 @@ const EditUser = () => {
     about: "",
     educations: [],
     specialities: [],
+    agent: "",
   });
 
   const {
+    name,
     phone,
     address,
     spouseName,
@@ -58,12 +62,14 @@ const EditUser = () => {
     about,
     educations,
     specialities,
+    agent,
   } = formData;
   const navigate = useNavigate();
   const [isTenant, setIsTenant] = useState(false);
   const [sent, setSent] = useState(false);
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [image, setImage] = useState(null);
+  const [agents, setAgents] = useState([]);
   const handleCheckboxChange = (e) => {
     setIsTenant(e.target.checked);
   };
@@ -71,7 +77,7 @@ const EditUser = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
-    role: "",
+    // role: "",
   });
 
   const handleSent = () => {
@@ -109,18 +115,14 @@ const EditUser = () => {
 
     if (id === "facebookLink") {
       if (!value.startsWith("https://")) {
-        setErrorMessage(
-          'Please enter a valid link starting with "https://".'
-        );
+        setErrorMessage('Please enter a valid link starting with "https://".');
       } else {
         setErrorMessage("");
       }
     }
     if (id === "instagramLink") {
       if (!value.startsWith("https://")) {
-        setErrorMessage2(
-          'Please enter a valid link starting with "https://".'
-        );
+        setErrorMessage2('Please enter a valid link starting with "https://".');
       } else {
         setErrorMessage2("");
       }
@@ -145,14 +147,45 @@ const EditUser = () => {
       }));
     }
   };
+
   useEffect(() => {
     const fetchUser = async () => {
       const userDocRef = doc(db, "users", uid);
       const userDocSnapshot = await getDoc(userDocRef);
       setUser(userDocSnapshot.data());
+
+      try {
+        // Initialize a Set to store unique agents
+        const uniqueAgentsSet = new Set();
+
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+
+          if (
+            userData.role === "agent" ||
+            userData.role === "admin" ||
+            userData.role === "superadmin"
+          ) {
+            const agentValue = userData.name;
+
+            // Add agentValue to the Set (it won't add if it already exists)
+            uniqueAgentsSet.add(agentValue);
+          }
+        });
+
+        // Convert the Set back to an array
+        const uniqueAgentsArray = Array.from(uniqueAgentsSet);
+
+        // Set the uniqueAgentsArray to the state variable
+        setAgents(uniqueAgentsArray);
+      } catch (error) {
+        console.error("Error fetching user documents:", error);
+      }
     };
+
     fetchUser();
-  }, []);
+  }, [agents]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -246,6 +279,11 @@ const EditUser = () => {
     }));
   };
 
+  const cancelUpdate = (e) => {
+    e.preventDefault();
+    navigate(-1);
+  };
+
   return (
     <div
       className="object-cover h-auto"
@@ -265,53 +303,88 @@ const EditUser = () => {
           opacity: 0.5,
         }}
       ></div>
+
       <div className="relative max-w-md w-full mx-auto bg-gray-100 rounded px-6 py-6">
-        <h1 className="text-3xl text-center py-4 font-bold">
-          Update information
-        </h1>
+        <div className="flex flex-col">
+          <h1 className="text-3xl text-center py-4 font-bold">
+            Update information
+          </h1>
+          
+        </div>
         <form onSubmit={onSubmit}>
+          <label>Name</label>
           <input
-            className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            value={user.name}
-            readOnly
+            className=" w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+            type="text"
+            id="name"
+            value={name}
+            onChange={onChange}
+            placeholder={user.name}
           />
+
+          <label>Email</label>
           <input
             className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             value={user.email}
             readOnly
           />
-          <input
-            className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            value={user.role}
-            readOnly
-          />
-          {/* Name form box */}
+          {user.role !== "superadmin" && user.role !== "admin" && user.role !== "agent" && user.role !== "user" && (
+              <>
+                <label>Agent or Staff</label>
+                <select
+                  id="agent"
+                  className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+                  value={formData.agent}
+                  onChange={onChange}
+                >
+                  {user.agent && (
+                    <> 
+                      <option value="">{user.agent}</option>
+                    </>
+                  )}
+                  {!user.agent && (
+                    <option value="" disabled>
+                      Select an agent or staff member
+                    </option>
+                  )}
+
+                  {agents.map((agent, index) => (
+                    <option key={index} value={agent}>
+                      {agent}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+
+          <label>Phone</label>
           <input
             className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="tel"
             id="phone"
             value={phone}
             onChange={onChange}
-            placeholder="Phone number"
+            placeholder={user.phone ? user.phone : "Phone Number"}
           />
-          {/* Email form box */}
+          <label>Street</label>
           <input
             className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="address.street"
             value={formData.address.street}
             onChange={onChange}
-            placeholder="Street"
+            placeholder={user.address?.street ? user.address.street : "Street"}
           />
-
+          <label>City</label>
           <input
             className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="address.city"
             value={formData.address.city}
             onChange={onChange}
-            placeholder="City"
+            placeholder={user.address?.city ? user.address.city : "City"}
           />
+          <label>State</label>
           <div className="flex">
             <select
               className="w-60 px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
@@ -319,7 +392,17 @@ const EditUser = () => {
               value={formData.address.state}
               onChange={onChange}
             >
-              <option value="">Select State</option>
+              {user.address && user.address.state && (
+                <>
+                  <option value="">{user.address?.state}</option>
+                </>
+              )}
+              {!user.address && !user.address?.state && (
+                <>
+                  <option value="">Select State</option>
+                </>
+              )}
+
               <option value="AL">Alabama</option>
               <option value="AK">Alaska</option>
               <option value="AZ">Arizona</option>
@@ -371,52 +454,65 @@ const EditUser = () => {
               <option value="WI">Wisconsin</option>
               <option value="WY">Wyoming</option>
             </select>
-            <input
-              className=" ml-4 px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-              style={{ width: "145px" }}
-              type="text"
-              id="address.zipCode"
-              value={formData.address.zipCode}
-              onChange={onChange}
-              placeholder="ZIP Code"
-            />
+            <div className="flex flex-col">
+              <label className="ml-4">Zip Code</label>
+              <input
+                className=" ml-4 px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+                style={{ width: "145px" }}
+                type="text"
+                id="address.zipCode"
+                value={formData.address.zipCode}
+                onChange={onChange}
+                placeholder="ZIP Code"
+              />
+            </div>
           </div>
-          {/* Password form box */}
+          <label>Spouse Name</label>
           <input
             className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="spouseName"
             value={spouseName}
             onChange={onChange}
-            placeholder="Spouse name"
+            placeholder={user.spouseName ? user.spouseName : "Spouse Name"}
           />
+          <label>Number Of Kids</label>
           <input
             className="w-full px-4 py-2 text-lg  text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="number"
             id="numberOfKids"
             value={numberOfKids}
             onChange={onChange}
-            placeholder="Number Of Kids"
+            placeholder={user.spouseName ? user.spouseName : "Number Of Kids"}
           />
-          
+          <label>Facebook Link</label>
           <input
             className="w-full px-4 py-2 text-lg  text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="facebookLink"
             value={facebookLink}
             onChange={onChange}
-            placeholder="Facebook Link"
+            placeholder={
+              user.facebookLink ? user.facebookLink : "Facebook Link"
+            }
           />
-          {facebookLink && errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          {facebookLink && errorMessage && (
+            <p className="text-red-500">{errorMessage}</p>
+          )}
+          <label>Instagram Link</label>
           <input
             className="w-full px-4 py-2 text-lg  text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="instagramLink"
             value={instagramLink}
             onChange={onChange}
-            placeholder="Instagram Link"
+            placeholder={
+              user.instagramLink ? user.instagramLink : "Instagram Link"
+            }
           />
-          {instagramLink && errorMessage2 && <div className="text-red-500">{errorMessage2}</div>}
+          {instagramLink && errorMessage2 && (
+            <div className="text-red-500">{errorMessage2}</div>
+          )}
 
           <div style={{}}>
             <p>
@@ -481,13 +577,14 @@ const EditUser = () => {
               </div>
             ))}
           </div>
+          <label>About</label>
           <textarea
             className="w-full h-40 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
             type="text"
             id="about"
             value={about}
             onChange={onChange}
-            placeholder="about"
+            placeholder={user.about ? user.about : "About"}
           />
           <p>Date of Birth</p>
           <DatePicker
@@ -518,10 +615,16 @@ const EditUser = () => {
               }}
             />
           )}
-          {/* Sign up button */}
+          <button
+            onClick={cancelUpdate}
+            className="mt-1 mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+          >
+            Cancel Update
+          </button>
+        
           <button
             onClick={handleSent}
-            className="w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+            className="w-full bg-gray-600 text-white px-7 py-3 text-sm font-semibold uppercase rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             type="submit"
           >
             Update

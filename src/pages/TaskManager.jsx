@@ -1,4 +1,6 @@
 import { useParams } from "react-router-dom";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   doc,
@@ -21,8 +23,8 @@ const TaskManager = () => {
   const [task, setTask] = useState({
     taskName: "",
     priority: "",
-    dueDate: "",
-    complete: "",
+    dueDate: null,
+    complete: false,
   });
   const [checked, setChecked] = useState(false);
   const [addTaskOpen, setAddTaskOpen] = useState(false);
@@ -47,17 +49,14 @@ const TaskManager = () => {
           if (userData.toDoList) {
             setToDoList(userData.toDoList);
           }
-        } else {
-          setUserRole(null); // Handle the case when the user document doesn't exist
         }
       } catch (error) {
         console.error("Error getting user document:", error);
-        setUserRole(null); // Handle errors by setting userRole to a fallback value
       }
     };
 
     fetch();
-  }, [checked, uid]);
+  }, [uid, checked]);
 
   const handleCheckBox = async (todo) => {
     const userRef = doc(db, "users", uid);
@@ -122,6 +121,13 @@ const TaskManager = () => {
     }
   };
 
+  const handleDateChange = (date) => {
+    setTask((prevTask) => ({
+      ...prevTask,
+      dueDate: date,
+    }));
+  };
+
   return (
     <>
       <div
@@ -165,9 +171,9 @@ const TaskManager = () => {
               <tbody>
                 {toDoList.map((todo, index) => (
                   <tr key={index} className="border">
-                    <td className="py-1 text-center">{todo.taskName}</td>
-                    <td className="py-1 text-center">{todo.priority}</td>
-                    <td className="py-1 text-center">{todo.dueDate}</td>
+                    <td className="py-1 text-center">{todo.taskName && todo.taskName}</td>
+                    <td className="py-1 text-center">{todo.priority && todo.priority}</td>
+                    <td className="py-1 text-center"> {todo.dueDate && todo.dueDate.toDate().toLocaleDateString()}</td>
                     <td className="py-1 text-center">
                       <input
                         type="checkbox"
@@ -207,21 +213,27 @@ const TaskManager = () => {
                 onChange={onChangeTask}
                 placeholder="Task Name"
               />
-              <input
-                className=" px-4 py-2 w-full text-md text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-1"
-                type="text"
+              <select
+                className="px-4 py-2 w-full text-md text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-1"
                 id="priority"
                 value={task.priority}
                 onChange={onChangeTask}
-                placeholder="Priority"
-              />
-              <input
-                className=" px-4 py-2 w-full text-md text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-1"
-                type="text"
+              >
+                <option value="" disabled>
+                  Select Priority
+                </option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+
+              <DatePicker
+                selected={task.dueDate}
+                onChange={handleDateChange}
+                className="px-4 py-2 w-full text-md text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-1"
                 id="dueDate"
-                value={task.dueDate}
-                onChange={onChangeTask}
-                placeholder="Due Date"
+                placeholderText="MM/DD/YYYY"
+                dateFormat="MM/dd/yyyy"
               />
               <button
                 onClick={handleAddTask}

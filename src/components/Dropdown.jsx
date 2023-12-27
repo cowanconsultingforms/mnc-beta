@@ -1,16 +1,16 @@
-import { doc, getDoc, updateDoc, serverTimestamp} from "firebase/firestore";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { db } from "../firebase";
 import Spinner from "./Spinner";
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
 
 const Dropdown = ({ userId, selected }) => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
- 
+const [loadingDeteting, setLoadingDeleting] = useState(false);
   const [userName, setUserName] = useState({
     name: "",
   });
@@ -19,6 +19,20 @@ const Dropdown = ({ userId, selected }) => {
   });
   const { role } = formData;
   const { name } = userName;
+  const [showModal, setShowModal] = useState(false);
+
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    setShowModal(true);
+  };
+
+  const handleConfirm = () => {
+    deleteUser(userId);
+    setShowModal(false);
+  };
+  const handleCancel = () => {
+    setShowModal(false);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -47,9 +61,9 @@ const Dropdown = ({ userId, selected }) => {
     setIsOpen(false);
   };
 
-    const RefreshButton = () => {
-      window.location.reload();
-    }
+  const RefreshButton = () => {
+    window.location.reload();
+  };
 
   // Submits changed role to firestore database
   const onSubmit = async (e) => {
@@ -59,9 +73,11 @@ const Dropdown = ({ userId, selected }) => {
 
     const formDataCopy = {
       ...formData,
+      subscriptionEmailSent: "false",
+      subscriptionAgentEmailSent: "false",
     };
 
-    if(role === "vip"){
+    if (role === "vip") {
       const timestamp = serverTimestamp();
       formDataCopy.subscription = timestamp;
     }
@@ -75,26 +91,33 @@ const Dropdown = ({ userId, selected }) => {
 
   const deleteUser = async (userId) => {
     try {
-      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/deleteUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
-      });
-  
+      setLoadingDeleting(true);
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/deleteUser",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
       if (response.ok) {
         RefreshButton();
-        console.log('User deleted successfully');
+        console.log("User deleted successfully");
       } else {
-        console.error('Failed to delete user');
+        console.error("Failed to delete user");
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
+    } finally{
+      setLoadingDeleting(false);
     }
   };
 
   return (
+    <div>
     <div onMouseLeave={() => setIsOpen(false)}>
       {role === "superadmin" ? (
         <div className="relative w-full">
@@ -140,13 +163,13 @@ const Dropdown = ({ userId, selected }) => {
               Apply
             </button>
           </div>
-{/* delete */}
+          {/* delete */}
           <div className="relative w-full">
             <button
               type="submit"
               className={`w-full ml-2 flex justify-center items-center p-3 z-10 bg-white text-gray-600  hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 rounded`}
-           onClick={()=>deleteUser(userId)}
-           >
+              onClick={(e) => handleButtonClick(e)}
+            >
               Delete
             </button>
           </div>
@@ -215,7 +238,6 @@ const Dropdown = ({ userId, selected }) => {
                   agent
                 </button>
 
-                
                 <button
                   value="client"
                   type="button"
@@ -241,7 +263,6 @@ const Dropdown = ({ userId, selected }) => {
                 >
                   tenant
                 </button>
-
 
                 <button
                   value="vendor"
@@ -272,6 +293,39 @@ const Dropdown = ({ userId, selected }) => {
             </div>
           )}
         </form>
+      )}
+     
+      </div>
+      {loadingDeteting && (
+      <div className="bg-gray-900 bg-opacity-50 fixed inset-0 flex items-center justify-center z-10">
+      <p className="font-semibold" style={{fontSize: "25px", color: "white"}}>Deleting...</p>
+      </div>
+      )}
+      {showModal && (
+        <>
+          <div className="bg-gray-600 bg-opacity-50 fixed inset-0 flex items-center justify-center z-10">
+            <div className="modal-content bg-white p-6 rounded shadow-lg flex flex-col items-center">
+              <p className="flex-grow">Are you sure you want to delete this user?</p>
+              <div className="mt-5 ml-auto">
+              <button
+              type="button"
+                onClick={()=>handleCancel()}
+                className="bg-gray-600 text-white px-4 py-2 rounded "
+              >
+                Cancel
+              </button>
+              <button
+              type="button"
+                onClick={()=>handleConfirm()}
+                className="bg-gray-600 text-white px-4 py-2 rounded ml-5"
+              >
+                OK
+              </button>
+              
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
