@@ -165,6 +165,7 @@ const EditUser = () => {
           if (
             userData.role === "agent" ||
             userData.role === "admin" ||
+            userData.role === "stuff" ||
             userData.role === "superadmin"
           ) {
             const agentValue = userData.name;
@@ -328,7 +329,7 @@ const EditUser = () => {
             value={user.email}
             readOnly
           />
-          {user.role !== "superadmin" && user.role !== "admin" && user.role !== "agent" && user.role !== "user" && (
+          {user.role !== "superadmin" && user.role !== "admin" && user.role !== "stuff" && user.role !== "agent" && user.role !== "user" && (
               <>
                 <label>Agent or Staff</label>
                 <select
@@ -342,7 +343,7 @@ const EditUser = () => {
                       <option value="">{user.agent}</option>
                     </>
                   )}
-                  {!user.agent && (
+                  {!user.agent && user.role !== "client" &&(
                     <option value="" disabled>
                       Select an agent or staff member
                     </option>

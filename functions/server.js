@@ -33,8 +33,6 @@ const updateNumberOfDaysLeft = async () => {
 
       if (user.subscription) {
         const subscriptionDate = user.subscription.toDate();
-        emailSent = user?.subscriptionEmailSent;
-        agentEmailSent = user?.subscriptionAgentEmailSent;
         // Calculate the date one year later from the subscription timestamp
         const oneYearLater = new Date(subscriptionDate);
         oneYearLater.setFullYear(subscriptionDate.getFullYear() + 1);
@@ -66,6 +64,16 @@ const updateNumberOfDaysLeft = async () => {
             try {
               // Send the email for each recipient
               await transporter.sendMail(mailOptions);
+              await db
+              .collection("users")
+              .doc(doc.id)
+              .set(
+                {
+                  subscriptionEmailSent: "true",
+                  subscriptionAgentEmailSent: "true",
+                },
+                { merge: true }
+              );
 
               if (user.agentEmail.length > 1) {
                 const text2 = `The VIP description attached to this account ${user.email} has ended. \n\nThank You\nTeam MNC Development`;
@@ -77,8 +85,7 @@ const updateNumberOfDaysLeft = async () => {
                 };
                 await transporter.sendMail(mailOptions2);
               }
-              emailSent = "true";
-              agentEmailSent = "true";
+
               console.log(`Email sent successfull`);
             } catch (error) {
               console.error(`Error sending email to:`, error);
@@ -104,12 +111,20 @@ const updateNumberOfDaysLeft = async () => {
               text: text,
             };
 
+            await db
+              .collection("users")
+              .doc(doc.id)
+              .set(
+                {
+                  subscriptionEmailSent: "true",
+                  subscriptionAgentEmailSent: "true",
+                },
+                { merge: true }
+              );
+
             try {
               // Send the email for each recipient
               await transporter.sendMail(mailOptions);
-              emailSent = "true";
-              agentEmailSent = "true";
-
               console.log(`Email sent successfull`);
             } catch (error) {
               console.error(`Error sending email to:`, error);
@@ -128,8 +143,6 @@ const updateNumberOfDaysLeft = async () => {
             {
               numberOfDaysLeft: numberOfDaysLeft,
               role: numberOfDaysLeft < 1 ? "user" : "vip",
-              subscriptionEmailSent: emailSent ?? "NA",
-              subscriptionAgentEmailSent: agentEmailSent ?? "NA",
             },
             { merge: true }
           );

@@ -107,6 +107,9 @@ const ManageUsersProfile = () => {
   const admins = Array.isArray(users)
     ? users.filter((user) => user.data.role === "admin")
     : [];
+    const stuffs = Array.isArray(users)
+    ? users.filter((user) => user.data.role === "stuff")
+    : [];
   const tenants = Array.isArray(users)
     ? users.filter((user) => user.data.role === "tenant")
     : [];
@@ -217,6 +220,10 @@ const ManageUsersProfile = () => {
             Admins
           </h2>
           <UserGrid users={admins} handleUpdate={handleUpdate} />
+          <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
+            Stuff
+          </h2>
+          <UserGrid users={stuffs} handleUpdate={handleUpdate} />
           <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
             Agents
           </h2>
