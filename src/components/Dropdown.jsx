@@ -198,16 +198,16 @@ const [loadingDeteting, setLoadingDeleting] = useState(false);
                 </button>
 
                 <button
-                  value="stuff"
+                  value="staff"
                   type="button"
                   onClick={onChange}
                   className={`p-3 ${
-                    role === "stuff"
+                    role === "staff"
                       ? "bg-gray-300 text-gray-800"
                       : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
                   }`}
                 >
-                  stuff
+                  staff
                 </button>
 
                 <button

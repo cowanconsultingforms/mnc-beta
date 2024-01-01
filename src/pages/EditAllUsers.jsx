@@ -165,7 +165,7 @@ const EditUser = () => {
           if (
             userData.role === "agent" ||
             userData.role === "admin" ||
-            userData.role === "stuff" ||
+            userData.role === "staff" ||
             userData.role === "superadmin"
           ) {
             const agentValue = userData.name;
@@ -329,7 +329,7 @@ const EditUser = () => {
             value={user.email}
             readOnly
           />
-          {user.role !== "superadmin" && user.role !== "admin" && user.role !== "stuff" && user.role !== "agent" && user.role !== "user" && (
+          {user.role !== "superadmin" && user.role !== "admin" && user.role !== "staff" && user.role !== "agent" && user.role !== "user" && (
               <>
                 <label>Agent or Staff</label>
                 <select
