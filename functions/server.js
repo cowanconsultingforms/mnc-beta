@@ -46,7 +46,7 @@ const updateNumberOfDaysLeft = async () => {
         const numberOfDaysLeft = differenceInDays >= 0 ? differenceInDays : -1;
 
         if (
-          numberOfDaysLeft <= 355 &&
+          numberOfDaysLeft < 1 &&
           user?.subscriptionAgentEmailSent === "false"
         ) {
           try {
@@ -97,7 +97,7 @@ const updateNumberOfDaysLeft = async () => {
           }
         }
         if (
-          numberOfDaysLeft <= 355 &&
+          numberOfDaysLeft === 7 &&
           user?.subscriptionEmailSent === "false"
         ) {
           try {

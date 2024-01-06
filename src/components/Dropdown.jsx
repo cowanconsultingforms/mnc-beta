@@ -10,7 +10,7 @@ import fetch from "node-fetch";
 const Dropdown = ({ userId, selected }) => {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-const [loadingDeteting, setLoadingDeleting] = useState(false);
+  const [loadingDeteting, setLoadingDeleting] = useState(false);
   const [userName, setUserName] = useState({
     name: "",
   });
@@ -111,230 +111,235 @@ const [loadingDeteting, setLoadingDeleting] = useState(false);
       }
     } catch (error) {
       console.error("Error deleting user:", error);
-    } finally{
+    } finally {
       setLoadingDeleting(false);
     }
   };
 
   return (
     <div>
-    <div onMouseLeave={() => setIsOpen(false)}>
-      {role === "superadmin" ? (
-        <div className="relative w-full">
-          <button
-            type="button"
-            className="w-full text-center p-3 z-10 bg-gray-600 text-white rounded-lg"
-          >
-            {role}
-          </button>
-        </div>
-      ) : (
-        <form
-          onSubmit={onSubmit}
-          className="relative w-full flex justify-center items-center shadow-xl rounded-lg"
-        >
-          {/* Dropdown button */}
+      <div onMouseLeave={() => setIsOpen(false)}>
+        {role === "superadmin" ? (
           <div className="relative w-full">
             <button
-              className={`min-w-[90px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
-                isOpen && "rounded-bl-none"
-              }`}
               type="button"
-              onClick={() => setIsOpen((prev) => !prev)}
+              className="w-full text-center p-3 z-10 bg-gray-600 text-white rounded-lg"
             >
               {role}
-              {/* Displays downward arrow when menu is closed, upward arrow when menu is open  */}
-              {!isOpen ? (
-                <AiOutlineCaretDown className="text-lg" />
-              ) : (
-                <AiOutlineCaretUp className="text-lg" />
-              )}
             </button>
           </div>
-
-          {/* Apply changes button */}
-          <div className="relative w-full">
-            <button
-              type="submit"
-              className={`w-full flex justify-center items-center p-3 z-10 bg-white text-gray-600 rounded-r-lg hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 ${
-                isOpen && "rounded-br-none"
-              }`}
-            >
-              Apply
-            </button>
-          </div>
-          {/* delete */}
-          <div className="relative w-full">
-            <button
-              type="submit"
-              className={`w-full ml-2 flex justify-center items-center p-3 z-10 bg-white text-gray-600  hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 rounded`}
-              onClick={(e) => handleButtonClick(e)}
-            >
-              Delete
-            </button>
-          </div>
-
-          {/* Displays role options when dropdown menu is clicked */}
-          {isOpen && selected && (
-            <div
-              className="absolute flex flex-col top-11 sm:top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl"
-              // onTouchEnd={() => setIsOpen(false)}
-              onClick={() => setIsOpen(false)}
-            >
-              {/* user role option */}
-              <div className="flex flex-col z-30 w-full shadow-2xl ">
-                {/* admin role option */}
-                <button
-                  value="admin"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "admin"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  admin
-                </button>
-
-                <button
-                  value="staff"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "staff"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  staff
-                </button>
-
-                <button
-                  value="user"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "user"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  user
-                </button>
-
-                {/* vip role option */}
-                <button
-                  value="vip"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "vip"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  vip
-                </button>
-
-                {/* agent role option */}
-                <button
-                  value="agent"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "agent"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  agent
-                </button>
-
-                <button
-                  value="client"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "client"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  client
-                </button>
-
-                <button
-                  value="tenant"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "tenant"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  tenant
-                </button>
-
-                <button
-                  value="vendor"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "vendor"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  vendor
-                </button>
-
-                <button
-                  value="partner"
-                  type="button"
-                  onClick={onChange}
-                  className={`p-3 ${
-                    role === "partner"
-                      ? "bg-gray-300 text-gray-800"
-                      : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
-                  }`}
-                >
-                  partner
-                </button>
-              </div>
+        ) : (
+          <form
+            onSubmit={onSubmit}
+            className="relative w-full flex justify-center items-center shadow-xl rounded-lg"
+          >
+            {/* Dropdown button */}
+            <div className="relative w-full">
+              <button
+                className={`min-w-[90px] w-full flex justify-between items-center p-3 z-10 bg-gray-600 text-white rounded-l-lg ${
+                  isOpen && "rounded-bl-none"
+                }`}
+                type="button"
+                onClick={() => setIsOpen((prev) => !prev)}
+              >
+                {role}
+                {/* Displays downward arrow when menu is closed, upward arrow when menu is open  */}
+                {!isOpen ? (
+                  <AiOutlineCaretDown className="text-lg" />
+                ) : (
+                  <AiOutlineCaretUp className="text-lg" />
+                )}
+              </button>
             </div>
-          )}
-        </form>
-      )}
-     
+
+            {/* Apply changes button */}
+            <div className="relative w-full">
+              <button
+                type="submit"
+                className={`w-full flex justify-center items-center p-3 z-10 bg-white text-gray-600 rounded-r-lg hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 ${
+                  isOpen && "rounded-br-none"
+                }`}
+              >
+                Apply
+              </button>
+            </div>
+            {/* delete */}
+            <div className="relative w-full">
+              <button
+                type="submit"
+                className={`w-full ml-2 flex justify-center items-center p-3 z-10 bg-white text-gray-600  hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800 rounded`}
+                onClick={(e) => handleButtonClick(e)}
+              >
+                Delete
+              </button>
+            </div>
+
+            {/* Displays role options when dropdown menu is clicked */}
+            {isOpen && selected && (
+              <div
+                className="absolute flex flex-col top-11 sm:top-12 items-start text-start w-full overflow-hidden rounded-lg rounded-t-none shadow-2xl"
+                // onTouchEnd={() => setIsOpen(false)}
+                onClick={() => setIsOpen(false)}
+              >
+                {/* user role option */}
+                <div className="flex flex-col z-30 w-full shadow-2xl ">
+                  {/* admin role option */}
+                  <button
+                    value="admin"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "admin"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    admin
+                  </button>
+
+                  <button
+                    value="staff"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "staff"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    staff
+                  </button>
+
+                  {/* agent role option */}
+                  <button
+                    value="agent"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "agent"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    agent
+                  </button>
+
+                  <button
+                    value="user"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "user"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    user
+                  </button>
+
+                  {/* vip role option */}
+                  <button
+                    value="vip"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "vip"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    vip
+                  </button>
+
+                  <button
+                    value="client"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "client"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    client
+                  </button>
+
+                  <button
+                    value="tenant"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "tenant"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    tenant
+                  </button>
+
+                  <button
+                    value="vendor"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "vendor"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    vendor
+                  </button>
+
+                  <button
+                    value="partner"
+                    type="button"
+                    onClick={onChange}
+                    className={`p-3 ${
+                      role === "partner"
+                        ? "bg-gray-300 text-gray-800"
+                        : "bg-white text-gray-500 hover:bg-gray-100 focus:bg-gray-100 hover:text-gray-700 focus:text-gray-700 active:bg-gray-300 active:text-gray-800"
+                    }`}
+                  >
+                    partner
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+        )}
       </div>
       {loadingDeteting && (
-      <div className="bg-gray-900 bg-opacity-50 fixed inset-0 flex items-center justify-center z-10">
-      <p className="font-semibold" style={{fontSize: "25px", color: "white"}}>Deleting...</p>
-      </div>
+        <div className="bg-gray-900 bg-opacity-50 fixed inset-0 flex items-center justify-center z-10">
+          <p
+            className="font-semibold"
+            style={{ fontSize: "25px", color: "white" }}
+          >
+            Deleting...
+          </p>
+        </div>
       )}
       {showModal && (
         <>
           <div className="bg-gray-600 bg-opacity-50 fixed inset-0 flex items-center justify-center z-10">
             <div className="modal-content bg-white p-6 rounded shadow-lg flex flex-col items-center">
-              <p className="flex-grow">Are you sure you want to delete this user?</p>
+              <p className="flex-grow">
+                Are you sure you want to delete this user?
+              </p>
               <div className="mt-5 ml-auto">
-              <button
-              type="button"
-                onClick={()=>handleCancel()}
-                className="bg-gray-600 text-white px-4 py-2 rounded "
-              >
-                Cancel
-              </button>
-              <button
-              type="button"
-                onClick={()=>handleConfirm()}
-                className="bg-gray-600 text-white px-4 py-2 rounded ml-5"
-              >
-                OK
-              </button>
-              
+                <button
+                  type="button"
+                  onClick={() => handleCancel()}
+                  className="bg-gray-600 text-white px-4 py-2 rounded "
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleConfirm()}
+                  className="bg-gray-600 text-white px-4 py-2 rounded ml-5"
+                >
+                  OK
+                </button>
               </div>
             </div>
           </div>

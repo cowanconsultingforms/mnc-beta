@@ -217,11 +217,11 @@ const ManageUsersProfile = () => {
           </h2>
           <UserGrid users={superadmin} handleUpdate={handleUpdate} />
           <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
-            Admins
+            Admin
           </h2>
           <UserGrid users={admins} handleUpdate={handleUpdate} />
           <h2 className="bg-gray-600 text-white text-center font-semibold mb-5">
-            Staffs
+            Staff
           </h2>
           <UserGrid users={staffs} handleUpdate={handleUpdate} />
           <h2 className="bg-gray-600 text-white text-center font-semibold mt-5 mb-5">
