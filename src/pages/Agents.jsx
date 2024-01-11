@@ -319,7 +319,7 @@ const ManageUsersProfile = () => {
                             filteredInfo.push(address.street);
                           }
                           if (
-                            address &&
+                            address && address.city &&
                             address.city
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase())
@@ -327,8 +327,8 @@ const ManageUsersProfile = () => {
                             filteredInfo.push(address.city);
                           }
                           if (
-                            address &&
-                            address.state
+                            address && address.state &&
+                            address.state 
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase())
                           ) {
