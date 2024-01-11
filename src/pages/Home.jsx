@@ -1,32 +1,238 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { useState } from "react";
+import {
+  collection,
+  getDoc,
+  getDocs,
+  query,
+  doc,
+  where,
+  setDoc,
+  updateDoc,
+  orderBy,
+  limit,
+} from "firebase/firestore";
+import { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-
+import "../css/Home1.css";
 import img1 from "../assets/img/mncthumbnail1.jpeg";
 import img2 from "../assets/img/mncthumbnail2.jpeg";
 import img3 from "../assets/img/mncthumbnail3.jpeg";
-
+import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
+import { app } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ToastContainer, toast } from "react-toastify";
+import { getMessaging } from "firebase/messaging";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import notification from "../assets/img/notification.png";
 
+// import { createNotification } from "../firebase";
+// import { getFirebaseToken, onForegroundMessage } from "../firebase";
+import { useContext } from "react";
 const Home = () => {
+  const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
-  const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const images = [img1, img2, img3];
+  const [zipcode, setZip] = useState(false);
+  const [city, setCity] = useState(false);
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = useState("");
+  const [signed, setSigned] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
+  const [notFound, setNotFound] = useState(false);
 
-  // Updates search bar data when user types
+  const [showToDoIcon, setShowToDoIcon] = useState(true);
+ 
+  const [userId, setUserId] = useState("");
+
+  const notFoundRef = useRef(null);
+
+  const handleNotFoundRef = (e) => {
+    if (notFoundRef.current && !notFoundRef.current.contains(e.target)) {
+      setNotFound(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleNotFoundRef);
+    return () => {
+      document.removeEventListener("click", handleNotFoundRef);
+    };
+  }, []);
+
+  const getUserRole = async (uid) => {
+    const userRef = doc(db, "users", uid);
+
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserRole(userData.role);
+      } else {
+        setUserRole(null); // Handle the case when the user document doesn't exist
+      }
+    } catch (error) {
+      console.error("Error getting user document:", error);
+      setUserRole(null); // Handle errors by setting userRole to a fallback value
+    }
+  };
+
+  useEffect(() => {
+    const call = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUserId(user.uid);
+          await getUserRole(user.uid);
+          setSigned(true);
+          if (userRole == "admin") {
+            const userRef = doc(db, "users", user.uid);
+            const userSnapshot = await getDoc(userRef);
+
+            if (userSnapshot.exists()) {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            } else {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            }
+            copyNotificationsToUserNotifications(userId);
+            fetchUserNotifications(userId);
+          }
+        } else {
+          console.log("User is not authenticated.");
+        }
+      });
+    };
+
+    call();
+  }, [userRole, userId]);
+
+  const fetchUserNotifications = async (userId) => {
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+
+    if (!userSnapshot.empty) {
+      const userNotificationsData = userSnapshot.get("userNotifications");
+      setNotifications(userNotificationsData);
+    } else {
+      console.log("emptu");
+    }
+  };
+  const copyNotificationsToUserNotifications = async (userId) => {
+    const notificationsRef = collection(db, "notifications");
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      if (userData.clear === false) {
+        const userNotificationsData =
+          userSnapshot.data().userNotifications || [];
+        if (userNotificationsData.length === 0) {
+          const latestTimestamp = await getLatestTimestamp();
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", "==", latestTimestamp))
+          );
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        } else {
+          // Get the latest timestamp from the userNotificationsData
+          const latestTimestamp = userNotificationsData.reduce(
+            (latest, notification) =>
+              notification.timestamp > latest ? notification.timestamp : latest,
+            userNotificationsData[0].timestamp
+          );
+          // Query for notifications newer than the latestTimestamp
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", ">", latestTimestamp))
+          );
+          // Append new notifications to userNotificationsData
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          // Update the userNotifications field with the combined data
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        }
+      }
+    }
+  };
+
+  const getLatestTimestamp = async () => {
+    const notificationsCollectionRef = collection(db, "notifications");
+    const latestTimestampQuery = query(
+      notificationsCollectionRef,
+      orderBy("timestamp", "desc"),
+      limit(1)
+    );
+    try {
+      const querySnapshot = await getDocs(latestTimestampQuery);
+      if (!querySnapshot.empty) {
+        const latestNotification = querySnapshot.docs[0].data();
+        return latestNotification.timestamp;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting the latest timestamp:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showNotifications &&
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        toggleNotifications();
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  // // Function to retrieve user role from Firebase Firestore
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   const onChange = (e) => {
     setSearchTerm(e.target.value);
 
-    // Displays results after 500ms delay
-    clearTimeout(timer);
-    const newTimer = setTimeout(() => {
-      fetchProperties(searchTerm);
-    }, 500);
-    setTimer(newTimer);
+    if (searchTerm !== "") {
+      // Displays results after 500ms delay
+      clearTimeout(timer);
+      const newTimer = setTimeout(() => {
+        fetchProperties(searchTerm);
+      }, 500);
+      setTimer(newTimer);
+    }
   };
+
+
 
   // Get the category based on the selectedButton
   const getCategory = (button) => {
@@ -39,12 +245,7 @@ const Home = () => {
         return "sold";
     }
   };
-
-  const createAddressTokens = (searchTerm) => {
-    // Split the searchTerm into individual tokens (words) and filter out empty strings
-    const tokens = searchTerm.split(" ").filter((token) => token.trim() !== "");
-    return tokens.map((token) => token.toLowerCase());
-  };
+  
 
   // Submit function for searchbar
   const handleSearch = (e) => {
@@ -54,36 +255,84 @@ const Home = () => {
 
   // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm) => {
-    const listingRef = collection(db, "propertyListings");
+    if (searchTerm !== "") {
+      const listingRef = collection(db, "propertyListings");
 
-    // Get the category based on the selectedButton
-    const category = getCategory(selectedButton);
+      // Get the category based on the selectedButton
+      const category = getCategory(selectedButton);
 
-    // Build the query based on the selectedButton and the searchTerm
-    let q = query(listingRef, where("type", "==", category));
+      // Build the query based on the selectedButton and the searchTerm
+      let q = query(listingRef, where("type", "==", category));
 
-    // If there's a searchTerm, add the where clause for address field
-    // If there's a searchTerm, create an array of address tokens and query against it
+      // If there's a searchTerm, add the where clause for address field
+      // If there's a searchTerm, create an array of address tokens and query against it
 
-    const querySnap = await getDocs(q);
+      const querySnap = await getDocs(q);
 
-    // Adds all listings from query to 'listings' variable
-    let listings = [];
-    querySnap.forEach((doc) => {
-      //if searchTerm != null, only return properties that contian the search term in the address
+      // Adds all listings from query to 'listings' variable
+      let listings = [];
+      querySnap.forEach((doc) => {
+        //if searchTerm != null, only return properties that contian the search term in the address
 
-      return listings.push({
-        id: doc.id,
-        data: doc.data(),
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
       });
-    });
 
-    const filteredProperties = listings.filter((listing) =>
-      listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+      // const filteredProperties = listings.filter((listing) =>
+      //   listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      // );
 
-    setFilteredProperties(filteredProperties);
+      // setInputValue(searchTerm);
+      const filteredSuggestions = listings.filter((listing) => {
+        const regexZipCode = /^\d{1,5}$/;
+        const regexCity = /^[a-zA-Z\s]+$/;
+
+        if (regexZipCode.test(searchTerm)) {
+          setZip("true");
+          setCity("false");
+          // console.log("zip", {zipcode});
+          return listing.data.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        }
+        if (regexCity.test(searchTerm)) {
+          setCity("true");
+          setZip("false");
+          return listing.data.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        }
+
+        setZip("false");
+        setCity("false");
+        return listing.data.address
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      });
+
+      // setSuggestions(uniqueSuggestions);
+      // setFilteredProperties(filteredProperties);
+      if (searchTerm == "") {
+        setSuggestions([]);
+      } else {
+        setSuggestions(filteredSuggestions);
+      }
+    }
   };
+
+  const handleVip = () => {
+    navigate("/faqPage");
+  };
+
+  const handleNotFound = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && suggestions.length == 0) {
+      setNotFound(!notFound);
+    }
+  };
+
 
   return (
     <>
@@ -95,7 +344,7 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -107,7 +356,7 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -119,7 +368,7 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium ring-1 uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
@@ -130,56 +379,233 @@ const Home = () => {
             </button>
           </div>
         </div>
-
-        {/* Search bar + button */}
-        <form
-          onSubmit={handleSearch}
-          className="max-w-md mt-6 w-full text flex justify-center"
-        >
+        <div>
           {/* Search bar */}
-          <div className="w-full px-3 relative">
-            <input
-              type="search"
-              placeholder={"Search by location or point of interest"}
-              value={searchTerm}
-              onChange={onChange}
-              onSubmit={handleSearch}
-              className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
-            ></input>
-
-            {/* Search button */}
-            <button
+          <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
+            <form onSubmit={(e) => handleNotFound(e)}>
+              <input
+                type="text"
+                id="location-lookup-input"
+                className="uc-omnibox-input cx-textField ring-1"
+                placeholder="City, Neighborhood, Address, School, ZIP"
+                aria-label="city, zip, address, school"
+                // value={searchTerm}
+                onChange={onChange}
+                style={{ width: "380px" }}
+              />
+              {notFound && (
+                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                    <div className="flex">
+                      <p className="font-semibold">
+                        We couldn't find '{searchTerm}'
+                      </p>
+                      <button
+                        className="mx-0 font-semibold text-xl ml-auto"
+                        onClick={() => {
+                          setNotFound(false);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <br></br>
+                    <p>
+                      Please check the spelling, try clearing the search box, or
+                      try reformatting to match these examples:
+                    </p>
+                    <br></br>
+                    <span className="font-semibold">Address:</span> 123 Main St,
+                    Seattle, WA <br></br>
+                    <span className="font-semibold">Neighborhood: </span>
+                    Downtown
+                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                    <br></br>
+                    <span className="font-semibold">City: </span> 'Seattle' or
+                    'Seattle, WA' <br></br>
+                    <br></br> Don't see what you're looking for? Your search
+                    might be outside our service areas.
+                  </div>
+                </div>
+              )}
+              <button
               type="submit"
               className="absolute right-[20px] top-[12px] cursor-pointer"
             >
               <AiOutlineSearch className="text-gray-700 text-2xl" />
             </button>
+            </form>
+             {/* Search button */}
+             
+            {/* {notFound && (
+                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
+                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
+                    <div className="flex">
+                      <p className="font-semibold">
+                        We couldn't find '{searchTerm}'
+                      </p>
+                      <button
+                        className="mx-0 font-semibold text-xl ml-auto"
+                        onClick={() => {
+                          setNotFound(false);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                    <br></br>
+                    <p>
+                      Please check the spelling, try clearing the search box, or
+                      try reformatting to match these examples:
+                    </p>
+                    <br></br>
+                    <span className="font-semibold">Address:</span> 123 Main St,
+                    Seattle, WA <br></br>
+                    <span className="font-semibold">Neighborhood: </span>
+                    Downtown
+                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
+                    <br></br>
+                    <span className="font-semibold">City: </span> 'Seattle' or
+                    'Seattle, WA' <br></br>
+                    <br></br> Don't see what you're looking for? Your search
+                    might be outside our service areas.
+                    {console.log('sssss')}
+                  </div>
+                </div>
+              )} */}
+              
+            <div>
+              {!searchTerm && (
+                <button
+                  onClick={handleVip}
+                  className="ml-8 underline mouse-cursor"
+                >
+                  Interested in VIP access to exclusive listings?
+                </button>
+              )}
+              {city === "true" ? (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {Array.from(
+                        new Set(
+                          suggestions.map((suggestion) => {
+                            const addressParts =
+                              suggestion.data.address.split(",");
+                            const city =
+                              addressParts[addressParts.length - 2]?.trim() ||
+                              "Unknown City";
+                            const stateAndZip =
+                              addressParts[addressParts.length - 1]?.trim() ||
+                              "Unknown State";
+                            const stateAndZipParts = stateAndZip.split(" ");
+                            const state = stateAndZipParts[0];
+                            return `${city}, ${state}`;
+                          })
+                        )
+                      ).map((cityStatePair, index) => (
+                        <li key={index}>
+                          <Link
+                            to={{
+                              pathname: `/afterSearch/${encodeURIComponent(
+                                cityStatePair.replace(/ /g, "%20")
+                              )}`,
+                              state: { fromListing: false },
+                            }}
+                          >
+                            {cityStatePair}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : zipcode === "true" ? (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <ul className="suggestions-list">
+                      {Array.from(
+                        new Set(
+                          suggestions.map((suggestion) => {
+                            const addressParts =
+                              suggestion.data.address.split(",");
+                            const stateAndZip =
+                              addressParts[addressParts.length - 1]?.trim() ||
+                              "Unknown State";
+                            return `${stateAndZip}`;
+                          })
+                        )
+                      ).map((cityStatePair, index) => (
+                        <li key={index}>
+                          <Link
+                            to={`/afterSearch/${encodeURIComponent(
+                              cityStatePair
+                            )}`}
+                          >
+                            {cityStatePair}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <>
+                  {searchTerm && suggestions.length > 0 && (
+                    <>
+                      <ul className="suggestions-list">
+                        {Array.from(
+                          new Set(
+                            suggestions.map((suggestion) => {
+                              const addressParts =
+                                suggestion.data.address.split(",");
+                              return `${addressParts}`;
+                            })
+                          )
+                        ).map((cityStatePair, index) => (
+                          <li key={index}>
+                            <Link
+                              to={`/afterSearch/${encodeURIComponent(
+                                cityStatePair
+                              )}`}
+                            >
+                              {cityStatePair}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
+           
           </div>
-        </form>
+        </div>
       </section>
 
-      {/* Search results (only displays when results are found) */}
-      {filteredProperties.length > 0 && (
-        <div className=" w-full max-w-6xl mx-auto flex items-center justify-center">
-          <ul className="w-full sm:grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
-            {filteredProperties.map((listing) => (
-              <ListingItem
-                key={listing.id}
-                id={listing.id}
-                listing={listing.data}
-              />
-            ))}
-          </ul>
-        </div>
-      )}
-
       {/* Thumbnail images */}
-      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+      <div
+        className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
+        style={{
+          position: "relative",
+          bottom: "0PX",
+          left: "0px",
+          right: "0px",
+        }}
+      >
         <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
           {images.map((img, i) => (
             <li
               key={i}
-              className="w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              style={{
+                backgroundImage: `url(${img})`, // Set the background image here
+                backgroundRepeat: "no-repeat", // Prevent background image from repeating
+                backgroundSize: "cover", // Adjust background image size as needed
+                height: "200px",
+              }}
             >
               <img
                 className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"

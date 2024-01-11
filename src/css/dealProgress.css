@@ -1,0 +1,35 @@
+.middle{
+background-color: rgba(116, 110, 116, 0.075);
+}
+
+/* ResponsiveTable.css */
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table td, .table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  @media (max-width: 600px) {
+    .table tr {
+      display: block;
+      margin-bottom: 12px;
+    }
+  
+    .table th {
+      display: none;
+    }
+  
+    .table td {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+  }
+  

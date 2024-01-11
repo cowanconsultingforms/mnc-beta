@@ -8,19 +8,27 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  deleteDoc,
+  orderBy,
   where,
 } from "firebase/firestore";
+import axios from "axios";
+import { db } from "../firebase";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { addNotificationToCollection } from "../components/Notification";
 import Spinner from "../components/Spinner";
-import { db } from "../firebase";
+import { getMessaging, onMessage } from "firebase/messaging";
+import emailjs from "@emailjs/browser";
+import fetch from 'node-fetch';
 
 const EditListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [listing, setListing] = useState(null);
+  const [price, setPrice] = useState("");
+  const [recipients, setRecipients] = useState([]);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -36,8 +44,12 @@ const EditListing = () => {
     latitude: 0,
     longitude: 0,
   });
+
   const navigate = useNavigate();
   const auth = getAuth();
+  const [signed, setSigned] = useState("false");
+  const [userRole, setUserRole] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
 
   const {
     type,
@@ -54,8 +66,82 @@ const EditListing = () => {
     latitude,
     longitude,
   } = formData;
-
+  const [message, setMessage] = useState("");
   const params = useParams();
+  const [sent, setSent] = useState("Send Email");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("timestamp", "desc"));
+      const querySnap = await getDocs(q);
+      const emailList = [];
+      querySnap.forEach((doc) => {
+        return emailList.push(doc.data().email);
+      });
+      setRecipients(emailList);
+      // console.log("ll", recipients)
+    };
+    // console.log("dd:", recipients)
+    fetchUser();
+  }, []);
+
+
+  const [emailData, setEmailData] = useState({
+    to: recipients,
+    subject: "price change",
+    text: `Take a look at new price of this listing ${listing?.address}`,
+  });
+
+  const subject = "price change";
+  const text = `Hello,\n\nYou got a new message from MNC Team Development.\nTake a look at the new price of this listing ${listing?.address}\n\nBest Wishes,\nMNC Team Development`;
+
+  const sendEmail = async () => {
+    try {
+      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/sendEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ recipients, subject, text }),
+      });
+  
+      if (response.ok) {
+        console.log('Email sent successfully');
+      } else {
+        console.error('Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  };
+
+  const handleEmail = () => {
+    if (price !== regularPrice) {
+      sendEmail();
+    }
+    handleAddNotificationClick(`${name} is updated!`);
+  };
+
+  const handleAddNotificationClick = async (notification) => {
+    addNotificationToCollection(notification);
+    const usersCollectionRef = collection(db, "users");
+    try {
+      const querySnapshot = await getDocs(usersCollectionRef);
+      querySnapshot.forEach(async (userDoc) => {
+        const userData = userDoc.data();
+        if (userData.clear !== undefined) {
+          const userRef = doc(db, "users", userDoc.id);
+          await updateDoc(userRef, { clear: false });
+        } else {
+          const userRef = doc(db, "users", userDoc.id);
+          await updateDoc(userRef, { clear: false });
+        }
+      });
+    } catch (error) {
+      console.error("Error updating clear field:", error);
+    }
+  };
 
   // Checks that listing belongs to the user that is editing it
   useEffect(() => {
@@ -92,6 +178,7 @@ const EditListing = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setListing(docSnap.data());
+        setPrice(docSnap.regularPrice);
         setFormData({ ...docSnap.data() });
         setLoading(false);
       } else {
@@ -177,6 +264,7 @@ const EditListing = () => {
     await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success("Listing edited!");
+
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
 
@@ -474,6 +562,7 @@ const EditListing = () => {
         <button
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
+          onClick={() => handleEmail(regularPrice)}
         >
           Edit Listing
         </button>
