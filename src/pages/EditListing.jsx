@@ -12,6 +12,14 @@ import {
   orderBy,
   where,
 } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 import axios from "axios";
 import { db } from "../firebase";
 import { useEffect, useState } from "react";
@@ -21,7 +29,7 @@ import { addNotificationToCollection } from "../components/Notification";
 import Spinner from "../components/Spinner";
 import { getMessaging, onMessage } from "firebase/messaging";
 import emailjs from "@emailjs/browser";
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
 
 const EditListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
@@ -29,6 +37,7 @@ const EditListing = () => {
   const [listing, setListing] = useState(null);
   const [price, setPrice] = useState("");
   const [recipients, setRecipients] = useState([]);
+  const [selectedImages, setImages] = useState([]);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -43,6 +52,7 @@ const EditListing = () => {
     discountedPrice: 0,
     latitude: 0,
     longitude: 0,
+    images: {},
   });
 
   const navigate = useNavigate();
@@ -65,10 +75,12 @@ const EditListing = () => {
     discountedPrice,
     latitude,
     longitude,
+    images,
   } = formData;
   const [message, setMessage] = useState("");
   const params = useParams();
   const [sent, setSent] = useState("Send Email");
+  const [image, setImage] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -86,7 +98,6 @@ const EditListing = () => {
     fetchUser();
   }, []);
 
-
   const [emailData, setEmailData] = useState({
     to: recipients,
     subject: "price change",
@@ -98,25 +109,28 @@ const EditListing = () => {
 
   const sendEmail = async () => {
     try {
-      const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/sendEmail', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ recipients, subject, text }),
-      });
-  
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/sendEmail",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ recipients, subject, text }),
+        }
+      );
+
       if (response.ok) {
-        console.log('Email sent successfully');
+        console.log("Email sent successfully");
       } else {
-        console.error('Failed to send email');
+        console.error("Failed to send email");
       }
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error("Error sending email:", error);
     }
   };
 
-  const handleEmail = () => {
+  const handleEmail = (regularPrice) => {
     if (price !== regularPrice) {
       sendEmail();
     }
@@ -190,6 +204,22 @@ const EditListing = () => {
     fetchListing();
   }, [navigate, params.listingId]);
 
+  useEffect(() => {
+    setLoading(true);
+    const fetchListing = async () => {
+      const docRef = doc(db, "propertyListings", params.listingId); // Gets listingId from the id in the page link
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setPrice(docSnap.regularPrice);
+      } else {
+        navigate("/");
+        toast.error("Listing does not exist.");
+      }
+    };
+
+    fetchListing();
+  }, []);
+
   // Update all form data
   const onChange = (e) => {
     let bool = null;
@@ -200,11 +230,23 @@ const EditListing = () => {
       bool = false;
     }
 
+    // File (image) input
+    if (e.target.files) {
+      const selectedImages = Array.from(e.target.files);
+      setImages(selectedImages);
+      setFormData((prevState) => ({
+        ...prevState,
+        images: e.target.files,
+      }));
+    }
+
     // Text / Boolean / Number input
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
-    }));
+    if (!e.target.files) {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
+      }));
+    }
   };
 
   // Submits form data to firebase
@@ -247,14 +289,73 @@ const EditListing = () => {
       geolocation.lng = longitude;
     }
 
+    const storeImage = async (image) => {
+      return new Promise((resolve, reject) => {
+        const storage = getStorage();
+        const filename = `images/${image.name}-${uuidv4()}`;
+        const storageRef = ref(storage, filename);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        // Register three observers:
+        // 1. 'state_changed' observer, called any time the state changes
+        // 2. Error observer, called on failure
+        // 3. Completion observer, called on successful completion
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            // eslint-disable-next-line default-case
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            reject(error);
+          },
+          () => {
+            // Handle successful uploads on complete
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+              // Returns img object with filepath and url fields
+              resolve({
+                path: filename,
+                url: downloadUrl,
+              });
+            });
+          }
+        );
+      });
+    };
+
+    // Passes all images to storeImage function, displays error message if image upload fails
+    const imgs = await Promise.all(
+      [...images].map((image) => storeImage(image))
+    ).catch((error) => {
+      setLoading(false);
+      toast.error("Images not uploaded.");
+      console.log(error);
+      return;
+    });
+
+    console.log("Images:", imgs);
     // Copy of form data with additional fields for geolocation, and timestamp
     const formDataCopy = {
       ...formData,
+      imgs,
       geolocation,
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
 
+    delete formDataCopy.images;
     delete formDataCopy.latitude;
     delete formDataCopy.longitude;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
@@ -268,17 +369,50 @@ const EditListing = () => {
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      const storage = getStorage();
+      const uniqueFileName = `${file?.name}-${uuidv4()}`;
+      const storageRef = ref(storage, `images/${uniqueFileName}`);
+
+      try {
+        const snapshot = await uploadBytes(storageRef, file); // Upload the file to Firebase Storage
+
+        // Get the download URL of the uploaded image
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        const imgs = []; // Initialize an empty array
+
+        // Add an object with a 'url' field to the 'imgs' array
+        imgs.push({ url: downloadURL });
+
+        // Update your formData with the download URL
+        setFormData({ ...formData, imgs: imgs });
+        // setFormData({ ...formData, url: downloadURL });
+        setImage(URL.createObjectURL(file));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   // Displays loading screen while listing is updated
   if (loading) {
     return <Spinner />;
   }
+
+  const cancelUpdate = (e) => {
+    e.preventDefault();
+    navigate(-1);
+  };
 
   return (
     <main className="max-w-md px-2 mx-auto">
       <h1 className="text-3xl text-center mt-6 font-bold">Edit Listing</h1>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
-        <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
+        <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
         <div className="flex ">
           <button
             type="button"
@@ -557,6 +691,37 @@ const EditListing = () => {
             </div>
           </div>
         )}
+
+        <input
+          style={{ marginBottom: "15px", marginTop: "15px" }}
+          type="file"
+          id="images"
+          multiple
+          accept=".jpg,.png,.jpeg"
+          onChange={onChange}
+          className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
+        />
+        {Array.isArray(selectedImages) && selectedImages.length > 0 && (
+          <div>
+            {selectedImages.map((image, index) => (
+              <img
+                key={index}
+                src={URL.createObjectURL(image)}
+                alt={`Uploaded Image ${index}`}
+                style={{
+                  filter: "grayscale(100%)",
+                  marginBottom: "20px",
+                }}
+              />
+            ))}
+          </div>
+        )}
+        <button
+          onClick={cancelUpdate}
+          className="mt-1 mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+        >
+          Cancel Update
+        </button>
 
         {/* Submit form data button */}
         <button
