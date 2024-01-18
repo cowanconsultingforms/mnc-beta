@@ -22,6 +22,7 @@ import { addNotificationToCollection } from "../components/Notification";
 const CreateListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [selectedImages, setImages] = useState([]);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -122,6 +123,9 @@ const CreateListing = () => {
 
       // File (image) input
       if (e.target.files) {
+        const selectedImages = Array.from(e.target.files);
+        setImages(selectedImages);
+        
         setFormData((prevState) => ({
           ...prevState,
           images: e.target.files,
@@ -707,6 +711,7 @@ const CreateListing = () => {
           </div>
         </div>{" "}
         &nbsp;
+
         {/* Submit images field */}
         <div className="mb-6">
           <p className="text-lg font-semibold">Images</p>
@@ -723,6 +728,23 @@ const CreateListing = () => {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
           />
         </div>
+
+        {Array.isArray(selectedImages) && selectedImages.length > 0 && (
+          <div>
+            {selectedImages.map((image, index) => (
+              <img
+                key={index}
+                src={URL.createObjectURL(image)}
+                alt={`Uploaded Image ${index}`}
+                style={{
+                  filter: "grayscale(100%)",
+                  marginBottom: "20px",
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         <button
             onClick={cancelUpdate}
             className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
