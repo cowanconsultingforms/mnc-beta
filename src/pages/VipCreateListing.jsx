@@ -161,6 +161,12 @@ const createVIPListing = () => {
       return;
     }
 
+    if (selectedImages.length > 6) {
+      setLoading(false);
+      toast.error("Maximum of 6 images are allowed.");
+      return;
+    }
+
     // Converts address to coordinates if geolocationEnabled is true
     let geolocation = {};
     let location;

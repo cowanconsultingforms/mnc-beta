@@ -38,6 +38,7 @@ const EditListing = () => {
   const [price, setPrice] = useState("");
   const [recipients, setRecipients] = useState([]);
   const [selectedImages, setImages] = useState([]);
+  const [previousImages, setPreviousImages] = useState([]);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -84,6 +85,7 @@ const EditListing = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      
       const usersRef = collection(db, "users");
       const q = query(usersRef, orderBy("timestamp", "desc"));
       const querySnap = await getDocs(q);
@@ -91,6 +93,13 @@ const EditListing = () => {
       querySnap.forEach((doc) => {
         return emailList.push(doc.data().email);
       });
+      const docSnapshot = await getDoc(
+        doc(db, "propertyListings", params.listingId)
+      );
+      setPreviousImages(
+        (docSnapshot.exists() && docSnapshot.data().imgs.map(img => img.url)) || []
+      );
+      // console.log('tsting', docSnapshot.exists() && docSnapshot.data().imgs.url)
       setRecipients(emailList);
       // console.log("ll", recipients)
     };
@@ -233,7 +242,9 @@ const EditListing = () => {
     // File (image) input
     if (e.target.files) {
       const selectedImages = Array.from(e.target.files);
-      setImages(selectedImages);
+      const objectURLs = selectedImages.map((image) => URL.createObjectURL(image));
+      const updatedImages = [...previousImages, ...objectURLs];
+      setImages(updatedImages);
       setFormData((prevState) => ({
         ...prevState,
         images: e.target.files,
@@ -261,6 +272,12 @@ const EditListing = () => {
       return;
     }
 
+    if (selectedImages.length > 6) {
+      setLoading(false);
+      toast.error("Maximum of 6 images are allowed.");
+      return;
+    }
+    
     // Converts address to coordinates if geolocationEnabled is true
     let geolocation = {};
     let location;
@@ -335,9 +352,19 @@ const EditListing = () => {
       });
     };
 
+    const docSnapshot = await getDoc(
+      doc(db, "propertyListings", params.listingId)
+    );
+
+    // Extract existing images from the Firestore document
+    const existingImages =
+      (docSnapshot.exists() && docSnapshot.data().imgs) || [];
+
     // Passes all images to storeImage function, displays error message if image upload fails
-    const imgs = await Promise.all(
-      [...images].map((image) => storeImage(image))
+    const newImages = await Promise.all(
+     images && Object.keys(images).length > 0
+      ? [...images].map((image) => storeImage(image))
+      : []
     ).catch((error) => {
       setLoading(false);
       toast.error("Images not uploaded.");
@@ -345,11 +372,12 @@ const EditListing = () => {
       return;
     });
 
-    console.log("Images:", imgs);
+    const allImages = [...existingImages, ...newImages];
+
     // Copy of form data with additional fields for geolocation, and timestamp
     const formDataCopy = {
       ...formData,
-      imgs,
+      imgs: allImages,
       geolocation,
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
@@ -701,26 +729,42 @@ const EditListing = () => {
           onChange={onChange}
           className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
         />
-        {Array.isArray(selectedImages) && selectedImages.length > 0 && (
-          <div>
-            {selectedImages.map((image, index) => (
-              <img
-                key={index}
-                src={URL.createObjectURL(image)}
-                alt={`Uploaded Image ${index}`}
-                style={{
-                  filter: "grayscale(100%)",
-                  marginBottom: "20px",
-                }}
-              />
-            ))}
-          </div>
-        )}
+       <div>
+  {(Array.isArray(previousImages) && previousImages.length > 0) || (Array.isArray(selectedImages) && selectedImages.length > 0) ? (
+    <div>
+      {Array.isArray(selectedImages) && selectedImages.length > 0
+        ? selectedImages.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Uploaded Image ${index}`}
+              style={{
+                filter: "grayscale(100%)",
+                marginBottom: "20px",
+              }}
+            />
+          ))
+        : previousImages.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Uploaded Image ${index}`}
+              style={{
+                filter: "grayscale(100%)",
+                marginBottom: "20px",
+              }}
+            />
+          ))}
+    </div>
+  ) : (
+    <p>No images to display</p>
+  )}
+</div>
         <button
           onClick={cancelUpdate}
           className="mt-1 mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
         >
-          Cancel Update
+          Cancel
         </button>
 
         {/* Submit form data button */}
