@@ -10,19 +10,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import {
-  doc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
-import { addNotificationToCollection } from "../components/Notification";
+import { doc, getDocs, updateDoc } from "firebase/firestore";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
+import { addNotificationToCollection } from "../components/Notification";
+import deleteIcon from "../assets/img/deleteImage.png";
 
 const createVIPListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedImages, setImages] = useState([]);
+  const [addressError, setAddressError] = useState("");
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -105,6 +103,8 @@ const createVIPListing = () => {
 
   // Update all form data
   const onChange = (e) => {
+    const { id, value } = e.target;
+
     if (e.target.type === "checkbox") {
       // Handle checkboxes separately
       setFormData((prevState) => ({
@@ -120,8 +120,26 @@ const createVIPListing = () => {
         bool = false;
       }
 
-      // File (image) input
-      if (e.target.files) {
+      if (id === "address") {
+        // Check if the address contains two commas
+        const commaCount = value?.split(",")?.length;
+
+        if (commaCount === 3) {
+          setFormData((prevState) => ({
+            ...prevState,
+            [e.target.id]: bool ?? e.target.value,
+          }));
+          setAddressError("");
+        } else {
+          setFormData((prevState) => ({
+            ...prevState,
+            [e.target.id]: bool ?? e.target.value,
+          }));
+          setAddressError(
+            "(Enter the full address (i.e. 277 Broadway, New York, NY 10007). No abbreviations except the state are allowed.)"
+          );
+        }
+      } else if (e.target.files) {
         const selectedImages = Array.from(e.target.files);
         setImages(selectedImages);
 
@@ -129,10 +147,7 @@ const createVIPListing = () => {
           ...prevState,
           images: e.target.files,
         }));
-      }
-
-      // Text / Boolean / Number input
-      if (!e.target.files) {
+      } else if (!e.target.files) {
         setFormData((prevState) => ({
           ...prevState,
           [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
@@ -145,7 +160,8 @@ const createVIPListing = () => {
   // Submits form data to firebase
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if(!addressError){
+    // setLoading(true);
 
     // Checks that discounted price is lower than regular price (if applicable)
     if (+discountedPrice >= +regularPrice) {
@@ -176,6 +192,7 @@ const createVIPListing = () => {
           import.meta.env.VITE_API_KEY
         }`
       );
+
       const data = await response.json();
 
       // Gets longitude and latitude from google maps api call
@@ -266,6 +283,7 @@ const createVIPListing = () => {
     delete formDataCopy.longitude;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
+    console.log("formDataCopy:", formDataCopy);
     // Adds form data to firestore database
     const docRef = await addDoc(
       collection(db, "vipPropertyListings"),
@@ -274,6 +292,19 @@ const createVIPListing = () => {
     setLoading(false);
     toast.success("Listing created!");
     navigate(`/vip/category/${formDataCopy.type}/${docRef.id}`);
+    }else{
+
+    }
+  };
+
+  const handleDeleteImage = async (imageIndex) => {
+    try {
+      const updatedImages = [...selectedImages];
+      updatedImages.splice(imageIndex, 1);
+      setImages(updatedImages);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
   };
 
   // Displays loading screen while listing is created
@@ -281,20 +312,18 @@ const createVIPListing = () => {
     return <Spinner />;
   }
 
-  const cancelUpdate =(e)=>{
+  const cancelUpdate = (e) => {
     e.preventDefault();
     navigate(-1);
-  }
-  
+  };
+
   return (
     <main className="max-w-md px-2 mx-auto">
       <div className="flex flex-col">
         <h1 className="text-3xl text-center py-4 font-bold">
-        Create a VIP Listing
+          Create a Listing
         </h1>
-        
-          </div>
-  
+      </div>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -342,7 +371,6 @@ const createVIPListing = () => {
             Sold
           </button>
         </div>
-
         {/* Name input field */}
         <p className="text-lg mt-6 font-semibold">Name</p>
         <input
@@ -356,7 +384,6 @@ const createVIPListing = () => {
           required
           className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
         />
-
         {/* Bedrooms and bathrooms input field */}
         <div className="flex space-x-6 mb-6">
           {/* Number of bedrooms */}
@@ -389,7 +416,6 @@ const createVIPListing = () => {
             />
           </div>
         </div>
-
         {/* Parking availability buttons */}
         <p className="text-lg mt-6 font-semibold">Parking Spot</p>
         <div className="flex ">
@@ -414,7 +440,6 @@ const createVIPListing = () => {
             No
           </button>
         </div>
-
         {/* Furnished buttons */}
         <p className="text-lg mt-6 font-semibold">Furnished</p>
         <div className="flex ">
@@ -439,7 +464,6 @@ const createVIPListing = () => {
             No
           </button>
         </div>
-
         {/* Address input field */}
         <p className="text-lg mt-6 font-semibold">Address</p>
         <textarea
@@ -449,9 +473,13 @@ const createVIPListing = () => {
           onChange={onChange}
           placeholder="Address"
           required
-          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
         />
-
+         {addressError && (
+          <>
+          <p style={{fontSize: "12px", color: "gray", marginBottom: "12px"}}>{addressError}</p>
+          </>
+        )}
         {/* Latitude and Longitude input field */}
         {!geolocationEnabled && (
           <div className="flex space-x-6 mb-6">
@@ -483,7 +511,6 @@ const createVIPListing = () => {
             </div>
           </div>
         )}
-
         {/* Description input field */}
         <p className="text-lg font-semibold">Description</p>
         <textarea
@@ -495,7 +522,6 @@ const createVIPListing = () => {
           required
           className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
         />
-
         {/* Add discount buttons */}
         <p className="text-lg font-semibold">Add Discount?</p>
         <div className="flex mb-6">
@@ -520,7 +546,6 @@ const createVIPListing = () => {
             No
           </button>
         </div>
-
         {/* Regular Price input field */}
         <div className="flex items-center mb-6">
           <div>
@@ -546,128 +571,6 @@ const createVIPListing = () => {
             </div>
           </div>
         </div>
-
-        <div style= {{paddingBottom: "20px"}}>
-          <div sytle={{marginBottom:"100px"}}>
-            <p className="text-lg font-semibold">Land Size</p>
-            <input
-             style={{ width: "100px", height: "35px" }}
-              type="number"
-              id="landSize"
-              value={landSize}
-              onChange={onChange}
-              min="1"
-              required
-              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
-            /> <span> Square Feet</span>
-</div>
-<div style={{  marginTop: "20px", display: "flex", justifyContent: "space-between"}} >
-            <div style={{ width: "100px", height: "35px" }}>
-            <p className="text-lg font-semibold">Year Built</p>
-            <input
-             style={{ width: "100px", height: "35px" }}
-              type="number"
-              id="yearBuilt"
-              value={yearBuilt}
-              onChange={onChange}
-              min="1900"
-              required
-              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
-            />
-            </div>
-            <div style={{width: "100px", height: "35px", margin: "0 40px" }}>
-            <p style={{ width: "200px"}}className="text-lg font-semibold">School Rating</p>
-            <input
-             style={{ width: "100px", height: "35px" }}
-              type="number"
-              id="schoolRating"
-              value={schoolRating}
-              onChange={onChange}
-              min="1"
-              max="10"
-              required
-              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
-            />
-            </div>
-            <div style={{ width: "100px", height: "40px" , margin: "0 30px"}}>
-            <p className="text-lg font-semibold">Stories</p>
-            <input
-             style={{ width: "100px", height: "35px" }}
-              type="number"
-              id="stories"
-              value={stories}
-              onChange={onChange}
-              min="1"
-              required
-              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
-            />
-            </div>
-            </div>
-            <div style={{ marginTop: "50px", display: "flex", justifyContent: "space-between"}} >
-            
-            <p style={{width: "150px"}} className="text-lg font-semibold">Outdoor Space &nbsp;
-            <input
-             type="checkbox"
-             id="privateOutdoorSpace"
-             checked={privateOutdoorSpace}
-              onChange={onChange}/>
-              </p>
-              <p className="text-lg font-semibold">Basement &nbsp;
-            <input
-             type="checkbox"
-             id="basement"
-             checked={basement}
-              onChange={onChange}
-            /></p>
-            <p className="text-lg font-semibold">Doorman &nbsp; 
-            <input
-             type="checkbox"
-             id="doorMan"
-             checked={doorMan}
-              onChange={onChange}/>
-              </p>
-
-            </div>
-
-            <div style={{ marginTop: "25px", display: "flex", justifyContent: "space-between"}} >
-          
-            <p className="text-lg font-semibold">Pool &nbsp;
-            <input
-             type="checkbox"
-             id="pool"
-             checked={pool}
-              onChange={onChange}
-            /></p>
-
-           
-
-            <p className="text-lg font-semibold">Elevator &nbsp;
-            <input
-             type="checkbox"
-             id="elevator"
-             checked={elevator}
-              onChange={onChange}
-            /></p>
-
-            <p className="text-lg font-semibold">Garage &nbsp;
-            <input
-             type="checkbox"
-             id="garage"
-             checked={garage}
-              onChange={onChange}
-            /></p>
-
-            <p className="text-lg font-semibold">Air Conditioning &nbsp; 
-            <input
-             type="checkbox"
-             id="airConditioning"
-             checked={airConditioning}
-              onChange={onChange}
-            /></p>
-            </div>
-      </div>  &nbsp;
-      
-
         {/* Discounted Price input field, only displays when offer field has 'yes' selection */}
         {offer && (
           <div className="flex items-center mb-6">
@@ -697,7 +600,156 @@ const createVIPListing = () => {
             </div>
           </div>
         )}
+        <div style={{ paddingBottom: "20px" }}>
+          <div sytle={{ marginBottom: "100px" }}>
+            <p className="text-lg font-semibold">Land Size</p>
+            <input
+              style={{ width: "100px", height: "35px" }}
+              type="number"
+              id="landSize"
+              value={landSize}
+              onChange={onChange}
+              min="1"
+              required
+              className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+            />{" "}
+            <span> Square Feet</span>
+          </div>
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ width: "100px", height: "35px" }}>
+              <p className="text-lg font-semibold">Year Built</p>
+              <input
+                style={{ width: "100px", height: "35px" }}
+                type="number"
+                id="yearBuilt"
+                value={yearBuilt}
+                onChange={onChange}
+                min="1900"
+                required
+                className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+              />
+            </div>
+            <div style={{ width: "100px", height: "35px", margin: "0 40px" }}>
+              <p style={{ width: "200px" }} className="text-lg font-semibold">
+                School Rating
+              </p>
+              <input
+                style={{ width: "100px", height: "35px" }}
+                type="number"
+                id="schoolRating"
+                value={schoolRating}
+                onChange={onChange}
+                min="1"
+                max="10"
+                required
+                className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+              />
+            </div>
+            <div style={{ width: "100px", height: "40px", margin: "0 30px" }}>
+              <p className="text-lg font-semibold">Stories</p>
+              <input
+                style={{ width: "100px", height: "35px" }}
+                type="number"
+                id="stories"
+                value={stories}
+                onChange={onChange}
+                min="1"
+                required
+                className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 text-center"
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              marginTop: "50px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <p style={{ width: "150px" }} className="text-lg font-semibold">
+              Outdoor Space &nbsp;
+              <input
+                type="checkbox"
+                id="privateOutdoorSpace"
+                checked={privateOutdoorSpace}
+                onChange={onChange}
+              />
+            </p>
+            <p className="text-lg font-semibold">
+              Basement &nbsp;
+              <input
+                type="checkbox"
+                id="basement"
+                checked={basement}
+                onChange={onChange}
+              />
+            </p>
+            <p className="text-lg font-semibold">
+              Doorman &nbsp;
+              <input
+                type="checkbox"
+                id="doorMan"
+                checked={doorMan}
+                onChange={onChange}
+              />
+            </p>
+          </div>
 
+          <div
+            style={{
+              marginTop: "25px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <p className="text-lg font-semibold">
+              Pool &nbsp;
+              <input
+                type="checkbox"
+                id="pool"
+                checked={pool}
+                onChange={onChange}
+              />
+            </p>
+
+            <p className="text-lg font-semibold">
+              Elevator &nbsp;
+              <input
+                type="checkbox"
+                id="elevator"
+                checked={elevator}
+                onChange={onChange}
+              />
+            </p>
+
+            <p className="text-lg font-semibold">
+              Garage &nbsp;
+              <input
+                type="checkbox"
+                id="garage"
+                checked={garage}
+                onChange={onChange}
+              />
+            </p>
+
+            <p className="text-lg font-semibold">
+              Air Conditioning &nbsp;
+              <input
+                type="checkbox"
+                id="airConditioning"
+                checked={airConditioning}
+                onChange={onChange}
+              />
+            </p>
+          </div>
+        </div>{" "}
+        &nbsp;
         {/* Submit images field */}
         <div className="mb-6">
           <p className="text-lg font-semibold">Images</p>
@@ -714,36 +766,42 @@ const createVIPListing = () => {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
           />
         </div>
-
-        {Array.isArray(selectedImages) && selectedImages.length > 0 && (
-          <div>
-            {selectedImages.map((image, index) => (
+        {Array.isArray(selectedImages) &&
+          selectedImages.length > 0 &&
+          selectedImages.map((image, index) => (
+            <div key={index} className="relative inline-block">
+              <button
+                className="absolute top-0 right-0 z-10 p-2 bg-white rounded-full"
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent the form submission
+                  handleDeleteImage(index);
+                }}
+              >
+                <img src={deleteIcon} alt="Delete" className="w-6 h-5" />
+              </button>
               <img
-                key={index}
                 src={URL.createObjectURL(image)}
                 alt={`Uploaded Image ${index}`}
+                className="filter grayscale-100 mb-6"
                 style={{
                   filter: "grayscale(100%)",
-                  marginBottom: "20px",
                 }}
               />
-            ))}
-          </div>
-        )}
-        
+            </div>
+          ))}
         <button
-            onClick={cancelUpdate}
-            className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-          >
-            Cancel
-          </button>
+          onClick={cancelUpdate}
+          className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+        >
+          Cancel
+        </button>
         {/* Submit form data button */}
         <button
-        onClick={handleAddNotificationClick(`Vip ${name} is added!`)}
+          onClick={handleAddNotificationClick(`${name} is added!`)}
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
         >
-          Create VIP Listing
+          Create Listing
         </button>
       </form>
     </main>

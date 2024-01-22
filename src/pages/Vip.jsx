@@ -76,14 +76,18 @@ const Vip = () => {
 
   // Updates search bar data when user types
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
+    const inputValue = e.target.value;
 
-    // Displays results after 500ms delay
-    clearTimeout(timer);
-    const newTimer = setTimeout(() => {
-      fetchProperties(searchTerm);
-    }, 500);
-    setTimer(newTimer);
+    setSearchTerm(inputValue);
+
+    if (inputValue !== "") {
+      // Displays results after 500ms delay
+      clearTimeout(timer);
+      const newTimer = setTimeout(() => {
+        fetchProperties(inputValue);
+      }, 500);
+      setTimer(newTimer);
+    }
   };
 
   // Get the category based on the selectedButton
@@ -129,18 +133,162 @@ const Vip = () => {
     let vipListings = [];
     querySnap.forEach((doc) => {
       //if searchTerm != null, only return properties that contian the search term in the address
-
+      
       return vipListings.push({
         id: doc.id,
         data: doc.data(),
       });
     });
 
-    const vipFilteredProperties = vipListings.filter((vipListing) =>
-      vipListing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredSuggestions = vipListings.filter((listing) => {
+    if (searchTerm.length >= 2) {
+      const address = listing.data?.address?.split(",");
+      const stateAndZip =
+        address?.length > 1 ? address[address.length - 1].trim() : null;
+      const stateFound = stateAndZip?.split(" ");
+      const state3 = stateFound && stateFound[0]?.toLowerCase();
 
-    setFilteredProperties(vipFilteredProperties);
+      if(state3.trim().length === 2){
+      let state = getState(searchTerm?.toLowerCase())?.toLowerCase();
+      let state2 = getState2(searchTerm?.toLowerCase())?.toLowerCase();
+
+      if (state === state3 || state2 === state3) {
+        if (state.length > 1 || state2.length > 1) {
+          return (
+            listing.data?.address
+              .toLowerCase()
+              .includes(state.toLowerCase()) ||
+            listing.data?.address
+              .toLowerCase()
+              .includes(state2.toLowerCase())
+          );
+        }
+      }}
+    }
+    return listing.data.address
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+  })
+
+    // const vipFilteredProperties = vipListings.filter((vipListing) =>
+    //   vipListing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+
+    setFilteredProperties(filteredSuggestions);
+  };
+
+  const getState = (stateFound) => {
+    const stateMapping = {
+      al: "Alabama",
+      ak: "Alaska",
+      az: "Arizona",
+      ar: "Arkansas",
+      ca: "California",
+      co: "Colorado",
+      ct: "Connecticut",
+      de: "Delaware",
+      fl: "Florida",
+      ga: "Georgia",
+      hi: "Hawaii",
+      id: "Idaho",
+      il: "Illinois",
+      in: "Indiana",
+      ia: "Iowa",
+      ks: "Kansas",
+      ky: "Kentucky",
+      la: "Louisiana",
+      me: "Maine",
+      md: "Maryland",
+      ma: "Massachusetts",
+      mi: "Michigan",
+      mn: "Minnesota",
+      ms: "Mississippi",
+      mo: "Missouri",
+      mt: "Montana",
+      ne: "Nebraska",
+      nv: "Nevada",
+      nh: "New Hampshire",
+      nj: "New Jersey",
+      nm: "New Mexico",
+      ny: "New York",
+      nc: "North Carolina",
+      nd: "North Dakota",
+      oh: "Ohio",
+      ok: "Oklahoma",
+      or: "Oregon",
+      pa: "Pennsylvania",
+      ri: "Rhode Island",
+      sc: "South Carolina",
+      sd: "South Dakota",
+      tn: "Tennessee",
+      tx: "Texas",
+      ut: "Utah",
+      vt: "Vermont",
+      va: "Virginia",
+      wa: "Washington",
+      wv: "West Virginia",
+      wi: "Wisconsin",
+      wy: "Wyoming",
+    };
+
+    return stateMapping[stateFound] || "";
+  };
+
+  const getState2 = (stateName) => {
+    const stateReverseMapping = {
+      alabama: "AL",
+      alaska: "AK",
+      arizona: "AZ",
+      arkansas: "AR",
+      california: "CA",
+      colorado: "CO",
+      connecticut: "CT",
+      delaware: "DE",
+      florida: "FL",
+      georgia: "GA",
+      hawaii: "HI",
+      idaho: "ID",
+      illinois: "IL",
+      indiana: "IN",
+      iowa: "IA",
+      kansas: "KS",
+      kentucky: "KY",
+      louisiana: "LA",
+      maine: "ME",
+      maryland: "MD",
+      massachusetts: "MA",
+      michigan: "MI",
+      minnesota: "MN",
+      mississippi: "MS",
+      missouri: "MO",
+      montana: "MT",
+      nebraska: "NE",
+      nevada: "NV",
+      "new hampshire": "NH", // Corrected
+      "new jersey": "NJ", // Corrected
+      "new mexico": "NM", // Corrected
+      "new york": "NY", // Corrected
+      "north carolina": "NC", // Corrected
+      "north dakota": "ND", // Corrected
+      ohio: "OH",
+      oklahoma: "OK",
+      oregon: "OR",
+      pennsylvania: "PA",
+      "rhode island": "RI", // Corrected
+      "south carolina": "SC", // Corrected
+      "south dakota": "SD", // Corrected
+      tennessee: "TN",
+      texas: "TX",
+      utah: "UT",
+      vermont: "VT",
+      virginia: "VA",
+      washington: "WA",
+      "west virginia": "WV", // Corrected
+      wisconsin: "WI",
+      wyoming: "WY",
+    };
+
+    return stateReverseMapping[stateName] || "";
   };
 
   return (

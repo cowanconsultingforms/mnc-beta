@@ -10,19 +10,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import {
-  doc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDocs, updateDoc } from "firebase/firestore";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { addNotificationToCollection } from "../components/Notification";
+import deleteIcon from "../assets/img/deleteImage.png";
 
 const CreateListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedImages, setImages] = useState([]);
+  const [addressError, setAddressError] = useState("");
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -81,7 +79,6 @@ const CreateListing = () => {
     images,
   } = formData;
 
-  
   const handleAddNotificationClick = (notification) => {
     return async () => {
       addNotificationToCollection(notification);
@@ -106,6 +103,8 @@ const CreateListing = () => {
 
   // Update all form data
   const onChange = (e) => {
+    const { id, value } = e.target;
+
     if (e.target.type === "checkbox") {
       // Handle checkboxes separately
       setFormData((prevState) => ({
@@ -121,19 +120,34 @@ const CreateListing = () => {
         bool = false;
       }
 
-      // File (image) input
-      if (e.target.files) {
+      if (id === "address") {
+        // Check if the address contains two commas
+        const commaCount = value?.split(",")?.length;
+
+        if (commaCount === 3) {
+          setFormData((prevState) => ({
+            ...prevState,
+            [e.target.id]: bool ?? e.target.value,
+          }));
+          setAddressError("");
+        } else {
+          setFormData((prevState) => ({
+            ...prevState,
+            [e.target.id]: bool ?? e.target.value,
+          }));
+          setAddressError(
+            "(Enter the full address (i.e. 277 Broadway, New York, NY 10007). No abbreviations except the state are allowed.)"
+          );
+        }
+      } else if (e.target.files) {
         const selectedImages = Array.from(e.target.files);
         setImages(selectedImages);
-        
+
         setFormData((prevState) => ({
           ...prevState,
           images: e.target.files,
         }));
-      }
-
-      // Text / Boolean / Number input
-      if (!e.target.files) {
+      } else if (!e.target.files) {
         setFormData((prevState) => ({
           ...prevState,
           [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
@@ -146,6 +160,7 @@ const CreateListing = () => {
   // Submits form data to firebase
   const onSubmit = async (e) => {
     e.preventDefault();
+    if(!addressError){
     setLoading(true);
 
     // Checks that discounted price is lower than regular price (if applicable)
@@ -177,6 +192,7 @@ const CreateListing = () => {
           import.meta.env.VITE_API_KEY
         }`
       );
+
       const data = await response.json();
 
       // Gets longitude and latitude from google maps api call
@@ -276,6 +292,19 @@ const CreateListing = () => {
     setLoading(false);
     toast.success("Listing created!");
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+    }else{
+
+    }
+  };
+
+  const handleDeleteImage = async (imageIndex) => {
+    try {
+      const updatedImages = [...selectedImages];
+      updatedImages.splice(imageIndex, 1);
+      setImages(updatedImages);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
   };
 
   // Displays loading screen while listing is created
@@ -283,19 +312,18 @@ const CreateListing = () => {
     return <Spinner />;
   }
 
-  const cancelUpdate =(e)=>{
+  const cancelUpdate = (e) => {
     e.preventDefault();
     navigate(-1);
-  }
+  };
 
   return (
     <main className="max-w-md px-2 mx-auto">
-       <div className="flex flex-col">
+      <div className="flex flex-col">
         <h1 className="text-3xl text-center py-4 font-bold">
-        Create a Listing
+          Create a Listing
         </h1>
-       
-          </div>
+      </div>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -438,6 +466,7 @@ const CreateListing = () => {
         </div>
         {/* Address input field */}
         <p className="text-lg mt-6 font-semibold">Address</p>
+       
         <textarea
           type="text"
           id="address"
@@ -445,8 +474,13 @@ const CreateListing = () => {
           onChange={onChange}
           placeholder="Address"
           required
-          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
         />
+         {addressError && (
+          <>
+          <p style={{fontSize: "12px", color: "gray", marginBottom: "12px"}}>{addressError}</p>
+          </>
+        )}
         {/* Latitude and Longitude input field */}
         {!geolocationEnabled && (
           <div className="flex space-x-6 mb-6">
@@ -717,7 +751,6 @@ const CreateListing = () => {
           </div>
         </div>{" "}
         &nbsp;
-
         {/* Submit images field */}
         <div className="mb-6">
           <p className="text-lg font-semibold">Images</p>
@@ -734,32 +767,38 @@ const CreateListing = () => {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
           />
         </div>
-
-        {Array.isArray(selectedImages) && selectedImages.length > 0 && (
-          <div>
-            {selectedImages.map((image, index) => (
+        {Array.isArray(selectedImages) &&
+          selectedImages.length > 0 &&
+          selectedImages.map((image, index) => (
+            <div key={index} className="relative inline-block">
+              <button
+                className="absolute top-0 right-0 z-10 p-2 bg-white rounded-full"
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent the form submission
+                  handleDeleteImage(index);
+                }}
+              >
+                <img src={deleteIcon} alt="Delete" className="w-6 h-5" />
+              </button>
               <img
-                key={index}
                 src={URL.createObjectURL(image)}
                 alt={`Uploaded Image ${index}`}
+                className="filter grayscale-100 mb-6"
                 style={{
                   filter: "grayscale(100%)",
-                  marginBottom: "20px",
                 }}
               />
-            ))}
-          </div>
-        )}
-
+            </div>
+          ))}
         <button
-            onClick={cancelUpdate}
-            className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-          >
-            Cancel
-          </button>
+          onClick={cancelUpdate}
+          className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+        >
+          Cancel
+        </button>
         {/* Submit form data button */}
         <button
-        onClick={handleAddNotificationClick(`${name} is added!`)}
+          onClick={handleAddNotificationClick(`${name} is added!`)}
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
         >

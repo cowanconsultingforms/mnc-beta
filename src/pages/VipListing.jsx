@@ -63,6 +63,8 @@ const VipListing = () => {
     return <Spinner />;
   }
 
+ 
+
   return (
     <main>
       {/* Image carousel using Swiper component */}

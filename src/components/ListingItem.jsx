@@ -23,7 +23,7 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
         <img
           className="grayscale h-[170px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in"
           loading="lazy"
-          src={listing.imgs[0].url}
+          src={listing?.imgs[0]?.url}
           alt=""
         />
         <Moment

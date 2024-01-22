@@ -8,19 +8,42 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  deleteDoc,
+  orderBy,
   where,
 } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
+import axios from "axios";
+import { db } from "../firebase";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addNotificationToCollection } from "../components/Notification";
 import Spinner from "../components/Spinner";
-import { db } from "../firebase";
+import { getMessaging, onMessage } from "firebase/messaging";
+import emailjs from "@emailjs/browser";
+import fetch from "node-fetch";
+import deleteIcon from "../assets/img/deleteImage.png";
 
 const VipEditListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [listing, setListing] = useState(null);
+  const [vipListing, setListing] = useState(null);
+  const [price, setPrice] = useState("");
+  const [toggle, setToggle] = useState(true);
+  const [recipients, setRecipients] = useState([]);
+  const [selectedImages, setImages] = useState([]);
+  const [previousImages, setPreviousImages] = useState([]);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [addressError, setAddressError] = useState("");
+  const [imageIndexToDelete, setImageIndexToDelete] = useState(null);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -35,9 +58,13 @@ const VipEditListing = () => {
     discountedPrice: 0,
     latitude: 0,
     longitude: 0,
+    images: {},
   });
   const navigate = useNavigate();
   const auth = getAuth();
+  const [signed, setSigned] = useState("false");
+  const [userRole, setUserRole] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
 
   const {
     type,
@@ -53,33 +80,103 @@ const VipEditListing = () => {
     discountedPrice,
     latitude,
     longitude,
+    images,
   } = formData;
-
+  const [message, setMessage] = useState("");
   const params = useParams();
+  const [sent, setSent] = useState("Send Email");
+  const [image, setImage] = useState([]);
 
-  const handleAddNotificationClick = (notification) => {
-    return async () => {
-      addNotificationToCollection(notification);
-      const usersCollectionRef = collection(db, "users");
-      try {
-        const querySnapshot = await getDocs(usersCollectionRef);
-        querySnapshot.forEach(async (userDoc) => {
-          const userData = userDoc.data();
-          if (userData.clear !== undefined) {
-            const userRef = doc(db, "users", userDoc.id);
-            await updateDoc(userRef, { clear: false });
-          } else {
-            const userRef = doc(db, "users", userDoc.id);
-            await updateDoc(userRef, { clear: false });
-          }
-        });
-      } catch (error) {
-        console.error("Error updating clear field:", error);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("timestamp", "desc"));
+      const querySnap = await getDocs(q);
+      const emailList = [];
+      querySnap.forEach((doc) => {
+        return emailList.push(doc.data().email);
+      });
+      const docSnapshot = await getDoc(
+        doc(db, "vipPropertyListings", params.listingId)
+      );
+        const address = docSnapshot.data().address;
+      const commaCount = address?.split(",")?.length;
+
+      if (commaCount !== 3) {
+        setAddressError( "(Enter the full address (i.e. 277 Broadway, New York, NY 10007). No abbreviations except the state are allowed.)")
+      }else{
+        setAddressError("");
       }
+      setPreviousImages(
+        (docSnapshot.exists() &&
+          docSnapshot.data().imgs.map((img) => img.url)) ||
+          []
+      );
+      setRecipients(emailList);
     };
+    fetchUser();
+  }, [toggle, selectedImages]);
+
+  const [emailData, setEmailData] = useState({
+    to: recipients,
+    subject: "price change",
+    text: `Take a look at new price of this vipListing ${vipListing?.address}`,
+  });
+
+  const subject = "price change";
+  const text = `Hello,\n\nYou got a new message from MNC Team Development.\nTake a look at the new price of this vipListing ${vipListing?.address}\n\nBest Wishes,\nMNC Team Development`;
+
+  const sendEmail = async () => {
+    try {
+      const response = await fetch(
+        "https://us-central1-mnc-development.cloudfunctions.net/sendEmail",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ recipients, subject, text }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Email sent successfully");
+      } else {
+        console.error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
-  
-  // Checks that listing belongs to the user that is editing it
+
+  const handleEmail = (regularPrice) => {
+    if (price !== regularPrice) {
+      sendEmail();
+    }
+    handleAddNotificationClick(`${name} is updated!`);
+  };
+
+  const handleAddNotificationClick = async (notification) => {
+    addNotificationToCollection(notification);
+    const usersCollectionRef = collection(db, "users");
+    try {
+      const querySnapshot = await getDocs(usersCollectionRef);
+      querySnapshot.forEach(async (userDoc) => {
+        const userData = userDoc.data();
+        if (userData.clear !== undefined) {
+          const userRef = doc(db, "users", userDoc.id);
+          await updateDoc(userRef, { clear: false });
+        } else {
+          const userRef = doc(db, "users", userDoc.id);
+          await updateDoc(userRef, { clear: false });
+        }
+      });
+    } catch (error) {
+      console.error("Error updating clear field:", error);
+    }
+  };
+
+  // Checks that vipListing belongs to the user that is editing it
   useEffect(() => {
     setLoading(true);
     const fetchUser = async () => {
@@ -97,7 +194,7 @@ const VipEditListing = () => {
 
       // Gives user access to listings if they have the correct role
       if (!["agent", "admin", "superadmin"].includes(user[0]?.role)) {
-        toast.error("You cannot edit this listing.");
+        toast.error("You cannot edit this vipListing.");
         navigate("/");
       }
     };
@@ -106,7 +203,7 @@ const VipEditListing = () => {
     setLoading(false);
   }, [auth.currentUser.uid, navigate]);
 
-  // Fetches listing data and adds it to the form
+  // Fetches vipListing data and adds it to the form
   useEffect(() => {
     setLoading(true);
     const fetchListing = async () => {
@@ -114,19 +211,38 @@ const VipEditListing = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setListing(docSnap.data());
+        setPrice(docSnap.regularPrice);
         setFormData({ ...docSnap.data() });
         setLoading(false);
       } else {
         navigate("/");
-        toast.error("Listing does not exist.");
+        toast.error("vipListing does not exist.");
       }
     };
 
     fetchListing();
   }, [navigate, params.listingId]);
 
+  useEffect(() => {
+    setLoading(true);
+    const fetchListing = async () => {
+      const docRef = doc(db, "vipPropertyListings", params.listingId); // Gets listingId from the id in the page link
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setPrice(docSnap.regularPrice);
+      } else {
+        navigate("/");
+        toast.error("vipListing does not exist.");
+      }
+    };
+
+    fetchListing();
+  }, []);
+
   // Update all form data
   const onChange = (e) => {
+    const { id, value } = e.target;
+
     let bool = null;
     if (e.target.value === "true") {
       bool = true;
@@ -135,22 +251,57 @@ const VipEditListing = () => {
       bool = false;
     }
 
-    // Text / Boolean / Number input
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
-    }));
+    if (id === "address") {
+      // Check if the address contains two commas
+      const commaCount = value?.split(",")?.length;
+
+      if (commaCount === 3) {
+        setFormData((prevState) => ({
+          ...prevState,
+          [e.target.id]: bool ?? e.target.value,
+        }));
+       setAddressError("");
+      }else{
+        setFormData((prevState) => ({
+          ...prevState,
+          [e.target.id]: bool ?? e.target.value,}));
+        setAddressError( "(Enter the full address (i.e. 277 Broadway, New York, NY 10007). No abbreviations except the state are allowed.)");
+      }
+    } else if (e.target.files) {
+      const selectedImages = Array.from(e.target.files);
+      const objectURLs = selectedImages.map((image) =>
+        URL.createObjectURL(image)
+      );
+      const updatedImages = [...previousImages, ...objectURLs];
+      setImages(updatedImages);
+      setFormData((prevState) => ({
+        ...prevState,
+        images: e.target.files,
+      }));
+    } else if (!e.target.files) {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: bool ?? e.target.value, // If bool is null, updates field with value, otherwise updates field with bool value
+      }));
+    }
   };
 
   // Submits form data to firebase
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
+    if(!addressError){
+      setLoading(true);
     // Checks that discounted price is lower than regular price (if applicable)
     if (+discountedPrice >= +regularPrice) {
       setLoading(false);
       toast.error("Discounted price needs to be less than the regular price.");
+      return;
+    }
+
+    if (selectedImages?.length  > 6) {
+      setLoading(false);
+      toast.error("Maximum of 6 images are allowed.");
       return;
     }
 
@@ -182,14 +333,84 @@ const VipEditListing = () => {
       geolocation.lng = longitude;
     }
 
+    const storeImage = async (image) => {
+      return new Promise((resolve, reject) => {
+        const storage = getStorage();
+        const filename = `images/${image.name}-${uuidv4()}`;
+        const storageRef = ref(storage, filename);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        // Register three observers:
+        // 1. 'state_changed' observer, called any time the state changes
+        // 2. Error observer, called on failure
+        // 3. Completion observer, called on successful completion
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            // eslint-disable-next-line default-case
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            reject(error);
+          },
+          () => {
+            // Handle successful uploads on complete
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+              // Returns img object with filepath and url fields
+              resolve({
+                path: filename,
+                url: downloadUrl,
+              });
+            });
+          }
+        );
+      });
+    };
+
+    const docSnapshot = await getDoc(
+      doc(db, "vipPropertyListings", params.listingId)
+    );
+
+    // Extract existing images from the Firestore document
+    const existingImages =
+      (docSnapshot.exists() && docSnapshot.data().imgs) || [];
+
+    // Passes all images to storeImage function, displays error message if image upload fails
+    const newImages = await Promise.all(
+      images && Object.keys(images).length > 0
+        ? [...images].map((image) => storeImage(image))
+        : []
+    ).catch((error) => {
+      setLoading(false);
+      toast.error("Images not uploaded.");
+      console.log(error);
+      return;
+    });
+
+    const allImages = [...existingImages, ...newImages];
+
     // Copy of form data with additional fields for geolocation, and timestamp
     const formDataCopy = {
       ...formData,
+      imgs: allImages,
       geolocation,
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
 
+    delete formDataCopy.images;
     delete formDataCopy.latitude;
     delete formDataCopy.longitude;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
@@ -198,21 +419,128 @@ const VipEditListing = () => {
     const docRef = doc(db, "vipPropertyListings", params.listingId);
     await updateDoc(docRef, formDataCopy);
     setLoading(false);
-    toast.success("Listing edited!");
+    toast.success("vipListing edited!");
+
     navigate(`/vip/category/${formDataCopy.type}/${docRef.id}`);
+  }else{
+
+  }
   };
 
-  // Displays loading screen while listing is updated
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      const storage = getStorage();
+      const uniqueFileName = `${file?.name}-${uuidv4()}`;
+      const storageRef = ref(storage, `images/${uniqueFileName}`);
+
+      try {
+        const snapshot = await uploadBytes(storageRef, file); // Upload the file to Firebase Storage
+
+        // Get the download URL of the uploaded image
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        const imgs = []; // Initialize an empty array
+
+        // Add an object with a 'url' field to the 'imgs' array
+        imgs.push({ url: downloadURL });
+
+        // Update your formData with the download URL
+        setFormData({ ...formData, imgs: imgs });
+        // setFormData({ ...formData, url: downloadURL });
+        setImage(URL.createObjectURL(file));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
+  // Function to handle image deletion
+  const handleDeleteImage = async (imageIndex) => {
+    try {
+      const docRef = doc(db, "vipPropertyListings", params.listingId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const imgsArray = docSnap.data().imgs;
+        const deletedImageUrl = imgsArray[imageIndex]?.url;
+
+        if (deletedImageUrl) {
+          setConfirmationVisible(true);
+          setImageIndexToDelete(imageIndex);
+        } else {
+          const updatedImages = [...selectedImages];
+          updatedImages.splice(imageIndex, 1);
+          setImages(updatedImages);
+        }
+      } else {
+        navigate("/");
+        toast.error("vipListing does not exist.");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (imageIndexToDelete !== null) {
+      try {
+        const docRef = doc(db, "vipPropertyListings", params.listingId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const imgsArray = docSnap.data().imgs;
+          const deletedImageUrl = imgsArray[imageIndexToDelete]?.url;
+
+          setConfirmationVisible(true);
+          setImageIndexToDelete(imageIndexToDelete);
+
+          const updatedImages = imgsArray.filter(
+            (img) => img.url !== deletedImageUrl
+          );
+          const updatedImages2 = selectedImages.filter(
+            (_, index) => index !== imageIndexToDelete
+          );
+          setImages(updatedImages2);
+
+          await updateDoc(docRef, { imgs: updatedImages });
+          toast.success("Image has been deleted!");
+          setToggle(!toggle);
+          // Close confirmation dialog
+          setConfirmationVisible(false);
+          setImageIndexToDelete(null);
+        } else {
+          navigate("/");
+          toast.error("vipListing does not exist.");
+        }
+      } catch (error) {
+        console.error("Error deleting image:", error);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    // Close confirmation dialog
+    setConfirmationVisible(false);
+    setImageIndexToDelete(null);
+  };
+
+  // Displays loading screen while vipListing is updated
   if (loading) {
     return <Spinner />;
   }
 
+  const cancelUpdate = (e) => {
+    e.preventDefault();
+    navigate(-1);
+  };
+
   return (
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Edit Listing</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">Edit VIP vipListing</h1>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
-        <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
+        <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
         <div className="flex ">
           <button
             type="button"
@@ -364,8 +692,13 @@ const VipEditListing = () => {
           onChange={onChange}
           placeholder="Address"
           required
-          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+          className="w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
         />
+         {addressError && (
+          <>
+          <p style={{fontSize: "12px", color: "gray", marginBottom: "12px"}}>{addressError}</p>
+          </>
+        )}
 
         {/* Latitude and Longitude input field */}
         {!geolocationEnabled && (
@@ -439,7 +772,7 @@ const VipEditListing = () => {
         {/* Regular Price input field */}
         <div className="flex items-center mb-6">
           <div>
-            <p className="text-lg font-semibold">Listing Price</p>
+            <p className="text-lg font-semibold">vipListing Price</p>
             <div className="flex w-full justify-center items-center space-x-6">
               <input
                 type="number"
@@ -492,13 +825,118 @@ const VipEditListing = () => {
           </div>
         )}
 
+        <input
+          style={{ marginBottom: "15px", marginTop: "15px" }}
+          type="file"
+          id="images"
+          multiple
+          accept=".jpg,.png,.jpeg"
+          onChange={onChange}
+          className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
+        />
+        <div>
+          {(Array.isArray(previousImages) && previousImages.length > 0) ||
+          (Array.isArray(selectedImages) && selectedImages.length > 0) ? (
+            <div>
+              {Array.isArray(selectedImages) && selectedImages.length > 0
+                ? selectedImages.map((image, index) => (
+                    <div key={index} className="relative inline-block">
+                      <button
+                        className="absolute top-0 right-0 z-10 p-2 bg-white rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault(); // Prevent the form submission
+                          handleDeleteImage(index);
+                        }}
+                      >
+                        <img
+                          src={deleteIcon}
+                          alt="Delete"
+                          className="w-6 h-5"
+                        />
+                      </button>
+                      <img
+                        src={image}
+                        alt={`Uploaded Image ${index}`}
+                        className="filter grayscale-100 mb-6"
+                        style={{
+                          filter: "grayscale(100%)",
+                        }}
+                      />
+                    </div>
+                  ))
+                : previousImages.map((image, index) => (
+                    <div key={index} className="relative inline-block">
+                      <button
+                        className="absolute top-0 right-0 z-10 p-2 bg-white rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault(); // Prevent the form submission
+                          handleDeleteImage(index);
+                        }}
+                      >
+                        <img
+                          src={deleteIcon}
+                          alt="Delete"
+                          className="w-6 h-5"
+                        />
+                      </button>
+                      <img
+                        src={image}
+                        alt={`Uploaded Image ${index}`}
+                        className="filter grayscale-100 mb-6"
+                        style={{
+                          filter: "grayscale(100%)",
+                        }}
+                      />
+                    </div>
+                  ))}
+            </div>
+          ) : (
+            <p>No images to display</p>
+          )}
+        </div>
+        {confirmationVisible && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
+            <div className="bg-white p-8 rounded">
+              <p className="mb-4">
+                This action will delete the selected image from database.
+                <br />
+                Press <strong>"Yes"</strong> to proceed.
+              </p>
+              <button
+                onClick={(e) => {
+                  confirmDelete();
+                  e.preventDefault();
+                }}
+                className="mr-4 px-4 py-2 bg-gray-600 text-white rounded"
+              >
+                Yes
+              </button>
+              <button
+                onClick={(e) => {
+                  cancelDelete();
+                  e.preventDefault();
+                }}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={cancelUpdate}
+          className="mt-1 mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+        >
+          Cancel
+        </button>
+
         {/* Submit form data button */}
         <button
-        onClick={handleAddNotificationClick(`Vip ${name} is updated!`)}
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
+          // onClick={() => handleEmail(regularPrice)}
         >
-          Edit Listing
+          Edit VIP vipListing
         </button>
       </form>
     </main>

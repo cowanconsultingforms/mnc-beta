@@ -43,6 +43,8 @@ import TrackIndividualDealsProgress from "./components/TrackIndividualDealsProgr
 import MyProfile from "./pages/MyProfile";
 import TaskManager from "./pages/TaskManager";
 
+import { DataProvider } from './pages/DataContext';
+
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [iconVisible, setIconVisible] = useState(true);
@@ -87,7 +89,7 @@ function App() {
     <>
       <BrowserRouter>
         <Header />
-        
+        <DataProvider>
         <Routes>
           {/* Displays corresponding component when navigating to specified path */}
           <Route path="/" element={<Home />} />
@@ -162,7 +164,7 @@ function App() {
           <Route path="/tenant/:uid" element={<EditUser />} />
           {/* </Route> */}
         </Routes>
-      
+        </DataProvider>
         <div>
           {iconVisible && (
             <div className="chat-icon" onClick={handleChatClick}>

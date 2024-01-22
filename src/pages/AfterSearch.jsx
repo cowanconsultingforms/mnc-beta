@@ -6,7 +6,9 @@ import {
   where,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, createContext, useState, useRef  } from "react";
+// import { useData } from './pages/DataContext';
+import { useData } from "./DataContext";
+import { useEffect, createContext, useState, useRef } from "react";
 import { arrayUnion } from "firebase/firestore";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
@@ -29,6 +31,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 
 const Home = () => {
+  // const location2 = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -40,12 +43,16 @@ const Home = () => {
     email2: "",
     password2: "",
   });
+  const [errorCategory, setErrorCategory] = useState("");
+  const { setGlobalData } = useData();
+  const { data } = useData();
+  const [category, setCategory] = useState("");
   const { email2, password2 } = formData2;
   const { name, email, password } = formData;
   const { location } = useParams();
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
-  const [selectedButton, setSelectedButton] = useState(1);
+  const [selectedButton, setSelectedButton] = useState("");
   const [searchTerm, setSearchTerm] = useState(location);
   const images = [img1, img2, img3];
   const [showFilters, setShowFilters] = useState(false);
@@ -90,31 +97,48 @@ const Home = () => {
       setNotFound(!notFound);
     }
   };
-  
+
   useEffect(() => {
-    async function fetchData() {
-      const listingRef = collection(db, "propertyListings");
-      const category = getCategory(selectedButton);
-      let q = query(listingRef, where("type", "==", category));
-      const querySnap = await getDocs(q);
-
-      let listings = [];
-      querySnap.forEach((doc) => {
-        //if searchTerm != null, only return properties that contian the search term in the address
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-
-      const filteredProperties = listings.filter((listing) =>
-        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSuggestions(filteredProperties);
+    // Check if category is already set, if not, set it from data?.state
+    if (!category && data?.state) {
+      setCategory(data.state);
     }
 
-    fetchData();
-  }, []);
+    // This will be executed after the state is updated
+
+    if (category) {
+      if (!selectedButton && data?.state) {
+        setSelectedButton(getCategory2(category));
+        const listingRef = collection(db, "propertyListings");
+
+        console.log("cate3", category);
+        let q = query(listingRef, where("type", "==", category));
+        getDocs(q).then((querySnap) => {
+          let listings = [];
+          querySnap.forEach((doc) => {
+            //if searchTerm != null, only return properties that contain the search term in the address
+            return listings.push({
+              id: doc.id,
+              data: doc.data(),
+            });
+          });
+
+          const filteredProperties = listings.filter((listing) =>
+            listing.data.address
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+          );
+          setSuggestions(filteredProperties);
+        });
+      }
+    }
+  }, [category, selectedButton, data?.state]);
+
+  useEffect(() => {
+    if (selectedButton) {
+      setErrorCategory("");
+    }
+  }, [selectedButton, searchTerm]);
 
   const handleClick = () => {
     setClicked(!clicked);
@@ -130,15 +154,27 @@ const Home = () => {
 
   // Updates search bar data when user types
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
+    const inputValue = e.target.value;
 
-    if (searchTerm !== "") {
+    setSearchTerm(inputValue);
+
+    if (inputValue !== "") {
       // Displays results after 500ms delay
       clearTimeout(timer);
       const newTimer = setTimeout(() => {
-        fetchProperties(searchTerm);
+        fetchProperties(inputValue);
       }, 500);
+      console.log("ca:", category);
+
       setTimer(newTimer);
+    }
+  };
+
+  const setGlobalCategory = (category) => {
+    try {
+      setGlobalData({ state: category });
+    } catch (error) {
+      console.log("ee", error);
     }
   };
 
@@ -180,6 +216,17 @@ const Home = () => {
     }
   };
 
+  const getCategory2 = (category) => {
+    switch (category) {
+      case "buy":
+        return 1;
+      case "rent":
+        return 2;
+      case "sold":
+        return 3;
+    }
+  };
+
   const createAddressTokens = (searchTerm) => {
     // Split the searchTerm into individual tokens (words) and filter out empty strings
     const tokens = searchTerm.split(" ").filter((token) => token.trim() !== "");
@@ -196,54 +243,199 @@ const Home = () => {
   const fetchProperties = async (searchTerm) => {
     if (searchTerm !== "") {
       const listingRef = collection(db, "propertyListings");
-      const category = getCategory(selectedButton);
-      let q = query(listingRef, where("type", "==", category));
-      const querySnap = await getDocs(q);
-      let listings = [];
-      querySnap.forEach((doc) => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
+
+      if (selectedButton && data) {
+        setErrorCategory("");
+        setCategory(getCategory(selectedButton));
+        console.log("caca: ", category);
+        let q = query(listingRef, where("type", "==", category));
+
+        const querySnap = await getDocs(q);
+        let listings = [];
+        querySnap.forEach((doc) => {
+          return listings.push({
+            id: doc.id,
+            data: doc.data(),
+          });
         });
-      });
 
-      const filteredSuggestions = listings.filter((listing) => {
-        const regexZipCode = /^\d{1,5}$/;
-        const regexCity = /^[a-zA-Z\s]+$/;
+        const filteredSuggestions = listings.filter((listing) => {
+          const regexZipCode = /^\d{1,5}$/;
+          const regexCity = /^[a-zA-Z\s]+$/;
 
-        if (regexZipCode.test(searchTerm)) {
-          setZip("true");
-          setCity("false");
-          // console.log("zip", {zipcode});
-          return listing.data.address
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        }
-        if (regexCity.test(searchTerm)) {
-          setCity("true");
+          if (searchTerm.length >= 2) {
+            const address = listing.data?.address?.split(",");
+            const stateAndZip =
+              address?.length > 1 ? address[address.length - 1].trim() : null;
+            const stateFound = stateAndZip?.split(" ");
+            const state3 = stateFound && stateFound[0]?.toLowerCase();
+
+            let state = getState(searchTerm?.toLowerCase())?.toLowerCase();
+            let state2 = getState2(searchTerm?.toLowerCase())?.toLowerCase();
+
+            if (state === state3 || state2 === state3) {
+              if (state.length > 1 || state2.length > 1) {
+                return (
+                  listing.data?.address
+                    .toLowerCase()
+                    .includes(state.toLowerCase()) ||
+                  listing.data?.address
+                    .toLowerCase()
+                    .includes(state2.toLowerCase())
+                );
+              }
+            }
+          }
+
+          if (regexZipCode.test(searchTerm)) {
+            setZip("true");
+            setCity("false");
+            // console.log("zip", {zipcode});
+            return listing.data.address
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase());
+          }
+          if (regexCity.test(searchTerm)) {
+            setCity("true");
+            setZip("false");
+            return listing.data.address
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase());
+          }
+
           setZip("false");
+          setCity("false");
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
+        });
+
+        // setSuggestions(uniqueSuggestions);
+        // setFilteredProperties(filteredProperties);
+        if (searchTerm == "") {
+          setSuggestions([]);
+        } else {
+          setSuggestions(filteredSuggestions);
         }
-
-        setZip("false");
-        setCity("false");
-        return listing.data.address
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      });
-
-      // setSuggestions(uniqueSuggestions);
-      // setFilteredProperties(filteredProperties);
-      if (searchTerm == "") {
-        setSuggestions([]);
       } else {
-        setSuggestions(filteredSuggestions);
+        setErrorCategory("Please select a category!");
       }
     }
   };
 
+  const getState = (stateFound) => {
+    const stateMapping = {
+      al: "Alabama",
+      ak: "Alaska",
+      az: "Arizona",
+      ar: "Arkansas",
+      ca: "California",
+      co: "Colorado",
+      ct: "Connecticut",
+      de: "Delaware",
+      fl: "Florida",
+      ga: "Georgia",
+      hi: "Hawaii",
+      id: "Idaho",
+      il: "Illinois",
+      in: "Indiana",
+      ia: "Iowa",
+      ks: "Kansas",
+      ky: "Kentucky",
+      la: "Louisiana",
+      me: "Maine",
+      md: "Maryland",
+      ma: "Massachusetts",
+      mi: "Michigan",
+      mn: "Minnesota",
+      ms: "Mississippi",
+      mo: "Missouri",
+      mt: "Montana",
+      ne: "Nebraska",
+      nv: "Nevada",
+      nh: "New Hampshire",
+      nj: "New Jersey",
+      nm: "New Mexico",
+      ny: "New York",
+      nc: "North Carolina",
+      nd: "North Dakota",
+      oh: "Ohio",
+      ok: "Oklahoma",
+      or: "Oregon",
+      pa: "Pennsylvania",
+      ri: "Rhode Island",
+      sc: "South Carolina",
+      sd: "South Dakota",
+      tn: "Tennessee",
+      tx: "Texas",
+      ut: "Utah",
+      vt: "Vermont",
+      va: "Virginia",
+      wa: "Washington",
+      wv: "West Virginia",
+      wi: "Wisconsin",
+      wy: "Wyoming",
+    };
+
+    return stateMapping[stateFound] || "";
+  };
+
+  const getState2 = (stateName) => {
+    const stateReverseMapping = {
+      alabama: "AL",
+      alaska: "AK",
+      arizona: "AZ",
+      arkansas: "AR",
+      california: "CA",
+      colorado: "CO",
+      connecticut: "CT",
+      delaware: "DE",
+      florida: "FL",
+      georgia: "GA",
+      hawaii: "HI",
+      idaho: "ID",
+      illinois: "IL",
+      indiana: "IN",
+      iowa: "IA",
+      kansas: "KS",
+      kentucky: "KY",
+      louisiana: "LA",
+      maine: "ME",
+      maryland: "MD",
+      massachusetts: "MA",
+      michigan: "MI",
+      minnesota: "MN",
+      mississippi: "MS",
+      missouri: "MO",
+      montana: "MT",
+      nebraska: "NE",
+      nevada: "NV",
+      "new hampshire": "NH", // Corrected
+      "new jersey": "NJ", // Corrected
+      "new mexico": "NM", // Corrected
+      "new york": "NY", // Corrected
+      "north carolina": "NC", // Corrected
+      "north dakota": "ND", // Corrected
+      ohio: "OH",
+      oklahoma: "OK",
+      oregon: "OR",
+      pennsylvania: "PA",
+      "rhode island": "RI", // Corrected
+      "south carolina": "SC", // Corrected
+      "south dakota": "SD", // Corrected
+      tennessee: "TN",
+      texas: "TX",
+      utah: "UT",
+      vermont: "VT",
+      virginia: "VA",
+      washington: "WA",
+      "west virginia": "WV", // Corrected
+      wisconsin: "WI",
+      wyoming: "WY",
+    };
+
+    return stateReverseMapping[stateName] || "";
+  };
   //Filters
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -481,26 +673,7 @@ const Home = () => {
       [e.target.id]: e.target.value,
     }));
   };
-  //   const handleItemClick = async(item)=>{
-  //     const listingRef = collection(db, "propertyListings");
-  //     const category = getCategory(selectedButton);
-  //     let q = query(listingRef, where("type", "==", category));
-  //     const querySnap = await getDocs(q);
 
-  //     let listings = [];
-  //     querySnap.forEach((doc) => {
-  //       //if searchTerm != null, only return properties that contian the search term in the address
-  //       return listings.push({
-  //         id: doc.id,
-  //         data: doc.data(),
-  //       });
-  //     });
-  // console.log("handle:")
-  // const filteredProperties = listings.filter((listing) =>
-  //       listing.data.address.toLowerCase().includes(item.toLowerCase())
-  //     );
-  //     setSuggestions(filteredProperties);
-  //   }
   const handleSignUP = () => {
     setSignUp(true);
   };
@@ -574,16 +747,14 @@ const Home = () => {
     setSuggestions(filteredProperties);
   };
 
- 
-
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
         <div className="w-full px-3">
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
-
-          <div className="flex flex-row space-x-3 mt-6">
+          <p style={{ color: "red" }}>{errorCategory && errorCategory}</p>
+          <div className="flex flex-row space-x-3 mt-2">
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -591,7 +762,10 @@ const Home = () => {
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
               }`}
-              onClick={() => setSelectedButton(1)}
+              onClick={() => {
+                setSelectedButton(1);
+                setGlobalCategory("buy");
+              }}
             >
               Buy
             </button>
@@ -603,7 +777,9 @@ const Home = () => {
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
               }`}
-              onClick={() => setSelectedButton(2)}
+              onClick={() => {
+                setSelectedButton(2), setGlobalCategory("rent");
+              }}
             >
               Rent
             </button>
@@ -615,7 +791,9 @@ const Home = () => {
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
               }`}
-              onClick={() => setSelectedButton(3)}
+              onClick={() => {
+                setSelectedButton(3), setGlobalCategory("sold");
+              }}
             >
               Sold
             </button>
@@ -623,7 +801,7 @@ const Home = () => {
         </div>
         <div>
           <form
-           onSubmit={(e) => handleNotFound(e)}
+            onSubmit={(e) => handleNotFound(e)}
             className="max-w-md mt-6 w-full text flex justify-center"
           >
             {/* Search bar */}

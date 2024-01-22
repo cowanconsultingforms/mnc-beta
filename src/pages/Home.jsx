@@ -26,11 +26,13 @@ import { getMessaging } from "firebase/messaging";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import notification from "../assets/img/notification.png";
+import { useData } from './DataContext';
 
 // import { createNotification } from "../firebase";
 // import { getFirebaseToken, onForegroundMessage } from "../firebase";
 import { useContext } from "react";
 const Home = () => {
+  const { setGlobalData } = useData();
   const [suggestions, setSuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
@@ -45,9 +47,10 @@ const Home = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationsRef = useRef(null);
   const [notFound, setNotFound] = useState(false);
+  const [category, setCategory] = useState(false);
 
   const [showToDoIcon, setShowToDoIcon] = useState(true);
- 
+
   const [userId, setUserId] = useState("");
 
   const notFoundRef = useRef(null);
@@ -116,6 +119,10 @@ const Home = () => {
 
     call();
   }, [userRole, userId]);
+
+  const handleClick = () => {
+    setGlobalData({ state: category });
+  };
 
   const fetchUserNotifications = async (userId) => {
     const userRef = doc(db, "users", userId);
@@ -220,19 +227,19 @@ const Home = () => {
   };
 
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
+    const inputValue = e.target.value;
 
-    if (searchTerm !== "") {
+    setSearchTerm(inputValue);
+
+    if (inputValue !== "") {
       // Displays results after 500ms delay
       clearTimeout(timer);
       const newTimer = setTimeout(() => {
-        fetchProperties(searchTerm);
+        fetchProperties(inputValue);
       }, 500);
       setTimer(newTimer);
     }
   };
-
-
 
   // Get the category based on the selectedButton
   const getCategory = (button) => {
@@ -245,7 +252,6 @@ const Home = () => {
         return "sold";
     }
   };
-  
 
   // Submit function for searchbar
   const handleSearch = (e) => {
@@ -260,7 +266,7 @@ const Home = () => {
 
       // Get the category based on the selectedButton
       const category = getCategory(selectedButton);
-
+      setCategory(category);
       // Build the query based on the selectedButton and the searchTerm
       let q = query(listingRef, where("type", "==", category));
 
@@ -288,6 +294,30 @@ const Home = () => {
       const filteredSuggestions = listings.filter((listing) => {
         const regexZipCode = /^\d{1,5}$/;
         const regexCity = /^[a-zA-Z\s]+$/;
+
+        if (searchTerm.length >= 2) {
+          const address = listing.data?.address?.split(",");
+          const stateAndZip =
+            address?.length > 1 ? address[address.length - 1].trim() : null;
+          const stateFound = stateAndZip?.split(" ");
+          const state3 = stateFound && stateFound[0]?.toLowerCase();
+
+          let state = getState(searchTerm?.toLowerCase())?.toLowerCase();
+          let state2 = getState2(searchTerm?.toLowerCase())?.toLowerCase();
+
+          if (state === state3 || state2 === state3) {
+            if (state.length > 1 || state2.length > 1) {
+              return (
+                listing.data?.address
+                  .toLowerCase()
+                  .includes(state.toLowerCase()) ||
+                listing.data?.address
+                  .toLowerCase()
+                  .includes(state2.toLowerCase())
+              );
+            }
+          }
+        }
 
         if (regexZipCode.test(searchTerm)) {
           setZip("true");
@@ -322,6 +352,120 @@ const Home = () => {
     }
   };
 
+  const getState = (stateFound) => {
+    const stateMapping = {
+      al: "Alabama",
+      ak: "Alaska",
+      az: "Arizona",
+      ar: "Arkansas",
+      ca: "California",
+      co: "Colorado",
+      ct: "Connecticut",
+      de: "Delaware",
+      fl: "Florida",
+      ga: "Georgia",
+      hi: "Hawaii",
+      id: "Idaho",
+      il: "Illinois",
+      in: "Indiana",
+      ia: "Iowa",
+      ks: "Kansas",
+      ky: "Kentucky",
+      la: "Louisiana",
+      me: "Maine",
+      md: "Maryland",
+      ma: "Massachusetts",
+      mi: "Michigan",
+      mn: "Minnesota",
+      ms: "Mississippi",
+      mo: "Missouri",
+      mt: "Montana",
+      ne: "Nebraska",
+      nv: "Nevada",
+      nh: "New Hampshire",
+      nj: "New Jersey",
+      nm: "New Mexico",
+      ny: "New York",
+      nc: "North Carolina",
+      nd: "North Dakota",
+      oh: "Ohio",
+      ok: "Oklahoma",
+      or: "Oregon",
+      pa: "Pennsylvania",
+      ri: "Rhode Island",
+      sc: "South Carolina",
+      sd: "South Dakota",
+      tn: "Tennessee",
+      tx: "Texas",
+      ut: "Utah",
+      vt: "Vermont",
+      va: "Virginia",
+      wa: "Washington",
+      wv: "West Virginia",
+      wi: "Wisconsin",
+      wy: "Wyoming",
+    };
+
+    return stateMapping[stateFound] || "";
+  };
+
+  const getState2 = (stateName) => {
+    const stateReverseMapping = {
+      alabama: "AL",
+      alaska: "AK",
+      arizona: "AZ",
+      arkansas: "AR",
+      california: "CA",
+      colorado: "CO",
+      connecticut: "CT",
+      delaware: "DE",
+      florida: "FL",
+      georgia: "GA",
+      hawaii: "HI",
+      idaho: "ID",
+      illinois: "IL",
+      indiana: "IN",
+      iowa: "IA",
+      kansas: "KS",
+      kentucky: "KY",
+      louisiana: "LA",
+      maine: "ME",
+      maryland: "MD",
+      massachusetts: "MA",
+      michigan: "MI",
+      minnesota: "MN",
+      mississippi: "MS",
+      missouri: "MO",
+      montana: "MT",
+      nebraska: "NE",
+      nevada: "NV",
+      "new hampshire": "NH", // Corrected
+      "new jersey": "NJ", // Corrected
+      "new mexico": "NM", // Corrected
+      "new york": "NY", // Corrected
+      "north carolina": "NC", // Corrected
+      "north dakota": "ND", // Corrected
+      ohio: "OH",
+      oklahoma: "OK",
+      oregon: "OR",
+      pennsylvania: "PA",
+      "rhode island": "RI", // Corrected
+      "south carolina": "SC", // Corrected
+      "south dakota": "SD", // Corrected
+      tennessee: "TN",
+      texas: "TX",
+      utah: "UT",
+      vermont: "VT",
+      virginia: "VA",
+      washington: "WA",
+      "west virginia": "WV", // Corrected
+      wisconsin: "WI",
+      wyoming: "WY",
+    };
+
+    return stateReverseMapping[stateName] || "";
+  };
+
   const handleVip = () => {
     navigate("/faqPage");
   };
@@ -332,7 +476,6 @@ const Home = () => {
       setNotFound(!notFound);
     }
   };
-
 
   return (
     <>
@@ -429,51 +572,14 @@ const Home = () => {
                 </div>
               )}
               <button
-              type="submit"
-              className="absolute right-[20px] top-[12px] cursor-pointer"
-            >
-              <AiOutlineSearch className="text-gray-700 text-2xl" />
-            </button>
+                type="submit"
+                className="absolute right-[20px] top-[12px] cursor-pointer"
+              >
+                <AiOutlineSearch className="text-gray-700 text-2xl" />
+              </button>
             </form>
-             {/* Search button */}
-             
-            {/* {notFound && (
-                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                    <div className="flex">
-                      <p className="font-semibold">
-                        We couldn't find '{searchTerm}'
-                      </p>
-                      <button
-                        className="mx-0 font-semibold text-xl ml-auto"
-                        onClick={() => {
-                          setNotFound(false);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <br></br>
-                    <p>
-                      Please check the spelling, try clearing the search box, or
-                      try reformatting to match these examples:
-                    </p>
-                    <br></br>
-                    <span className="font-semibold">Address:</span> 123 Main St,
-                    Seattle, WA <br></br>
-                    <span className="font-semibold">Neighborhood: </span>
-                    Downtown
-                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                    <br></br>
-                    <span className="font-semibold">City: </span> 'Seattle' or
-                    'Seattle, WA' <br></br>
-                    <br></br> Don't see what you're looking for? Your search
-                    might be outside our service areas.
-                    {console.log('sssss')}
-                  </div>
-                </div>
-              )} */}
-              
+            {/* Search button */}
+
             <div>
               {!searchTerm && (
                 <button
@@ -500,6 +606,7 @@ const Home = () => {
                               "Unknown State";
                             const stateAndZipParts = stateAndZip.split(" ");
                             const state = stateAndZipParts[0];
+
                             return `${city}, ${state}`;
                           })
                         )
@@ -509,10 +616,9 @@ const Home = () => {
                             to={{
                               pathname: `/afterSearch/${encodeURIComponent(
                                 cityStatePair.replace(/ /g, "%20")
-                              )}`,
-                              state: { fromListing: false },
+                              )}`
                             }}
-                          >
+                            onClick={handleClick} >
                             {cityStatePair}
                           </Link>
                         </li>
@@ -532,6 +638,7 @@ const Home = () => {
                             const stateAndZip =
                               addressParts[addressParts.length - 1]?.trim() ||
                               "Unknown State";
+
                             return `${stateAndZip}`;
                           })
                         )
@@ -541,7 +648,7 @@ const Home = () => {
                             to={`/afterSearch/${encodeURIComponent(
                               cityStatePair
                             )}`}
-                          >
+                            onClick={handleClick}>
                             {cityStatePair}
                           </Link>
                         </li>
@@ -565,10 +672,12 @@ const Home = () => {
                         ).map((cityStatePair, index) => (
                           <li key={index}>
                             <Link
-                              to={`/afterSearch/${encodeURIComponent(
-                                cityStatePair
-                              )}`}
-                            >
+                              to={{
+                                pathname: `/afterSearch/${encodeURIComponent(
+                                  cityStatePair
+                                )}`
+                              }}
+                              onClick={handleClick} >
                               {cityStatePair}
                             </Link>
                           </li>
@@ -579,8 +688,6 @@ const Home = () => {
                 </>
               )}
             </div>
-
-           
           </div>
         </div>
       </section>
