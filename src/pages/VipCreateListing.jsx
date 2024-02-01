@@ -101,6 +101,62 @@ const createVIPListing = () => {
     };
   };
 
+  function isGoogleMapsLoaded() {
+    return window.google && window.google.maps;
+  }
+
+  // Function to load the Google Maps API script
+  function loadGoogleMapsScript(callback) {
+    const apiKey = `${import.meta.env.VITE_API_KEY}`;
+    console.log("Attempting to load Google Maps API script");
+    if (isGoogleMapsLoaded()) {
+      if (typeof callback === "function") {
+        callback();
+      }
+    } else {
+      if (window.googleMapsScriptLoading) {
+        // If script is already in the process of loading, add the callback to a queue
+        window.googleMapsScriptCallbackQueue.push(callback);
+      } else {
+        window.googleMapsScriptLoading = true;
+        window.googleMapsScriptCallbackQueue = [callback];
+  
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&callback=googleMapsScriptLoaded`;
+        script.defer = true;
+  
+        window.googleMapsScriptLoaded = () => {
+          window.googleMapsScriptLoading = false;
+          if (typeof callback === "function") {
+            callback();
+          }
+  
+          // Call any additional callbacks in the queue
+          window.googleMapsScriptCallbackQueue.forEach((cb) => cb());
+          window.googleMapsScriptCallbackQueue = [];
+        };
+  
+        document.head.appendChild(script);
+      }
+    }
+  }
+
+  // Your geocoding logic function
+  const geocodeAddress = async (address) => {
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === "OK" && results.length > 0) {
+          resolve(results[0].geometry.location);
+        } else {
+          reject(
+            new Error("Geocoding failed. Please enter a correct address.")
+          );
+        }
+      });
+    });
+  };
+
   // Update all form data
   const onChange = (e) => {
     const { id, value } = e.target;
@@ -185,31 +241,18 @@ const createVIPListing = () => {
 
     // Converts address to coordinates if geolocationEnabled is true
     let geolocation = {};
-    let location;
-    if (geolocationEnabled) {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_API_KEY
-        }`
-      );
+    try {
+      await new Promise((resolve) => {
+        loadGoogleMapsScript(resolve);
+      });
 
-      const data = await response.json();
-
-      // Gets longitude and latitude from google maps api call
-      geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
-      geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
-
-      location = data.status === "ZERO_RESULTS" && undefined;
-
-      if (location === undefined) {
-        setLoading(false);
-        toast.error("Please enter a correct address.");
-        return;
-      }
-    } else {
-      // Otherwise use manually inputted form data for the latitude and longitude fields
-      geolocation.lat = latitude;
-      geolocation.lng = longitude;
+      const location = await geocodeAddress(address);
+      geolocation.lat = location.lat() || 0;
+      geolocation.lng = location.lng() || 0;
+    } catch (error) {
+      setLoading(false);
+      toast.error("Please enter a correct address.");
+      return;
     }
 
     // Uploads image to firestore database

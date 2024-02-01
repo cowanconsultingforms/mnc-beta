@@ -124,7 +124,7 @@ const VipEditListing = () => {
   });
 
   const subject = "price change";
-  const text = `Hello,\n\nYou got a new message from MNC Team Development.\nTake a look at the new price of this vipListing ${vipListing?.address}\n\nBest Wishes,\nMNC Team Development`;
+  const text = `Hello,\n\nYou got a new message from MNC Team Development.\nTake a look at the new price of this vipListing ${vipListing?.address}\n\nBest Wishes,\nTeam MNC Development`;
 
   const sendEmail = async () => {
     try {
@@ -239,6 +239,62 @@ const VipEditListing = () => {
     fetchListing();
   }, []);
 
+  function isGoogleMapsLoaded() {
+    return window.google && window.google.maps;
+  }
+
+  // Function to load the Google Maps API script
+  function loadGoogleMapsScript(callback) {
+    const apiKey = `${import.meta.env.VITE_API_KEY}`;
+    console.log("Attempting to load Google Maps API script");
+    if (isGoogleMapsLoaded()) {
+      if (typeof callback === "function") {
+        callback();
+      }
+    } else {
+      if (window.googleMapsScriptLoading) {
+        // If script is already in the process of loading, add the callback to a queue
+        window.googleMapsScriptCallbackQueue.push(callback);
+      } else {
+        window.googleMapsScriptLoading = true;
+        window.googleMapsScriptCallbackQueue = [callback];
+  
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&callback=googleMapsScriptLoaded`;
+        script.defer = true;
+  
+        window.googleMapsScriptLoaded = () => {
+          window.googleMapsScriptLoading = false;
+          if (typeof callback === "function") {
+            callback();
+          }
+  
+          // Call any additional callbacks in the queue
+          window.googleMapsScriptCallbackQueue.forEach((cb) => cb());
+          window.googleMapsScriptCallbackQueue = [];
+        };
+  
+        document.head.appendChild(script);
+      }
+    }
+  }
+
+  // Your geocoding logic function
+  const geocodeAddress = async (address) => {
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === "OK" && results.length > 0) {
+          resolve(results[0].geometry.location);
+        } else {
+          reject(
+            new Error("Geocoding failed. Please enter a correct address.")
+          );
+        }
+      });
+    });
+  };
+
   // Update all form data
   const onChange = (e) => {
     const { id, value } = e.target;
@@ -305,33 +361,48 @@ const VipEditListing = () => {
       return;
     }
 
-    // Converts address to coordinates if geolocationEnabled is true
     let geolocation = {};
-    let location;
-    if (geolocationEnabled) {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_API_KEY
-        }`
-      );
-      const data = await response.json();
+      try {
+        await new Promise((resolve) => {
+          loadGoogleMapsScript(resolve);
+        });
 
-      // Gets longitude and latitude from google maps api call
-      geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
-      geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
-
-      location = data.status === "ZERO_RESULTS" && undefined;
-
-      if (location === undefined) {
+        const location = await geocodeAddress(address);
+        geolocation.lat = location.lat() || 0;
+        geolocation.lng = location.lng() || 0;
+      } catch (error) {
         setLoading(false);
         toast.error("Please enter a correct address.");
         return;
       }
-    } else {
-      // Otherwise use manually inputted form data for the latitude and longitude fields
-      geolocation.lat = latitude;
-      geolocation.lng = longitude;
-    }
+
+    // // Converts address to coordinates if geolocationEnabled is true
+    // let geolocation = {};
+    // let location;
+    // if (geolocationEnabled) {
+    //   const response = await fetch(
+    //     `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+    //       import.meta.env.VITE_API_KEY
+    //     }`
+    //   );
+    //   const data = await response.json();
+
+    //   // Gets longitude and latitude from google maps api call
+    //   geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+    //   geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
+
+    //   location = data.status === "ZERO_RESULTS" && undefined;
+
+    //   if (location === undefined) {
+    //     setLoading(false);
+    //     toast.error("Please enter a correct address.");
+    //     return;
+    //   }
+    // } else {
+    //   // Otherwise use manually inputted form data for the latitude and longitude fields
+    //   geolocation.lat = latitude;
+    //   geolocation.lng = longitude;
+    // }
 
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
@@ -537,7 +608,7 @@ const VipEditListing = () => {
 
   return (
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Edit VIP vipListing</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">Edit VIP Listing</h1>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -936,7 +1007,7 @@ const VipEditListing = () => {
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
           // onClick={() => handleEmail(regularPrice)}
         >
-          Edit VIP vipListing
+          Edit VIP Listing
         </button>
       </form>
     </main>

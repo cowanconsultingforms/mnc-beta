@@ -26,7 +26,7 @@ const Contact = ({ listing }) => {
 
       {/* Submit message button */}
       <a
-        href={`mailto:info@mncdevelopment.com?Subject=${listing.name}&body=${message}`}
+        href={`mailto:team@mncdevelopment.com?Subject=${listing.name}&body=${message}`}
       >
         <button
           type="button"

@@ -227,6 +227,12 @@ const ViewProfile = () => {
           customer.email,
           `Hello ${customer.name}, your account is created with MNC Development with email: ${customer.email} and a temporary password: ${password}\n\nThank You\nTeam MNC Development.`
         );
+
+        sendEmail(
+          "team@mncdevelopment.com",
+          `Hello ${customer.name}, your account is created with MNC Development with email: ${customer.email} and a temporary password: ${password}\n\nThank You\nTeam MNC Development.`
+        );
+
         toast.success("Deal is created successfully!");
         handlePopUp();
       } else {
