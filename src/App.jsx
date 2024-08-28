@@ -36,7 +36,7 @@ import ManageUsersProfile from "./pages/ManageUsersProfile";
 import EditUser from "./pages/EditAllUsers";
 import ViewProfile from "./pages/ViewProfile";
 import Agents from "./pages/Agents";
-import FAQPage from "./pages/Faq"; 
+import FAQPage from "./pages/Faq";
 import ManageRequests from "./pages/ManageRequests";
 import TrackDealsProgress from "./pages/TrackDealsProgress";
 import TrackIndividualDealsProgress from "./components/TrackIndividualDealsProgress";
@@ -63,14 +63,13 @@ function App() {
     setIconVisible(true);
   };
 
-
   // useEffect(() => {
   //   return async() => {
   //     try {
   //       const response = await fetch(' https://us-central1-mnc-development.cloudfunctions.net/updateUsersFunction', {
   //         method: 'POST', // or 'GET' depending on your function's setup
   //       });
-    
+
   //       if (response.ok) {
   //         console.log('Update triggered successfully');
   //       } else {
@@ -82,12 +81,11 @@ function App() {
   //   };
   // }, []);
 
-
   return (
     <>
       <BrowserRouter>
         <Header />
-        
+
         <Routes>
           {/* Displays corresponding component when navigating to specified path */}
           <Route path="/" element={<Home />} />
@@ -156,13 +154,16 @@ function App() {
           <Route path="/agents" element={<Agents />} />
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
-          <Route path="/trackIndividualDealsProgress/:uid" element={<TrackIndividualDealsProgress />} />
+          <Route
+            path="/trackIndividualDealsProgress/:uid"
+            element={<TrackIndividualDealsProgress />}
+          />
           <Route path="/taskManager/:uid" element={<TaskManager />} />
           {/* <Route path="/editTenant" element={<PrivateRoute />}> */}
           <Route path="/tenant/:uid" element={<EditUser />} />
           {/* </Route> */}
         </Routes>
-      
+
         <div>
           {iconVisible && (
             <div className="chat-icon" onClick={handleChatClick}>
@@ -207,7 +208,7 @@ function App() {
           )}
         </div>
       </BrowserRouter>
-    
+
       <ToastContainer
         position="bottom-center"
         autoClose={1500}
