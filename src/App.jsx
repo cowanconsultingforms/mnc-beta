@@ -21,7 +21,6 @@ import Vip from "./pages/Vip";
 import CreateVipListing from "./pages/VipCreateListing";
 import VipEditListing from "./pages/VipEditListing";
 import VipListing from "./pages/VipListing";
-
 import AfterSearch from "./pages/AfterSearch";
 import MortgageCalculator from "./pages/MortgageCalculator";
 import config from "./pages/config";
@@ -42,6 +41,8 @@ import TrackDealsProgress from "./pages/TrackDealsProgress";
 import TrackIndividualDealsProgress from "./components/TrackIndividualDealsProgress";
 import MyProfile from "./pages/MyProfile";
 import TaskManager from "./pages/TaskManager";
+import PropertyManagement from "./pages/PropertyManagement";
+import TenantList from "./pages/TenantList";
 
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -154,6 +155,9 @@ function App() {
           <Route path="/agents" element={<Agents />} />
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
+          <Route path="/property-management" element={<PropertyManagement />} />
+          <Route path="/property-management/:id/tenants" element={<TenantList />} />
+
           <Route
             path="/trackIndividualDealsProgress/:uid"
             element={<TrackIndividualDealsProgress />}

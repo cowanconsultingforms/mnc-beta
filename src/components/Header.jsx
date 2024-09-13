@@ -301,7 +301,7 @@ const Header = () => {
   return (
     <div className="bg-white border-b shadow-sm sticky top-0 z-40 lg:px-16">
       {/* Navigation Bar container */}
-      <header className="flex justify-between items-center mx-auto">
+      <header className="flex justify-between items-center mx-auto" >
         {/* //notification */}
         {signed && (userRole === "admin" || userRole === "agent") && (
           <div>
@@ -373,13 +373,13 @@ const Header = () => {
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block" hover:text-blue-500>
           <ul className="flex space-x-10">
             {/* Home button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] 
               ${!pathMatchRoute("/") && "text-gray-400 border-b-transparent"} 
-              ${pathMatchRoute("/") && "text-black border-b-gray-900 "}`}
+              ${pathMatchRoute("/") && "text-black border-b-gray-900 "}hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("/"), setToolsDropdownOpen(false); setToolsClicked(false);
               }}
@@ -393,7 +393,8 @@ const Header = () => {
                 className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                   !pathMatchRoute("/vip") &&
                   "text-gray-400 border-b-transparent"
-                } ${pathMatchRoute("/vip") && "text-black border-b-gray-900"}`}
+                } ${pathMatchRoute("/vip") && "text-black border-b-gray-900"}
+                hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
                 onClick={() => {
                   navigate("/vip"), setToolsDropdownOpen(false); setToolsClicked(false);
                 }}
@@ -406,7 +407,8 @@ const Header = () => {
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/map") && "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}`}
+              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}
+              hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("/map"), setToolsDropdownOpen(false); setToolsClicked(false);
               }}
@@ -424,7 +426,8 @@ const Header = () => {
                     } ${
                       pathMatchRoute("/savedSearches") &&
                       "text-black border-b-gray-900"
-                    }`}
+                    }
+                  hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
                     onClick={() => {
                       navigate("/savedSearches"),
                         setMobileMenuOpen(false),
@@ -444,7 +447,8 @@ const Header = () => {
                 "text-gray-400 border-b-transparent"
               } ${
                 pathMatchRoute("/contact-us") && "text-black border-b-gray-900"
-              }`}
+              }
+            hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("/contact-us"), setToolsDropdownOpen(false), setToolsClicked(false);
               }}
@@ -454,7 +458,8 @@ const Header = () => {
 
             {/* //tools */}
             <li
-              className={`cursor-pointer  mt-2.5 font-semibold border-b-transparent`}
+              className={`cursor-pointer  mt-2.5 font-semibold border-b-transparent
+              `}
               onClick={() =>{toggleToolsDropdown(), setToolsClicked(true)}}
             >
               <span style={{ display: "flex", color: toolsClicked ? "black" : "gray" }}>
@@ -580,7 +585,8 @@ const Header = () => {
                 "text-gray-400 border-b-transparent"
               } ${
                 pathMatchRoute("./faqPage") && "text-black border-b-gray-900"
-              }`}
+              }
+            hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("./faqPage"); setToolsClicked(false);
               }}
@@ -592,7 +598,8 @@ const Header = () => {
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/agents") && "text-black border-b-gray-900"}`}
+              } ${pathMatchRoute("/agents") && "text-black border-b-gray-900"}
+              hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("/agents"); setToolsClicked(false);
               }}
@@ -608,7 +615,8 @@ const Header = () => {
                   "text-gray-400 border-b-transparent"
                 } ${
                   pathMatchRoute("/admin") && "text-black border-b-gray-900"
-                }`}
+                }
+                hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
                 onClick={() => {
                   navigate("/admin"), setToolsDropdownOpen(false); setToolsClicked(false);
                 }}
@@ -628,7 +636,8 @@ const Header = () => {
               ${
                 (pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) &&
                 "text-black border-b-gray-900"
-              }`}
+              }
+              hover:text-blue-500 hover:border-b-blue-500 transition-all duration-300`}
               onClick={() => {
                 navigate("/profile"), setToolsDropdownOpen(false); setToolsClicked(false);
               }}
