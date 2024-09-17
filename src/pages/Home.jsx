@@ -645,7 +645,7 @@ const Home = () => {
                 className="polaroid-image"
               />
             </div>
-            <p className="polaroid-caption">We buy property in any coindition anywhere!</p>
+            <p className="polaroid-caption">We buy property in any condition anywhere!</p>
           </div>
         </div>
       )}
