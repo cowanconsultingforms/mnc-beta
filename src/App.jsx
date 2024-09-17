@@ -21,7 +21,6 @@ import Vip from "./pages/Vip";
 import CreateVipListing from "./pages/VipCreateListing";
 import VipEditListing from "./pages/VipEditListing";
 import VipListing from "./pages/VipListing";
-
 import AfterSearch from "./pages/AfterSearch";
 import MortgageCalculator from "./pages/MortgageCalculator";
 import config from "./pages/config";
@@ -36,12 +35,16 @@ import ManageUsersProfile from "./pages/ManageUsersProfile";
 import EditUser from "./pages/EditAllUsers";
 import ViewProfile from "./pages/ViewProfile";
 import Agents from "./pages/Agents";
-import FAQPage from "./pages/Faq"; 
+import FAQPage from "./pages/Faq";
 import ManageRequests from "./pages/ManageRequests";
 import TrackDealsProgress from "./pages/TrackDealsProgress";
 import TrackIndividualDealsProgress from "./components/TrackIndividualDealsProgress";
 import MyProfile from "./pages/MyProfile";
 import TaskManager from "./pages/TaskManager";
+import PropertyManagement from "./pages/PropertyManagement";
+import TenantList from "./pages/TenantList";
+import ListingsPage from "./pages/ListingsPage";
+import TenantDetail from "./pages/TenantDetail";
 
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -63,14 +66,13 @@ function App() {
     setIconVisible(true);
   };
 
-
   // useEffect(() => {
   //   return async() => {
   //     try {
   //       const response = await fetch(' https://us-central1-mnc-development.cloudfunctions.net/updateUsersFunction', {
   //         method: 'POST', // or 'GET' depending on your function's setup
   //       });
-    
+
   //       if (response.ok) {
   //         console.log('Update triggered successfully');
   //       } else {
@@ -82,12 +84,11 @@ function App() {
   //   };
   // }, []);
 
-
   return (
     <>
       <BrowserRouter>
         <Header />
-        
+
         <Routes>
           {/* Displays corresponding component when navigating to specified path */}
           <Route path="/" element={<Home />} />
@@ -156,13 +157,24 @@ function App() {
           <Route path="/agents" element={<Agents />} />
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
-          <Route path="/trackIndividualDealsProgress/:uid" element={<TrackIndividualDealsProgress />} />
+          <Route path="/property-management" element={<PropertyManagement />} />
+          <Route
+            path="/property-management/:id/tenants"
+            element={<TenantList />}
+          />
+          <Route path="/property-management/:id/tenant/:tenantId" element={<TenantDetail />} />
+          <Route path="/listings" element={<ListingsPage />} />
+
+          <Route
+            path="/trackIndividualDealsProgress/:uid"
+            element={<TrackIndividualDealsProgress />}
+          />
           <Route path="/taskManager/:uid" element={<TaskManager />} />
           {/* <Route path="/editTenant" element={<PrivateRoute />}> */}
           <Route path="/tenant/:uid" element={<EditUser />} />
           {/* </Route> */}
         </Routes>
-      
+
         <div>
           {iconVisible && (
             <div className="chat-icon" onClick={handleChatClick}>
@@ -207,7 +219,7 @@ function App() {
           )}
         </div>
       </BrowserRouter>
-    
+
       <ToastContainer
         position="bottom-center"
         autoClose={1500}
