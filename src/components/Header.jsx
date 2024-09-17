@@ -47,7 +47,6 @@ const Header = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  
   const getUserRole = async (uid) => {
     const userRef = doc(db, "users", uid);
 
@@ -373,18 +372,37 @@ const Header = () => {
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block" hover:text-blue-500>
           <ul className="flex space-x-10">
             {/* Home button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] 
               ${!pathMatchRoute("/") && "text-gray-400 border-b-transparent"} 
-              ${pathMatchRoute("/") && "text-black border-b-gray-900 "}`}
+              ${
+                pathMatchRoute("/") && "text-black border-b-gray-900 "
+              }hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("/"), setToolsDropdownOpen(false); setToolsClicked(false);
+                navigate("/"), setToolsDropdownOpen(false);
+                setToolsClicked(false);
               }}
             >
               Home
+            </li>
+
+            {/* Listings button */}
+            <li
+              className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+                !pathMatchRoute("/listings") &&
+                "text-gray-400 border-b-transparent"
+              } ${pathMatchRoute("/listings") && "text-black border-b-gray-900"}
+                hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
+              onClick={() => {
+                navigate("/listings"),
+                  setToolsDropdownOpen(false),
+                  setToolsClicked(false);
+              }}
+            >
+              Listings
             </li>
 
             {/* Vip button */}
@@ -393,9 +411,11 @@ const Header = () => {
                 className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                   !pathMatchRoute("/vip") &&
                   "text-gray-400 border-b-transparent"
-                } ${pathMatchRoute("/vip") && "text-black border-b-gray-900"}`}
+                } ${pathMatchRoute("/vip") && "text-black border-b-gray-900"}
+                hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
                 onClick={() => {
-                  navigate("/vip"), setToolsDropdownOpen(false); setToolsClicked(false);
+                  navigate("/vip"), setToolsDropdownOpen(false);
+                  setToolsClicked(false);
                 }}
               >
                 VIP
@@ -406,9 +426,11 @@ const Header = () => {
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/map") && "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}`}
+              } ${pathMatchRoute("/map") && "text-black border-b-gray-900"}
+              hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("/map"), setToolsDropdownOpen(false); setToolsClicked(false);
+                navigate("/map"), setToolsDropdownOpen(false);
+                setToolsClicked(false);
               }}
             >
               Map
@@ -424,12 +446,13 @@ const Header = () => {
                     } ${
                       pathMatchRoute("/savedSearches") &&
                       "text-black border-b-gray-900"
-                    }`}
+                    }
+                  hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
                     onClick={() => {
                       navigate("/savedSearches"),
                         setMobileMenuOpen(false),
                         setToolsDropdownOpen(false);
-                        setToolsClicked(false);
+                      setToolsClicked(false);
                     }}
                   >
                     Saved Searches
@@ -444,9 +467,12 @@ const Header = () => {
                 "text-gray-400 border-b-transparent"
               } ${
                 pathMatchRoute("/contact-us") && "text-black border-b-gray-900"
-              }`}
+              }
+            hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("/contact-us"), setToolsDropdownOpen(false), setToolsClicked(false);
+                navigate("/contact-us"),
+                  setToolsDropdownOpen(false),
+                  setToolsClicked(false);
               }}
             >
               Contact Us
@@ -454,10 +480,18 @@ const Header = () => {
 
             {/* //tools */}
             <li
-              className={`cursor-pointer  mt-2.5 font-semibold border-b-transparent`}
-              onClick={() =>{toggleToolsDropdown(), setToolsClicked(true)}}
+              className={`cursor-pointer  mt-2.5 font-semibold border-b-transparent
+              `}
+              onClick={() => {
+                toggleToolsDropdown(), setToolsClicked(true);
+              }}
             >
-              <span style={{ display: "flex", color: toolsClicked ? "black" : "gray" }}>
+              <span
+                style={{
+                  display: "flex",
+                  color: toolsClicked ? "black" : "gray",
+                }}
+              >
                 Tools
                 <svg
                   className={`w-4 mt-1 ml-1 h-4 fill-current hover:underline focus:underline transform transition-transform duration-300`}
@@ -467,7 +501,7 @@ const Header = () => {
                   <path d="M8 12l-6-6 1.41-1.41L8 9.17l4.59-4.58L14 6z" />
                 </svg>
               </span>
-              
+
               {isToolsDropdownOpen && (
                 <div
                   className="dropdown-container absolute text-sm bg-white h-8 shadow-md mr-5 hover:bg-gray-200"
@@ -504,23 +538,23 @@ const Header = () => {
                 </div>
               )}
 
-{isToolsDropdownOpen &&
+              {isToolsDropdownOpen &&
                 (role === "agent" ||
                   role === "admin" ||
                   role === "superadmin") && (
-                    <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate(`/manageRequests/${userId2}`),
-                        setMobileMenuOpen(false),
-                        setToolsDropdownOpen(false);
-                    }}
-                    className="text-left pl-2 mt-5 dropdown-container absolute bg-white text-sm h-6 shadow-md hover:bg-gray-200"
-                    style={{ marginLeft: "-60px", width: "147px" }}
-                  >
-                    Request Tracker
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate(`/manageRequests/${userId2}`),
+                          setMobileMenuOpen(false),
+                          setToolsDropdownOpen(false);
+                      }}
+                      className="text-left pl-2 mt-5 dropdown-container absolute bg-white text-sm h-6 shadow-md hover:bg-gray-200"
+                      style={{ marginLeft: "-60px", width: "147px" }}
+                    >
+                      Request Tracker
+                    </button>
                   </>
                 )}
 
@@ -573,28 +607,30 @@ const Header = () => {
                   </>
                 )}
             </li>
-{/* faqPage */}
+            {/* faqPage */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/faqPage") &&
                 "text-gray-400 border-b-transparent"
-              } ${
-                pathMatchRoute("./faqPage") && "text-black border-b-gray-900"
-              }`}
+              } ${pathMatchRoute("./faqPage") && "text-black border-b-gray-900"}
+            hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("./faqPage"); setToolsClicked(false);
+                navigate("./faqPage");
+                setToolsClicked(false);
               }}
             >
               FAQ
             </li>
-{/* agents */}
+            {/* agents */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
-              } ${pathMatchRoute("/agents") && "text-black border-b-gray-900"}`}
+              } ${pathMatchRoute("/agents") && "text-black border-b-gray-900"}
+              hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("/agents"); setToolsClicked(false);
+                navigate("/agents");
+                setToolsClicked(false);
               }}
             >
               Agents
@@ -606,11 +642,11 @@ const Header = () => {
                 className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                   !pathMatchRoute("/admin") &&
                   "text-gray-400 border-b-transparent"
-                } ${
-                  pathMatchRoute("/admin") && "text-black border-b-gray-900"
-                }`}
+                } ${pathMatchRoute("/admin") && "text-black border-b-gray-900"}
+                hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
                 onClick={() => {
-                  navigate("/admin"), setToolsDropdownOpen(false); setToolsClicked(false);
+                  navigate("/admin"), setToolsDropdownOpen(false);
+                  setToolsClicked(false);
                 }}
               >
                 Admin
@@ -628,9 +664,11 @@ const Header = () => {
               ${
                 (pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) &&
                 "text-black border-b-gray-900"
-              }`}
+              }
+              hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
               onClick={() => {
-                navigate("/profile"), setToolsDropdownOpen(false); setToolsClicked(false);
+                navigate("/profile"), setToolsDropdownOpen(false);
+                setToolsClicked(false);
               }}
             >
               {pageState}
@@ -691,7 +729,7 @@ const Header = () => {
             >
               Map
             </li>
-{/* saved searches */}
+            {/* saved searches */}
             {user === "true" && (
               <ul>
                 <div style={{ display: "flex" }}>
@@ -707,7 +745,7 @@ const Header = () => {
                       navigate("/savedSearches"),
                         setMobileMenuOpen(false),
                         setToolsDropdownOpen(false);
-                        setToolsClicked(false);
+                      setToolsClicked(false);
                     }}
                   >
                     Saved Searches
@@ -715,7 +753,7 @@ const Header = () => {
                 </div>
               </ul>
             )}
-{/* Contact button */}
+            {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
               ${!pathMatchRoute("/contact-us") && "text-gray-400"} ${
@@ -730,15 +768,22 @@ const Header = () => {
             >
               Contact Us
             </li>
-{/* tools */}
+            {/* tools */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-transparent border-b-[3px]
               ${!pathMatchRoute("/mortgageCalculator") && "text-gray-400"} ${
                 pathMatchRoute("/mortgageCalculator") && "text-black"
               }`}
-               onClick={() =>{toggleToolsDropdown(), setToolsClicked(true)}}
+              onClick={() => {
+                toggleToolsDropdown(), setToolsClicked(true);
+              }}
             >
-              <span style={{ display: "flex", color: toolsClicked ? "black" : "gray" }}>
+              <span
+                style={{
+                  display: "flex",
+                  color: toolsClicked ? "black" : "gray",
+                }}
+              >
                 Tools
                 <svg
                   className={`w-4 mt-2 ml-1 h-4 fill-current hover:underline focus:underline transform transition-transform duration-300`}
@@ -749,7 +794,7 @@ const Header = () => {
                 </svg>
               </span>
 
- {/* Mortgage Calculator */}
+              {/* Mortgage Calculator */}
 
               {isToolsDropdownOpen && (
                 <div className=" absolute bg-white h-8 shadow-md mr-5 hover:bg-gray-200">
@@ -766,7 +811,7 @@ const Header = () => {
                   </Link>
                 </div>
               )}
-  {/* Repair Request Form */}
+              {/* Repair Request Form */}
               {isToolsDropdownOpen && role === "tenant" && (
                 <div className=" absolute bg-white h-8 shadow-md mr-5 hover:bg-gray-200 mt-7">
                   <a
@@ -782,28 +827,28 @@ const Header = () => {
                 </div>
               )}
 
-{/* Request Tracker */}
+              {/* Request Tracker */}
               {isToolsDropdownOpen &&
                 (role === "agent" ||
                   role === "admin" ||
                   role === "superadmin") && (
-                    <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigate(`/manageRequests/${userId2}`),
-                        setMobileMenuOpen(false),
-                        setToolsDropdownOpen(false);
-                    }}
-                    className="mt-7 text-left pl-2 dropdown-container absolute bg-white h-8 shadow-md mr-5 hover:bg-gray-200"
-                    style={{ width: "184px" }}
-                  >
-                    Request Tracker
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate(`/manageRequests/${userId2}`),
+                          setMobileMenuOpen(false),
+                          setToolsDropdownOpen(false);
+                      }}
+                      className="mt-7 text-left pl-2 dropdown-container absolute bg-white h-8 shadow-md mr-5 hover:bg-gray-200"
+                      style={{ width: "184px" }}
+                    >
+                      Request Tracker
+                    </button>
                   </>
                 )}
 
-{/* Deal Tracker */}
+              {/* Deal Tracker */}
 
               {isToolsDropdownOpen &&
                 (role === "admin" ||
@@ -828,7 +873,7 @@ const Header = () => {
                     </div>
                   </>
                 )}
-{/* Task Manager */}
+              {/* Task Manager */}
               {isToolsDropdownOpen &&
                 (role === "admin" ||
                   role === "superadmin" ||
@@ -838,7 +883,7 @@ const Header = () => {
                       className=" dropdown-container absolute bg-white text-lg h-8 shadow-md mr-5 hover:bg-gray-200"
                       style={{
                         width: "184px",
-                        marginTop: "85px"
+                        marginTop: "85px",
                       }}
                     >
                       <button
@@ -870,7 +915,7 @@ const Header = () => {
             >
               FAQ
             </li>
-{/* agents */}
+            {/* agents */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent ${
                 !pathMatchRoute("/agents") &&

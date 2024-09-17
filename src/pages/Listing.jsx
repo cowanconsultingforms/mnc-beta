@@ -5,29 +5,9 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState, Link } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
-import {
-  FaBath,
-  FaBed,
-  FaChair,
-  FaMapMarkerAlt,
-  FaParking,
-  FaShare,
-  FaTree,
-  FaRuler,
-  FaCalendar,
-  FaGraduationCap,
-  FaBook,
-  FaHome,
-  FaBuilding,
-  FaSwimmingPool,
-  FaElevator,
-  FaCar,
-  FaSnowflake,
-} from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaArrowLeft, FaShare, FaBed, FaBath, FaParking, FaChair, FaRuler, FaCalendar, FaGraduationCap, FaTree, FaHome, FaBuilding, FaSwimmingPool, FaCar, FaSnowflake, FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "swiper/css";
 import "swiper/css/effect-fade";
@@ -40,13 +20,11 @@ import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
 const Listing = () => {
-  let lat1 = "";
-  let lang1 = "";
   const params = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contactCreator, setContactCreator] = useState(false);
-  const [listingData, setListingData] = useState('');
+  const [selectedMarker, setSelectedMarker] = useState(null);
   const navigate = useNavigate();
 
   // Loads google maps api script
@@ -54,9 +32,7 @@ const Listing = () => {
     googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
   });
 
-  const [selectedMarker, setSelectedMarker] = useState(null);
-
-  // Gets data from ListingItem that user clicked on
+  // Fetch listing data
   useEffect(() => {
     const fetchListing = async () => {
       const docRef = doc(db, "propertyListings", params.listingId);
@@ -73,11 +49,11 @@ const Listing = () => {
     return <Spinner />;
   }
 
-  const handleDirection = (lat, lang)=>{
-    const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lang}`;
+  const handleDirection = (lat, lng) => {
+    const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(directionsLink, "_blank");
+  };
 
-    window.open(directionsLink, '_blank');
-  }
   return (
     <main className="relative">
       {/* Back button */}
@@ -89,7 +65,7 @@ const Listing = () => {
           <FaArrowLeft className="text-gray-600 text-sm md:text-lg" />
         </button>
       </div>
-  
+
       {/* Copy link button */}
       <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
         <div
@@ -102,8 +78,8 @@ const Listing = () => {
           <FaShare className="text-lg text-gray-600" />
         </div>
       </div>
-  
-      {/* Image carousel using Swiper component */}
+
+      {/* Image carousel */}
       <Swiper
         slidesPerView={1}
         style={{
@@ -129,7 +105,7 @@ const Listing = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-  
+
       {/* Information section */}
       <div className="lg:m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5 relative z-10 mt-6">
         <div className="w-full flex flex-col">
@@ -144,12 +120,12 @@ const Listing = () => {
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             {listing.type === "rent" ? " / Month" : ""}
           </p>
-  
+
           <p className="flex items-center mt-6 mb-3 font-semibold">
             <FaMapMarkerAlt className="text-gray-600 mr-1" />
             {listing.address}
           </p>
-  
+
           <div className="flex justify-start items-center space-x-4 w-full md:w-[75%]">
             <p className="bg-gray-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
               {listing.type === "rent" ? "Rent" : listing.type === "buy" ? "Buy" : "Sold"}
@@ -164,12 +140,12 @@ const Listing = () => {
               </p>
             )}
           </div>
-  
+
           <p className="mt-3 mb-3">
             <span className="font-semibold">Description - </span>
             {listing.description}
           </p>
-  
+
           <ul className="items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
             <li className="flex items-center">
               <FaBed className="text-lg mr-1" />
@@ -200,10 +176,6 @@ const Listing = () => {
               {`${listing.schoolRating} School Rating`}
             </li>
             <li className="flex items-center whitespace-nowrap">
-              <FaBath className="text-lg mr-1" />
-              {+listing.stories > 1 ? `${listing.stories} Stories` : `${listing.stories} Story`}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
               <FaTree className="text-lg mr-1" />
               {listing.privateOutdoorSpace ? "Outdoor space" : "No outdoor space"}
             </li>
@@ -228,72 +200,48 @@ const Listing = () => {
               {listing.airConditioning ? "Air conditioning" : "No air conditioning"}
             </li>
           </ul>
-  
-          {!contactCreator && (
-            <div className="mt-6">
-              <button
-                onClick={() => setContactCreator(true)}
-                className="px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out"
-              >
-                Contact
-              </button>
-            </div>
-          )}
+
+          <button
+            className="bg-gray-800 text-white w-full py-3 rounded-lg shadow-md hover:bg-gray-900 transition duration-150 ease-in-out text-lg font-semibold"
+            onClick={() => setContactCreator(true)}
+          >
+            Contact Owner
+          </button>
+
           {contactCreator && <Contact listing={listing} />}
         </div>
-  
-        {/* Map section */}
-        <div className="w-full h-[200px] md:h-[400px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2">
+
+        {/* Map */}
+        <div className="w-full md:w-[40%] mt-6 md:mt-0 h-[300px] md:h-[400px] z-10 overflow-x-hidden">
           <GoogleMap
-            clickableIcons={false}
-            options={{
-              disableDefaultUI: true,
-              gestureHandling: "greedy",
-              keyboardShortcuts: true,
-            }}
-            mapContainerClassName="w-full h-full rounded grayscale"
-            zoom={14}
-            center={{
-              lat: listing.geolocation.lat,
-              lng: listing.geolocation.lng,
-            }}
-            onClick={() => setSelectedMarker(null)}
+            center={{ lat: listing.geolocation.lat, lng: listing.geolocation.lng }}
+            zoom={16}
+            mapContainerStyle={{ width: "100%", height: "100%" }}
           >
             <MarkerF
-              key={1}
-              position={{
-                lat: listing.geolocation.lat,
-                lng: listing.geolocation.lng,
-              }}
-              onClick={() => setSelectedMarker(1)}
-            >
-              {selectedMarker && (
-                <InfoWindowF
-                  onCloseClick={() => setSelectedMarker(null)}
-                  position={{
-                    lat: listing.geolocation.lat,
-                    lng: listing.geolocation.lng,
-                  }}
-                >
-                  <div>
-                    <button className="bg-gray-600 p-1 font-semibold text-white" onClick={()=>{handleDirection(listing.geolocation.lat, listing.geolocation.lng)}}>Directions</button>
-                    <p className="text-gray-800 text-sm font-medium mb-1">
-                      {listing.name}
-                    </p>
-                    <p className="text-gray-800 font-normal">
-                      {listing.address}
-                    </p>
-                  </div>
-                </InfoWindowF>
-              )}
-            </MarkerF>
+              position={{ lat: listing.geolocation.lat, lng: listing.geolocation.lng }}
+              onClick={() => setSelectedMarker(true)}
+            />
+            {selectedMarker && (
+              <InfoWindowF
+                position={{ lat: listing.geolocation.lat, lng: listing.geolocation.lng }}
+                onCloseClick={() => setSelectedMarker(null)}
+              >
+                <p>{listing.address}</p>
+              </InfoWindowF>
+            )}
           </GoogleMap>
+
+          <button
+            className="bg-gray-800 text-white py-2 px-4 rounded-lg w-full shadow-md hover:bg-gray-900 transition duration-150 ease-in-out mt-3 text-sm font-semibold"
+            onClick={() => handleDirection(listing.geolocation.lat, listing.geolocation.lng)}
+          >
+            Get Directions
+          </button>
         </div>
       </div>
     </main>
   );
-  
-  
 };
 
 export default Listing;
