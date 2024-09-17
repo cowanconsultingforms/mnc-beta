@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import faqVideo from "../assets/videos/faq_background.mp4";
 import { Link } from "react-router-dom";
 
 function FAQPage() {
@@ -48,19 +47,20 @@ function FAQPage() {
   const handleClick = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
-
   return (
     <div className="relative font-semibold text-gray-900">
       {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="fixed top-0 left-0 w-full h-full object-cover z-0"
-      >
-        <source src={faqVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      <div className="fixed top-0 left-0 w-full h-full z-0">
+        <iframe
+          src="https://drive.google.com/file/d/1lf2Dpw7-eC3Ia7X6Bc8kPE6CoQmaOx_-/preview"
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          allow="autoplay; fullscreen"
+          className="w-full h-full object-cover"
+          title="Background Video"
+        ></iframe>
+      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center p-4 min-h-screen">
@@ -68,7 +68,7 @@ function FAQPage() {
           {faqData.map((item, index) => (
             <div key={index} className="py-2">
               <button
-                onClick={() => handleClick(index)}
+                onClick={() => handleClick(index)}  
                 className="flex w-full items-center justify-between p-4 text-lg font-medium text-gray-800 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none"
               >
                 <span>{item.question}</span>
