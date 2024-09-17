@@ -11,8 +11,6 @@
   },
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
-    "@headlessui/react": "^2.1.5",
-    "@heroicons/react": "^2.1.5",
     "@react-google-maps/api": "^2.19.2",
     "@syncfusion/ej2-react-calendars": "^23.1.41",
     "@tailwindcss/forms": "^0.5.4",

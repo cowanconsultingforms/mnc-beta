@@ -26,7 +26,6 @@ const Map = () => {
     navigate(`/category/${property.data.type}/${property.id}`);
   };
 
-
   async function getProperties() {
     const listingRef = collection(db, "propertyListings");
     const snapshot = await getDocs(listingRef);
