@@ -43,6 +43,8 @@ import MyProfile from "./pages/MyProfile";
 import TaskManager from "./pages/TaskManager";
 import PropertyManagement from "./pages/PropertyManagement";
 import TenantList from "./pages/TenantList";
+import ListingsPage from "./pages/ListingsPage";
+import TenantDetail from "./pages/TenantDetail";
 
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -156,7 +158,12 @@ function App() {
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
           <Route path="/property-management" element={<PropertyManagement />} />
-          <Route path="/property-management/:id/tenants" element={<TenantList />} />
+          <Route
+            path="/property-management/:id/tenants"
+            element={<TenantList />}
+          />
+          <Route path="/property-management/:id/tenant/:tenantId" element={<TenantDetail />} />
+          <Route path="/listings" element={<ListingsPage />} />
 
           <Route
             path="/trackIndividualDealsProgress/:uid"

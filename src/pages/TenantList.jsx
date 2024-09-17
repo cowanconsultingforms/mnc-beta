@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { collection, getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import { Link } from "react-router-dom";
 
 const TenantList = () => {
   const { id } = useParams(); // Get the property ID from the URL
@@ -57,15 +58,16 @@ const TenantList = () => {
           <p>No tenants found for this property</p>
         ) : (
           tenants.map((tenant, index) => (
-            <div
+            <Link
               key={index}
+              to={`/property-management/${id}/tenant/${tenant.id}`}
               className="flex justify-center items-center h-48 w-48 bg-cyan-400 rounded-lg"
             >
-              <div className="flex justify-center items-center bg-white gap-4">
+              <div className="flex justify-center items-center bg-white gap-4 p-4">
                 <p>Name: {tenant.name}</p>
                 <p>DOB: {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}</p>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>

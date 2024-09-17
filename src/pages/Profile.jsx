@@ -373,25 +373,25 @@ const Profile = () => {
 
       {/* Display created listings on profile for agents, admins, superadmins */}
       <div className="max-w-6xl px-3 mt-6 mx-auto">
-        {!loading && listings?.length > 0 && (
-          <>
-            <h2 className="text-2xl text-center font-semibold mb-6">
-              Listings
-            </h2>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-              {listings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  id={listing.id}
-                  listing={listing.data}
-                  onDelete={() => onDelete(listing.id)}
-                  onEdit={() => onEdit(listing.id)}
-                  // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
-                />
-              ))}
-            </ul>
-          </>
-        )}
+        {/* {!loading && listings?.length > 0 && (
+          // <>
+          //   <h2 className="text-2xl text-center font-semibold mb-6">
+          //     Listings
+          //   </h2>
+          //   <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+          //     {listings.map((listing) => (
+          //       <ListingItem
+          //         key={listing.id}
+          //         id={listing.id}
+          //         listing={listing.data}
+          //         onDelete={() => onDelete(listing.id)}
+          //         onEdit={() => onEdit(listing.id)}
+          //         // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
+          //       />
+          //     ))}
+          //   </ul>
+          // </>
+        )} */}
         {!loading && vipListings?.length > 0 && (
           <>
             <h2 className="text-2xl text-center font-semibold mb-6">
