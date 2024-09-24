@@ -3,7 +3,6 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust import if necessary
 import ListingItem from "../components/ListingItem"; // Assuming this component displays a listing
 import { toast } from "react-toastify";
-import listingsBackground from "../assets/videos/listingsBackground.mp4";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -65,17 +64,6 @@ const ListingsPage = () => {
 
   return (
     <div className="relative">
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="fixed top-0 left-0 w-full h-full object-cover z-0"
-      >
-        <source src={listingsBackground} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
       {/* Content */}
       <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
         {!loading && listings.length > 0 && (
