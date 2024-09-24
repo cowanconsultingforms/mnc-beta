@@ -44,7 +44,7 @@ const Listing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [contactCreator, setContactCreator] = useState(false);
-  const [listingData, setListingData] = useState('');
+  const [listingData, setListingData] = useState("");
 
   // Loads google maps api script
   const { isLoaded } = useLoadScript({
@@ -70,11 +70,11 @@ const Listing = () => {
     return <Spinner />;
   }
 
-  const handleDirection = (lat, lang)=>{
+  const handleDirection = (lat, lang) => {
     const directionsLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lang}`;
 
-    window.open(directionsLink, '_blank');
-  }
+    window.open(directionsLink, "_blank");
+  };
   return (
     <main>
       {/* Image carousel using Swiper component */}
@@ -166,80 +166,84 @@ const Listing = () => {
             {listing.description}
           </p>
           <div className="flex flex-wrap">
-          {/* Beds, baths, parking, furnished */}
-          <ul className="items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
-            {/* Bedrooms */}
-            <div></div>
-            <li className="flex items-center ">
-              <FaBed className="text-lg mr-1 " />
-              {+listing.bedrooms > 1
-                ? `${listing.bedrooms} Beds`
-                : `${listing.bedrooms} Bed`}
-            </li>
+            {/* Beds, baths, parking, furnished */}
+            <ul className="items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
+              {/* Bedrooms */}
+              <div></div>
+              <li className="flex items-center ">
+                <FaBed className="text-lg mr-1 " />
+                {+listing.bedrooms > 1
+                  ? `${listing.bedrooms} Beds`
+                  : `${listing.bedrooms} Bed`}
+              </li>
 
-            {/* Bathrooms */}
-            <li className="flex items-center whitespace-nowrap">
-              <FaBath className="text-lg mr-1" />
-              {+listing.bedrooms > 1
-                ? `${listing.bathrooms} Baths`
-                : `${listing.bathrooms} Bath`}
-            </li>
+              {/* Bathrooms */}
+              <li className="flex items-center whitespace-nowrap">
+                <FaBath className="text-lg mr-1" />
+                {+listing.bedrooms > 1
+                  ? `${listing.bathrooms} Baths`
+                  : `${listing.bathrooms} Bath`}
+              </li>
 
-            {/* Parking */}
-            <li className="flex items-center whitespace-nowrap">
-              <FaParking className="text-lg mr-1" />
-              {listing.parking ? "Parking spot" : "No parking"}
-            </li>
+              {/* Parking */}
+              <li className="flex items-center whitespace-nowrap">
+                <FaParking className="text-lg mr-1" />
+                {listing.parking ? "Parking spot" : "No parking"}
+              </li>
 
-            {/* Furnished */}
-            <li className="flex items-center whitespace-nowrap">
-              <FaChair className="text-lg mr-1" />
-              {listing.furnished ? "Furnished" : "Not furnished"}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaRuler className="text-lg mr-1" />
+              {/* Furnished */}
+              <li className="flex items-center whitespace-nowrap">
+                <FaChair className="text-lg mr-1" />
+                {listing.furnished ? "Furnished" : "Not furnished"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaRuler className="text-lg mr-1" />
                 {`${listing.landSize} Square Ft`}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaCalendar className="text-lg mr-1" />
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaCalendar className="text-lg mr-1" />
                 {`Year Built: ${listing.yearBuilt}`}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaGraduationCap className="text-lg mr-1" />
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaGraduationCap className="text-lg mr-1" />
                 {`${listing.schoolRating} School Rating`}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaBath className="text-lg mr-1" />
-              {+listing.stories > 1
-                ? `${listing.bathrooms} Stories`
-                : `${listing.bathrooms} Story`}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaTree className="text-lg mr-1" />
-              {listing.privateOutdoorSpace ? "Outdoor space" : "No outdoor space"}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaHome className="text-lg mr-1" />
-              {listing.basement ? "Basement" : "No basement"}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaBuilding className="text-lg mr-1" />
-              {listing.doorMan ? "Doorman" : "No doorman"}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaSwimmingPool className="text-lg mr-1" />
-              {listing.pool ? "Pool" : "No pool"}
-            </li>
-            
-            <li className="flex items-center whitespace-nowrap">
-              <FaCar className="text-lg mr-1" />
-              {listing.garage ? "Garage" : "No garage"}
-            </li>
-            <li className="flex items-center whitespace-nowrap">
-              <FaSnowflake className="text-lg mr-1"/>
-              {listing.airConditioning ? "Air conditioning" : "No air conditioning"}
-            </li>
-          </ul>
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaBath className="text-lg mr-1" />
+                {+listing.stories > 1
+                  ? `${listing.bathrooms} Stories`
+                  : `${listing.bathrooms} Story`}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaTree className="text-lg mr-1" />
+                {listing.privateOutdoorSpace
+                  ? "Outdoor space"
+                  : "No outdoor space"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaHome className="text-lg mr-1" />
+                {listing.basement ? "Basement" : "No basement"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaBuilding className="text-lg mr-1" />
+                {listing.doorMan ? "Doorman" : "No doorman"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaSwimmingPool className="text-lg mr-1" />
+                {listing.pool ? "Pool" : "No pool"}
+              </li>
+
+              <li className="flex items-center whitespace-nowrap">
+                <FaCar className="text-lg mr-1" />
+                {listing.garage ? "Garage" : "No garage"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaSnowflake className="text-lg mr-1" />
+                {listing.airConditioning
+                  ? "Air conditioning"
+                  : "No air conditioning"}
+              </li>
+            </ul>
           </div>
           {/* Contact button */}
           {!contactCreator && (
@@ -285,24 +289,33 @@ const Listing = () => {
               {/* Displays listing name and address on top of marker when marker is clicked */}
               {selectedMarker && (
                 <>
-                
-                <InfoWindowF
-                  onCloseClick={() => setSelectedMarker(null)}
-                  position={{
-                    lat: listing.geolocation.lat,
-                    lng: listing.geolocation.lng,
-                  }}
-                >
-                  <div>
-                    <button className="bg-gray-600 p-1 font-semibold text-white" onClick={()=>{handleDirection(listing.geolocation.lat, listing.geolocation.lng)}}>Directions</button>
-                    <p className=" text-gray-800 text-sm font-medium mb-1">
-                      {listing.name}
-                    </p>
-                    <p className=" text-gray-800 font-normal">
-                      {listing.address}
-                    </p>
-                  </div>
-                </InfoWindowF>
+                  <InfoWindowF
+                    onCloseClick={() => setSelectedMarker(null)}
+                    position={{
+                      lat: listing.geolocation.lat,
+                      lng: listing.geolocation.lng,
+                    }}
+                  >
+                    <div>
+                      <button
+                        className="bg-gray-600 p-1 font-semibold text-white"
+                        onClick={() => {
+                          handleDirection(
+                            listing.geolocation.lat,
+                            listing.geolocation.lng
+                          );
+                        }}
+                      >
+                        Directions
+                      </button>
+                      <p className=" text-gray-800 text-sm font-medium mb-1">
+                        {listing.name}
+                      </p>
+                      <p className=" text-gray-800 font-normal">
+                        {listing.address}
+                      </p>
+                    </div>
+                  </InfoWindowF>
                 </>
               )}
             </MarkerF>

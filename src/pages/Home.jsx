@@ -45,12 +45,29 @@ const Home = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationsRef = useRef(null);
   const [notFound, setNotFound] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const [showToDoIcon, setShowToDoIcon] = useState(true);
  
   const [userId, setUserId] = useState("");
 
   const notFoundRef = useRef(null);
+
+
+  const handleImageClick = (img) => {
+    setSelectedImage(img);
+    setTimeout(() => {
+      setIsAnimating(true);
+    }, 10);
+  };
+
+  const closeModal = () => {
+    setIsAnimating(false);
+    setTimeout(() =>{
+      setSelectedImage(null);
+    }, 500);
+  };
 
   const handleNotFoundRef = (e) => {
     if (notFoundRef.current && !notFoundRef.current.contains(e.target)) {
@@ -588,24 +605,19 @@ const Home = () => {
       {/* Thumbnail images */}
       <div
         className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
-        style={{
-          position: "relative",
-          bottom: "0PX",
-          left: "0px",
-          right: "0px",
-        }}
       >
         <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
           {images.map((img, i) => (
             <li
               key={i}
-              className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              className="h-[250px] w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
               style={{
-                backgroundImage: `url(${img})`, // Set the background image here
-                backgroundRepeat: "no-repeat", // Prevent background image from repeating
-                backgroundSize: "cover", // Adjust background image size as needed
+                backgroundImage: `url(${img})`,
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
                 height: "200px",
               }}
+              onClick={() => handleImageClick(img)}
             >
               <img
                 className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
@@ -616,6 +628,27 @@ const Home = () => {
           ))}
         </ul>
       </div>
+
+      {/* Modal pop-up */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={closeModal}
+        >
+          <div
+            className={`relative p-4 rounded-md shadow-lg polaroid-container ${isAnimating ? 'show' : ''}`}
+          >
+            <div className="polaroid-image-container">
+              <img
+                src={selectedImage}
+                alt="Selected"
+                className="polaroid-image"
+              />
+            </div>
+            <p className="polaroid-caption">We buy property in any condition anywhere!</p>
+          </div>
+        </div>
+      )}
 
       {/* Footer Information */}
       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
