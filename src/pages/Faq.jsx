@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Link } from "react-router-dom";
+import "../css/faq.css";
 
 function FAQPage() {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -47,22 +48,32 @@ function FAQPage() {
   const handleClick = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
+  
+
+
   return (
     <div className="relative font-semibold text-gray-900">
       {/* Video Background */}
-      <div className="fixed top-0 left-0 w-full h-full z-0">
+      <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
         <iframe
-          src="https://drive.google.com/file/d/1lf2Dpw7-eC3Ia7X6Bc8kPE6CoQmaOx_-/preview"
-          width="100%"
-          height="100%"
+          className="absolute top-0 left-0 w-full h-full"
+          src="https://www.youtube.com/embed/YWGfcrqXo50?si=8khE0ad0Tpc1Uzaw&autoplay=1&mute=1&controls=0&loop=1&playlist=YWGfcrqXo50&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
+          title="YouTube video player"
           frameBorder="0"
-          allow="autoplay; fullscreen"
-          className="w-full h-full object-cover"
-          title="Background Video"
-        ></iframe>
+          allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{
+            width: '100vw',
+            height: '100vh',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            pointerEvents: 'none',
+          }}
+        />
       </div>
 
-      {/* Content */}
+      {/* FAQ Content */}
       <div className="relative z-10 flex flex-col items-center justify-center p-4 min-h-screen">
         <div className="w-full max-w-lg divide-y divide-gray-200 rounded-xl bg-white p-6 shadow-[10px_10px_30px_rgba(0,0,0,0.2)] overflow-auto">
           {faqData.map((item, index) => (
@@ -73,7 +84,7 @@ function FAQPage() {
               >
                 <span>{item.question}</span>
                 <ChevronDownIcon
-                  className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+                  className={`w-5 h-5 text-gray-500 transition-transform duration-300 
                     expandedIndex === index ? "transform rotate-180" : ""
                   }`}
                 />

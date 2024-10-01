@@ -44,12 +44,13 @@ const ContactUs = () => {
 
   return (
     <main
-      className="object-cover h-[calc(100vh-48px)]"
-      style={{
-        backgroundImage: `url(${ContactImage})`,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
+    className="h-[calc(100vh-48px)]"
+    style={{
+      backgroundImage: `url(${ContactImage})`,
+      backgroundSize: "cover", // Ensures the image covers the entire background
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    }}
     >
       <h1 className="text-3xl text-center py-12 font-bold">Contact Us</h1>
 

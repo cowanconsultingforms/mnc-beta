@@ -13,9 +13,9 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
-import img1 from "../assets/img/mncthumbnail1.jpeg";
-import img2 from "../assets/img/mncthumbnail2.jpeg";
-import img3 from "../assets/img/mncthumbnail3.jpeg";
+import image1 from "../assets/img/mncthumbnail1.jpeg";
+import image2 from "../assets/img/mncthumbnail2.jpeg";
+import image3 from "../assets/img/mncthumbnail3.jpeg";
 import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
@@ -35,7 +35,11 @@ const Home = () => {
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const images = [img1, img2, img3];
+  const imagesWithCaptions = [
+    { src: image1, caption: 'We buy property in any condition anywhere!' },
+    { src: image2, caption: 'We sell property at an affordable price.' },
+    { src: image3, caption: 'We develop in partnership with the community.' },
+  ];
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
   const navigate = useNavigate();
@@ -47,6 +51,7 @@ const Home = () => {
   const [notFound, setNotFound] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedCaption, setSelectedCaption] = useState('');
 
   const [showToDoIcon, setShowToDoIcon] = useState(true);
  
@@ -55,8 +60,9 @@ const Home = () => {
   const notFoundRef = useRef(null);
 
 
-  const handleImageClick = (img) => {
+  const handleImageClick = (img, caption) => {
     setSelectedImage(img);
+    setSelectedCaption(caption);
     setTimeout(() => {
       setIsAnimating(true);
     }, 10);
@@ -64,6 +70,7 @@ const Home = () => {
 
   const closeModal = () => {
     setIsAnimating(false);
+    setSelectedCaption('');
     setTimeout(() =>{
       setSelectedImage(null);
     }, 500);
@@ -408,7 +415,7 @@ const Home = () => {
                 aria-label="city, zip, address, school"
                 // value={searchTerm}
                 onChange={onChange}
-                style={{ width: "380px" }}
+                style={{ width: "380px", borderRadius: "10px" }}
               />
               {notFound && (
                 <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
@@ -603,26 +610,24 @@ const Home = () => {
       </section>
 
       {/* Thumbnail images */}
-      <div
-        className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white"
-      >
+      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
-          {images.map((img, i) => (
+          {imagesWithCaptions.map((imgObj, i) => (
             <li
               key={i}
               className="h-[250px] w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
               style={{
-                backgroundImage: `url(${img})`,
+                backgroundImage: `url(${imgObj.src})`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
                 height: "200px",
               }}
-              onClick={() => handleImageClick(img)}
+              onClick={() => handleImageClick(imgObj.src, imgObj.caption)}
             >
               <img
                 className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
                 loading="lazy"
-                src={img}
+                src={imgObj.src}
               />
             </li>
           ))}
@@ -645,7 +650,7 @@ const Home = () => {
                 className="polaroid-image"
               />
             </div>
-            <p className="polaroid-caption">We buy property in any condition anywhere!</p>
+            <p className="polaroid-caption">{selectedCaption}</p>
           </div>
         </div>
       )}

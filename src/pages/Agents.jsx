@@ -16,7 +16,6 @@ import { AiOutlineSearch } from "react-icons/ai";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
-import back from "../assets/img/backImage.png";
 
 const UserGrid = ({ users, handleUpdate }) => {
   return (
@@ -233,159 +232,143 @@ const ManageUsersProfile = () => {
   };
 
   return (
-    <div>
-      <div
+    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+      {/* Background video */}
+      <iframe
+        className="absolute top-0 left-0 w-full h-full"
+        src="https://www.youtube.com/embed/37ZwT0H67R8?autoplay=1&mute=1&controls=0&loop=1&playlist=37ZwT0H67R8&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
+        title="YouTube video player"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
         style={{
-          position: "absolute",
-          zIndex: -1,
-          top: 45,
-          width: "100%",
-          opacity: 1,
+          width: '100vw',
+          height: '100vh',
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          pointerEvents: 'none',
         }}
-      >
-        <div
-          style={{
-            backgroundImage: `url(${back})`,
-            width: "100%",
-            backgroundSize: "cover",
-            opacity: 0.75,
-            backgroundRepeat: "no-repeat",
-            display: "flex", // Use flexbox
-            flexDirection: "column", // Stack items vertically
-            justifyContent: "center", // Center vertically
-            alignItems: "center",
-            height: select ? "400px" : "100vh",
-          }}
-        >
-          <div className="flex flex-col items-center justify-center text-center">
-            <div style={{ maxWidth: "100%" }}>
-              <form
-                className=" mt-6 mb-15 flex items-center "
-                style={{
-                  maxWidth: "90%",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-                onSubmit={onchange}
-              >
-                {/* Search bar */}
-                <div
-                  className="px-3 relative"
-                  style={{ width: "456px", margin: "auto" }}
-                >
-                  <input
-                    type="search"
-                    placeholder="Search agents by address or name"
-                    value={searchTerm}
-                    onChange={onChange}
-                    style={{
-                      width: "100%",
-                      border: "",
-                      boxShadow:
-                        "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)",
-                    }}
-                    className=" text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
-                  ></input>
-                </div>
-              </form>
-              {search && searchTerm && suggestions.length > 0 && (
-                <>
-                <div
-                  style={{
-                    marginLeft: "35px",
-                  }}
-                  className="bg-red"
-                >
-                  <ul
-                    className="suggestions-list bg-white font-semibold"
-                    style={{
-                      textAlign: "left",
-                      paddingLeft: "15px",
-                      width: "91.8%",
-                    }}
-                  >
-                    {Array.from(
-                      new Set(
-                        suggestions.map((suggestion) => {
-                          const { address } = suggestion.data;
-                          const filteredInfo = [];
+      ></iframe>
 
-                          if (
-                            address && address.street &&
-                            address.street
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                          ) {
-                            filteredInfo.push(address.street);
-                          }
-                          if (
-                            address && address.city &&
-                            address.city
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                          ) {
-                            filteredInfo.push(address.city);
-                          }
-                          if (
-                            address && address.state &&
-                            address.state 
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                          ) {
-                            filteredInfo.push(address.state);
-                          }
-                          if (address && address.zipCode && address.zipCode.includes(searchTerm)) {
-                            filteredInfo.push(address.zipCode);
-                          }
-                          if (
-                            suggestion.data.name &&
-                            suggestion.data.name.toLowerCase().includes(
-                              searchTerm.toLowerCase())
-                          ) {
-                            filteredInfo.push(
-                              suggestion.data.name.toLowerCase()
-                            );
-                          }
-                          return filteredInfo.join(", "); // Join non-empty parts with a comma
-                        })
-                      )
-                    ).map((cityStatePair, index) => (
-                      <li key={index} style={{}}>
-                        <button
-                          onClick={() => handleSearch(cityStatePair)}
-                          style={{ width: "100%", textAlign: "left" }}
-                        >
-                          {cityStatePair}
-                        </button>
-                      </li>
-                    ))}
-                    
-                  </ul>
-                </div>
-                
-                </>
-              )}
-              {search && searchTerm && suggestions.length == 0 && (
-                  <>
-                  <ul className="text-black bg-white " style={{marginLeft: "34px", width: "388px", maxWidth: "100%"}}>
-                    <li>No listings available with "{searchTerm}"</li>
-                  </ul>
-                  </>
-                )}
+      {/* Foreground content */}
+      <div className="flex flex-col items-center justify-center text-center" style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ maxWidth: "100%" }}>
+          <form
+            className="mt-6 mb-15 flex items-center"
+            style={{
+              maxWidth: "90%",
+              marginLeft: "auto",
+              marginRight: "auto",
+              marginTop: "150px", // Brings search bar down
+            }}
+            onSubmit={onchange}
+          >
+            {/* Search bar */}
+            <div
+              className="px-3 relative"
+              style={{ width: "456px", margin: "auto" }}
+            >
+              <input
+                type="search"
+                placeholder="Search agents by address or name"
+                value={searchTerm}
+                onChange={onChange}
+                style={{
+                  width: "100%",
+                  boxShadow:
+                    "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)",
+                }}
+                className="rounded-lg text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
+              ></input>
             </div>
-          </div>
+          </form>
+
+          {/* Suggestions List */}
+          {search && searchTerm && suggestions.length > 0 && (
+            <div className="bg-red" style={{ marginLeft: "35px" }}>
+              <ul
+                className="suggestions-list bg-white font-semibold"
+                style={{
+                  textAlign: "left",
+                  paddingLeft: "15px",
+                  width: "91.8%",
+                }}
+              >
+                {Array.from(
+                  new Set(
+                    suggestions.map((suggestion) => {
+                      const { address } = suggestion.data;
+                      const filteredInfo = [];
+
+                      if (
+                        address?.street &&
+                        address.street.toLowerCase().includes(searchTerm.toLowerCase())
+                      ) {
+                        filteredInfo.push(address.street);
+                      }
+                      if (
+                        address?.city &&
+                        address.city.toLowerCase().includes(searchTerm.toLowerCase())
+                      ) {
+                        filteredInfo.push(address.city);
+                      }
+                      if (
+                        address?.state &&
+                        address.state.toLowerCase().includes(searchTerm.toLowerCase())
+                      ) {
+                        filteredInfo.push(address.state);
+                      }
+                      if (address?.zipCode && address.zipCode.includes(searchTerm)) {
+                        filteredInfo.push(address.zipCode);
+                      }
+                      if (
+                        suggestion.data.name &&
+                        suggestion.data.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                      ) {
+                        filteredInfo.push(suggestion.data.name.toLowerCase());
+                      }
+                      return filteredInfo.join(", ");
+                    })
+                  )
+                ).map((cityStatePair, index) => (
+                  <li key={index}>
+                    <button
+                      onClick={() => handleSearch(cityStatePair)}
+                      style={{ width: "100%", textAlign: "left" }}
+                    >
+                      {cityStatePair}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* No Suggestions */}
+          {search && searchTerm && suggestions.length === 0 && (
+            <ul
+              className="text-black bg-white"
+              style={{ marginLeft: "34px", width: "388px", maxWidth: "100%" }}
+            >
+              <li>No listings available with "{searchTerm}"</li>
+            </ul>
+          )}
         </div>
-        {select && (
-          <h2 className="bg-gray-600 text-white cursor-pointer font-semibold text-md text-center">
-            Agents
-          </h2>
-        )}
-        {results && (
-          <div style={{ marginTop: "20px" }}>
-            <UserGrid users={agents} handleUpdate={searchTerm} />
-          </div>
-        )}
       </div>
+
+      {select && (
+        <h2 className="bg-gray-600 text-white cursor-pointer font-semibold text-md text-center">
+          Agents
+        </h2>
+      )}
+      {results && (
+        <div style={{ marginTop: "20px" }}>
+          <UserGrid users={agents} handleUpdate={searchTerm} />
+        </div>
+      )}
     </div>
   );
 };
