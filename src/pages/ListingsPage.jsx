@@ -2,28 +2,26 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust import if necessary
 import ListingItem from "../components/ListingItem"; // Assuming this component displays a listing
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; // Import toast for notifications
 import "../css/listingPage.css";
+import { useNavigate } from "react-router-dom";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        // Get regular listings from Firestore
         const listingRef = collection(db, "propertyListings");
         const q = query(listingRef, orderBy("timestamp", "desc"));
         const querySnap = await getDocs(q);
 
-        let listings = [];
-        querySnap.forEach((doc) => {
-          listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
+        const listings = querySnap.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
 
         setListings(listings);
       } catch (error) {
@@ -38,24 +36,10 @@ const ListingsPage = () => {
   }, []);
 
   // Delete listing function
-  const onDelete = async (listingID) => {
-    if (window.confirm("Are you sure you want to delete this entry?")) {
-      const docRef = doc(db, "propertyListings", listingID);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const deletedListing = docSnap.data();
-        await deleteDoc(docRef); // Remove from Firestore
-
-        // Update the state to reflect the deleted listing
-        const updatedListings = listings.filter(
-          (listing) => listing.id !== listingID
-        );
-        setListings(updatedListings);
-
-        toast.success("Listing deleted successfully.");
-      }
-    }
+  const onDelete = (listingID) => {
+    const updatedListings = listings.filter((listing) => listing.id !== listingID);
+    setListings(updatedListings);
+    toast.success("The listing was deleted!"); // Show success notification
   };
 
   // Edit listing function
@@ -80,7 +64,7 @@ const ListingsPage = () => {
             position: 'absolute',
             top: '0',
             left: '0',
-            objectFit: 'cover', // Ensures the video covers the entire area
+            objectFit: 'cover',
             pointerEvents: 'none'
           }}
         />
@@ -99,7 +83,7 @@ const ListingsPage = () => {
                   key={listing.id}
                   id={listing.id}
                   listing={listing.data}
-                  onDelete={() => onDelete(listing.id)}
+                  onDelete={() => onDelete(listing.id)} // Pass down onDelete method
                   onEdit={() => onEdit(listing.id)}
                 />
               ))}
