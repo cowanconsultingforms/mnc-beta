@@ -3,7 +3,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust import if necessary
 import ListingItem from "../components/ListingItem"; // Assuming this component displays a listing
 import { toast } from "react-toastify";
-import listingsBackground from "../assets/videos/listingsBackground.mp4";
+import "../css/listingPage.css";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -64,23 +64,33 @@ const ListingsPage = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative font-semibold text-gray-900">
       {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="fixed top-0 left-0 w-full h-full object-cover z-0"
-      >
-        <source src={listingsBackground} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
+        <iframe
+          className="absolute top-0 left-0 w-full h-full"
+          src="https://www.youtube.com/embed/8BBE1Ui8yo4?si=5BNr_sLaivrlXusM&controls=0&autoplay=1&mute=1&loop=1&playlist=8BBE1Ui8yo4&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{
+            width: '100vw',
+            height: '100vh',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            objectFit: 'cover', // Ensures the video covers the entire area
+            pointerEvents: 'none'
+          }}
+        />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
         {!loading && listings.length > 0 && (
           <>
-            <h2 className="text-2xl text-center font-semibold mb-6">
+            <h2 className="text-2xl text-center font-semibold mb-6 text-white">
               Listings
             </h2>
             <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
