@@ -13,8 +13,6 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState, useRef } from "react";
 import { AiFillHome } from "react-icons/ai";
-import { FaClipboardList } from "react-icons/fa";
-import { VscSymbolProperty } from "react-icons/vsc";
 import { Link, useNavigate } from "react-router-dom";
 
 import { deleteObject, getStorage, ref } from "firebase/storage";
@@ -231,14 +229,7 @@ const Profile = () => {
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <button
-          onClick={() => {
-            navigate("/myProfile");
-          }}
-          className="shadow border p-1 hover:ring-2 text-xl text-center mt-6 font-bold"
-        >
-          View Your Profile
-        </button>
+        <button onClick={()=>{navigate("/myProfile")}} className="shadow border p-1 hover:ring-2 text-xl text-center mt-6 font-bold">View Your Profile</button>
         <div className="w-full max-w-md mt-6 px-3">
           {/* {signed === "true" && userRole === "admin" && (
             <div>
@@ -276,6 +267,26 @@ const Profile = () => {
               Sign out
             </button>
           </form>
+
+          {/* Display buttons if not admin or superadmin (available option) */}
+          {/* {!["admin", "superadmin"].includes(userRole) && ( */}
+            <>
+              <button
+                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
+              >
+                <Link to="/payments/${user.id}" className="flex justify-center items-center">
+                  Payment Management
+                </Link>
+              </button>
+              <button
+                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
+              >
+                <Link to="/userDocuments/${user.id}" className="flex justify-center items-center">
+                  Document Management
+                </Link>
+              </button>
+            </>
+          {/* )} */}
 
           {/* Create listing button, navigates to /create-listing page */}
           {showCreateListing && (
@@ -323,7 +334,7 @@ const Profile = () => {
           {showCreateListing && (
             <button
               type="submit"
-              className=" w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800 mb-6"
+              className=" w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
             >
               <Link
                 to="/manageUsersProfile"
@@ -334,64 +345,30 @@ const Profile = () => {
               </Link>
             </button>
           )}
-
-          {showCreateListing && (
-            <button
-              type="submit"
-              className="w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800 mb-6 "
-            >
-              <Link
-                to="/property-Management"
-                className="flex justify-center items-center"
-              >
-                <VscSymbolProperty className="mr-2 text-2xl p-1 border-2 rounded-full" />
-                Property Management
-              </Link>
-            </button>
-          )}
-
-          {showCreateListing && (
-            <button
-              type="button"
-              className="w-full bg-blue-500 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800 "
-              onClick={() =>
-                window.open(
-                  "https://docs.google.com/forms/d/e/1FAIpQLSeJEKEmhkNChaStTLliCwconvj07lyfvKA-fQuIpLqQguApMw/viewform?pli=1%22;send_form%26pli%3D1%22%3B&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzc3OGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8",
-                  "_blank"
-                )
-              }
-            >
-              <div className="flex items-center justify-center">
-                <FaClipboardList className="mr-2 text-2xl p-1 border-2 rounded-full" />
-                Repair Request Form
-              </div>
-            </button>
-          )}
-          
         </div>
       </section>
 
       {/* Display created listings on profile for agents, admins, superadmins */}
       <div className="max-w-6xl px-3 mt-6 mx-auto">
-        {/* {!loading && listings?.length > 0 && (
-          // <>
-          //   <h2 className="text-2xl text-center font-semibold mb-6">
-          //     Listings
-          //   </h2>
-          //   <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-          //     {listings.map((listing) => (
-          //       <ListingItem
-          //         key={listing.id}
-          //         id={listing.id}
-          //         listing={listing.data}
-          //         onDelete={() => onDelete(listing.id)}
-          //         onEdit={() => onEdit(listing.id)}
-          //         // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
-          //       />
-          //     ))}
-          //   </ul>
-          // </>
-        )} */}
+        {!loading && listings?.length > 0 && (
+          <>
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              Listings
+            </h2>
+            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                  onDelete={() => onDelete(listing.id)}
+                  onEdit={() => onEdit(listing.id)}
+                  // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
         {!loading && vipListings?.length > 0 && (
           <>
             <h2 className="text-2xl text-center font-semibold mb-6">

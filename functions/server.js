@@ -8,6 +8,8 @@ const schedule = require("node-schedule");
 let emailSent = "false";
 let agentEmailSent = "false";
 
+const stripe = require('stripe')(functions.config().stripe.secret); // Stripe secret key
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://mnc-development-default-rtdb.firebaseio.com",
@@ -156,6 +158,72 @@ const updateNumberOfDaysLeft = async () => {
     console.error("Error updating numberOfDaysLeft:", error);
   }
 };
+
+exports.createPaymentIntent = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      const { amount, currency } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).send({ error: 'Invalid amount' });
+      }
+
+      // Create a PaymentIntent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount, // Amount should already be in cents from the frontend
+        currency: currency || 'usd',
+      });
+
+      res.status(200).send({
+        clientSecret: paymentIntent.client_secret,  // Return the client secret to the frontend
+      });
+    } catch (error) {
+      res.status(500).send({
+        error: error.message || 'Failed to create payment intent',
+      });
+    }
+  });
+});
+
+exports.getPaymentHistory = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      const { userId } = req.query;
+
+      if (!userId) {
+        return res.status(400).send({
+          error: 'Missing userId parameter',
+        });
+      }
+
+      // Fetch payment history from Firestore collection
+      const paymentsRef = db.collection('payments').where('userId', '==', userId);
+      const snapshot = await paymentsRef.get();
+
+      if (snapshot.empty) {
+        return res.status(404).send({
+          error: 'No payment history found for this user',
+        });
+      }
+
+      // Construct the payment history array from Firestore documents
+      const paymentHistory = [];
+      snapshot.forEach((doc) => {
+        paymentHistory.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+
+      // Send the payment history back to the client
+      return res.status(200).send(paymentHistory);
+    } catch (error) {
+      return res.status(500).send({
+        error: error.message || 'Failed to retrieve payment history',
+      });
+    }
+  });
+});
 
 exports.deleteUser = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
