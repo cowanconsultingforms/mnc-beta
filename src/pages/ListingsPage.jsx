@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust import if necessary
+import { getAuth , onAuthStateChanged} from "firebase/auth";
 import ListingItem from "../components/ListingItem"; // Assuming this component displays a listing
 import { toast } from "react-toastify"; // Import toast for notifications
 import "../css/listingPage.css";
@@ -9,8 +10,33 @@ import { useNavigate } from "react-router-dom";
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setIsAuthenticated(true);
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            setUserRole(userSnap.data().role); // Get and set the user role
+          } else {
+            console.log("User document not found.");
+          }
+        } else {
+          setIsAuthenticated(false);
+        }
+      });
+    };
+  
+    fetchUserRole();
+  }, []);
+  
+  
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -85,6 +111,7 @@ const ListingsPage = () => {
                   listing={listing.data}
                   onDelete={() => onDelete(listing.id)} // Pass down onDelete method
                   onEdit={() => onEdit(listing.id)}
+                  showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
                 />
               ))}
             </ul>
