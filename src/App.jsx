@@ -49,6 +49,7 @@ import Payments from "./components/Payments";
 import UserDocuments from "./pages/userDocuments";
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import ViewPaymentHistory from "./pages/ViewPaymentHistory";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -189,6 +190,7 @@ function App() {
             </Elements>
           }
           />
+          <Route path="/payment-history" element={<ViewPaymentHistory />} />
           <Route path="/userDocuments/:uid" element={<UserDocuments />} />
 
         </Routes>
