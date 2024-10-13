@@ -28,6 +28,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 // import { createNotification } from "../firebase";
 import { addNotificationToCollection } from "../components/Notification";
 import { Menu } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -267,16 +268,19 @@ const Profile = () => {
           </form>
 
           <div className="flex justify-center">
-            {" "}
-            {/* Center the dropdown */}
             <Menu as="div" className="relative inline-block text-left">
               <div>
-                <Menu.Button className="flex justify-center items-center bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800">
+                <Menu.Button className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
                   Options
-                </Menu.Button>
+                  <ChevronDownIcon className="h-4 w-4 fill-white/60" />
+                  </Menu.Button>
               </div>
 
-              <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items
+                transition
+                anchor="bottom left"
+                className="absolute right-0 z-10 mt-2 w-56 origin-top-right bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              >
                 {showCreateListing && (
                   <Menu.Item>
                     {({ active }) => (
@@ -284,7 +288,7 @@ const Profile = () => {
                         to="/create-listing"
                         className={`${
                           active ? "bg-gray-100" : ""
-                        } flex items-center px-4 py-2 text-sm text-gray-700`}
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
                       >
                         <AiFillHome className="mr-2" />
                         Create a Listing
@@ -300,7 +304,7 @@ const Profile = () => {
                         to="/vip-create-listing"
                         className={`${
                           active ? "bg-gray-100" : ""
-                        } flex items-center px-4 py-2 text-sm text-gray-700`}
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
                       >
                         <AiFillHome className="mr-2" />
                         Create a VIP Listing
@@ -315,7 +319,7 @@ const Profile = () => {
                       to="/manageUsersProfile"
                       className={`${
                         active ? "bg-gray-100" : ""
-                      } flex items-center px-4 py-2 text-sm text-gray-700`}
+                      } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
                     >
                       <AiFillHome className="mr-2" />
                       Relationship Management
@@ -329,7 +333,7 @@ const Profile = () => {
                       type="button"
                       className={`${
                         active ? "bg-gray-100" : ""
-                      } flex items-center px-4 py-2 text-sm text-gray-700`}
+                      } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
                       onClick={() =>
                         window.open(
                           "https://docs.google.com/forms/d/e/1FAIpQLSeJEKEmhkNChaStTLliCwconvj07lyfvKA-fQuIpLqQguApMw/viewform?pli=1%22;send_form%26pli%3D1%22%3B&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzc3OGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8",
@@ -350,7 +354,7 @@ const Profile = () => {
                         to="/property-Management"
                         className={`${
                           active ? "bg-gray-100" : ""
-                        } flex items-center px-4 py-2 text-sm text-gray-700`}
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
                       >
                         <VscSymbolProperty className="mr-2" />
                         Property Management

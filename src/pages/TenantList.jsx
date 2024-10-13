@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { collection, getDoc, doc } from "firebase/firestore";
+import { useParams, Link } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Link } from "react-router-dom";
 
 const TenantList = () => {
   const { id } = useParams(); // Get the property ID from the URL
@@ -13,14 +12,16 @@ const TenantList = () => {
   const fetchSingleListing = async (listingId) => {
     try {
       const docRef = doc(db, "propertyListings", listingId);
-
-      // Fetch the document
       const docSnap = await getDoc(docRef);
 
       // Check if the document exists
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setTenants(data.tenants || []); // Assuming `tenants` is an array field in the document
+        console.log(data); // Log data to check its structure
+
+        // Ensure tenants is an array
+        const fetchedTenants = Array.isArray(data.tenants) ? data.tenants : [data.tenants];
+        setTenants(fetchedTenants); // Set tenants from fetched data
       } else {
         console.log("No such document!");
         setError("No such document exists.");
@@ -39,8 +40,11 @@ const TenantList = () => {
 
   // Function to format Firebase Timestamp
   const formatDate = (timestamp) => {
-    const date = timestamp.toDate(); // Convert Firebase Timestamp to JavaScript Date
-    return date.toLocaleDateString(); // Format as a date string
+    if (timestamp) {
+      const date = timestamp.toDate(); // Convert Firebase Timestamp to JavaScript Date
+      return date.toLocaleDateString(); // Format as a date string
+    }
+    return "N/A"; // Return N/A if no timestamp
   };
 
   if (loading) {
@@ -59,7 +63,7 @@ const TenantList = () => {
         ) : (
           tenants.map((tenant, index) => (
             <Link
-              key={index}
+              key={tenant.id || index} // Use tenant.id if available, else fallback to index
               to={`/property-management/${id}/tenant/${tenant.id}`}
               className="flex justify-center items-center h-48 w-48 bg-cyan-400 rounded-lg"
             >
