@@ -12,6 +12,7 @@ const ListingItem = ({
   id,
   onDelete,
   isPropertyManagement,
+  showActions, // Add the showActions prop here
 }) => {
   const navigate = useNavigate();
 
@@ -101,33 +102,33 @@ const ListingItem = ({
           <p className="font-bold text-xs">
             {listing.bathrooms > 1 ? `${listing.bathrooms} Baths` : "1 Bath"}
           </p>
-          <p className="font-bold text-xs">
-            {`${listing.landSize} Sq Ft`}
-          </p>
-          <p className="font-bold text-xs">
-            {`Year Built: ${listing.yearBuilt}`}
-          </p>
+          <p className="font-bold text-xs">{`${listing.landSize} Sq Ft`}</p>
+          <p className="font-bold text-xs">{`Year Built: ${listing.yearBuilt}`}</p>
         </div>
       </Link>
 
-      <div className="flex justify-between w-full p-2 mt-2">
-        <button
-          type="button"
-          onClick={handleEdit}
-          className="text-sm flex items-center justify-center space-x-1 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
-        >
-          <MdEdit className="text-lg" />
-          <span>Edit</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="text-sm flex items-center justify-center space-x-1 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
-        >
-          <FaTrash className="text-lg" />
-          <span>Delete</span>
-        </button>
-      </div>
+      {/* Conditionally render the Edit and Delete buttons based on showActions */}
+      {!showActions && <div className ="mb-4"></div>}
+      {showActions && (
+        <div className="flex justify-between w-full p-2 mt-2">
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="text-sm flex items-center justify-center space-x-1 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
+          >
+            <MdEdit className="text-lg" />
+            <span>Edit</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="text-sm flex items-center justify-center space-x-1 cursor-pointer font-medium text-gray-500 hover:text-gray-800 active:text-black transition duration-150 ease-in-out"
+          >
+            <FaTrash className="text-lg" />
+            <span>Delete</span>
+          </button>
+        </div>
+      )}
     </li>
   );
 };

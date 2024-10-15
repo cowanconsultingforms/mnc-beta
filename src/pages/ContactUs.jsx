@@ -43,68 +43,93 @@ const ContactUs = () => {
   };
 
   return (
+    
     <main
-    className="h-[calc(100vh-48px)]"
-    style={{
-      backgroundImage: `url(${ContactImage})`,
-      backgroundSize: "cover", // Ensures the image covers the entire background
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-    }}
-    >
-      <h1 className="text-3xl text-center py-12 font-bold">Contact Us</h1>
+  className="relative min-h-screen"
+  style={{
+    backgroundImage: `url(${ContactImage})`,
+    backgroundSize: "cover", // Ensures the image covers the entire background
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <h1 className="text-3xl text-center py-12 font-bold text-white" style={{ textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)" }}>
+  Contact Us
+  </h1>
+  
+  {/* Contact form */}
+  <div className="max-w-md mx-auto bg-gray-100 rounded px-6 py-6">
+    <form ref={form} onSubmit={contactUs}>
+      <input
+        placeholder="Name"
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+        required
+      />
 
-      {/* Contact form */}
-      <div className="max-w-md mx-auto bg-gray-100 rounded px-6 py-6">
-        <form
-          ref={form}
-          onSubmit={contactUs}
-        >
-          <input
-            placeholder="Name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            required
-          />
+      <input
+        placeholder="Email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+        required
+      />
 
-          <input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            required
-          />
+      <input
+        placeholder="Phone Number"
+        type="tel"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+        required
+      />
 
-          <input
-            placeholder="Phone Number"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            required
-          />
+      <textarea
+        placeholder="Message"
+        type="text"
+        value={message2}
+        onChange={(e) => setMessage(e.target.value)}
+        className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+        required
+      />
 
-          <textarea
-            placeholder="Message"
-            type="text"
-            value={message2}
-            onChange={(e) => setMessage(e.target.value)}
-            className="text-lg w-full px-4 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-            required
-          />
+      <button
+        type="submit"
+        className="w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
+      >
+        {sent}
+      </button>
+    </form>
+  </div>
 
-          <button
-            type="submit"
-            className="w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
-          >
-            {sent}
-          </button>
-        </form>
+  {/* Footer Section */}
+  <div className="absolute bottom-0 left-0 w-full text-center py-6 bg-transparent z-20">
+    <div className="mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded text-white">
+      <p className="text-white mb-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p>
+      <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2 mb-2">
+        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+          <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>All rights reserved.</p>
+          <span className="hidden md:block">|</span>
+          <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>© MNC Development, Inc. 2008-present.</p>
+        </div>
+        <span className="hidden lg:block">|</span>
+        <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>31 Buffalo Avenue, Brooklyn, New York 11233</p>
       </div>
-    </main>
+      <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+        <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+        <span className="hidden md:block">|</span>
+        <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+      </div>
+      <p className="text-white text-center mt-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
+        MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
+      </p>
+    </div>
+  </div>
+</main>
+
   );
 };
 

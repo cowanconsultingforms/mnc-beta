@@ -44,31 +44,34 @@ const Map = () => {
 
   // return <Map properties={properties} navigate={navigate} />;
   return (
-    <div className="w-full h-full z-10 overflow-x-hidden">
-      <GoogleMap
-        zoom={11}
-        center={{ lat: 40.78, lng: -73.97 }}
-        mapContainerClassName="map-container grayscale"
-        clickableIcons={false}
-        options={{
-          disableDefaultUI: true,
-          gestureHandling: "greedy",
-          keyboardShortcuts: true,
-        }}
-      >
-        {/* Render Markers using properties */}
-        {properties.map((property) => (
-          <MarkerF
-            onClick={() => handleClick(property)}
-            key={property.id}
-            position={{
-              lat: property.data.geolocation.lat,
-              lng: property.data.geolocation.lng,
-            }}
-          />
-        ))}
-      </GoogleMap>
-    </div>
+    <div className="w-full h-screen z-10 flex flex-col overflow-hidden">
+  {/* Map Section */}
+  <div className="flex-grow">
+    <GoogleMap
+      zoom={11}
+      center={{ lat: 40.78, lng: -73.97 }}
+      mapContainerClassName="w-full h-full grayscale"
+      clickableIcons={false}
+      options={{
+        disableDefaultUI: true,
+        gestureHandling: "greedy",
+        keyboardShortcuts: true,
+      }}
+    >
+      {/* Render Markers using properties */}
+      {properties.map((property) => (
+        <MarkerF
+          onClick={() => handleClick(property)}
+          key={property.id}
+          position={{
+            lat: property.data.geolocation.lat,
+            lng: property.data.geolocation.lng,
+          }}
+        />
+      ))}
+    </GoogleMap>
+  </div>
+</div>
   );
 };
 
