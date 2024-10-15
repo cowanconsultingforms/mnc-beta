@@ -12,7 +12,7 @@ const TenantDetail = () => {
       const docRef = doc(db, "propertyListings", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const tenantDetail = docSnap.data().tenants; // Directly access the tenants field
+        const tenantDetail = docSnap.data().tenants;
         if (tenantDetail && tenantDetail.id === tenantId) {
           setTenant(tenantDetail);
         } else {
@@ -62,20 +62,35 @@ const TenantDetail = () => {
             />
           </div>
         ))}
+
         {/* Dropdown for Rental Type */}
         <div>
           <label className="font-semibold">Rental Type:</label>
           <select
             className="w-full p-2 border border-gray-300 rounded bg-white"
             value={tenant.rentalType || "Residential"}
-            disabled
+            enabled
           >
             <option value="Residential">Residential</option>
             <option value="Commercial">Commercial</option>
             <option value="Other">Other</option>
           </select>
         </div>
+
+        {/* Notes Section */}
+        <div className="col-span-2 border-t border-gray-200 mt-4 pt-4">
+          <label className="font-semibold text-lg text-gray-700 mb-2 block">
+            Internal Notes:
+          </label>
+          <textarea
+            className="w-full p-4 border border-gray-300 rounded h-24 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder-gray-400 resize-none"
+            placeholder="Enter internal notes here"
+            value={tenant.internalNotes || ""}
+            readOnly
+          ></textarea>
+        </div>
       </div>
+
       <div className="text-center mt-6">
         <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
           Edit Tenant

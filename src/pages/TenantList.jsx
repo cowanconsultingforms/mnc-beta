@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 const TenantList = () => {
-  const { id } = useParams(); // Get the property ID from the URL
+  const { id } = useParams();
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,20 +14,16 @@ const TenantList = () => {
       const docRef = doc(db, "propertyListings", listingId);
       const docSnap = await getDoc(docRef);
 
-      // Check if the document exists
       if (docSnap.exists()) {
         const data = docSnap.data();
-        console.log(data); // Log data to check its structure
-
-        // Ensure tenants is an array
-        const fetchedTenants = Array.isArray(data.tenants) ? data.tenants : [data.tenants];
-        setTenants(fetchedTenants); // Set tenants from fetched data
+        const fetchedTenants = Array.isArray(data.tenants)
+          ? data.tenants
+          : [data.tenants];
+        setTenants(fetchedTenants);
       } else {
-        console.log("No such document!");
         setError("No such document exists.");
       }
     } catch (error) {
-      console.error("Error fetching document:", error);
       setError("Failed to fetch tenants.");
     } finally {
       setLoading(false);
@@ -38,39 +34,46 @@ const TenantList = () => {
     fetchSingleListing(id);
   }, [id]);
 
-  // Function to format Firebase Timestamp
   const formatDate = (timestamp) => {
     if (timestamp) {
-      const date = timestamp.toDate(); // Convert Firebase Timestamp to JavaScript Date
-      return date.toLocaleDateString(); // Format as a date string
+      const date = timestamp.toDate();
+      return date.toLocaleDateString();
     }
-    return "N/A"; // Return N/A if no timestamp
+    return "N/A";
   };
 
   if (loading) {
-    return <p>Loading tenants...</p>;
+    return <p className="text-center text-lg">Loading tenants...</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="text-center text-red-500">{error}</p>;
   }
 
   return (
-    <div className="flex justify-center bg-slate-400">
-      <div className="flex gap-12">
+    <div className="flex justify-center bg-gray-50 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl px-4">
         {tenants.length === 0 ? (
-          <p>No tenants found for this property</p>
+          <p className="text-gray-600 text-center col-span-full">
+            No tenants found for this property
+          </p>
         ) : (
           tenants.map((tenant, index) => (
             <Link
-              key={tenant.id || index} // Use tenant.id if available, else fallback to index
+              key={tenant.id || index}
               to={`/property-management/${id}/tenant/${tenant.id}`}
-              className="flex justify-center items-center h-48 w-48 bg-cyan-400 rounded-lg"
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 flex flex-col items-center text-center"
+              style={{ height: "auto" }} // Ensures box height is only as large as needed
             >
-              <div className="flex justify-center items-center bg-white gap-4 p-4">
-                <p>Name: {tenant.name}</p>
-                <p>DOB: {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}</p>
-              </div>
+              <p className="text-lg font-semibold text-gray-800">
+                {tenant.name}
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                DOB:{" "}
+                <span className="font-medium text-gray-700">
+                  {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}
+                </span>
+              </p>
             </Link>
           ))
         )}
