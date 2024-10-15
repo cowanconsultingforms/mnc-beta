@@ -124,9 +124,10 @@ const ManageUsersProfile = () => {
         style={{
           width: "100vw",
           height: "100vh",
-          position: "absolute",
+          position: "fixed",
           top: "0",
           left: "0",
+          zIndex: "-1",
           pointerEvents: "none",
         }}
       ></iframe>
@@ -251,32 +252,49 @@ const ManageUsersProfile = () => {
             </button>
           </div>
         </div>
-
         {/* Testimonials Section */}
-        <section className="bg-white dark:bg-gray-900 mt-16 rounded-lg">
-          <div className="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-16 lg:px-6">
-            <figure className="max-w-screen-md mx-auto">
-              <svg className="h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" viewBox="0 0 24 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z" fill="currentColor"/>
-              </svg>
-              <blockquote>
-                <p className="text-2xl font-medium text-gray-900 dark:text-white">
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                </p>
-              </blockquote>
-              <figcaption className="flex items-center justify-center mt-6 space-x-3">
-                <img className="w-6 h-6 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gouch.png" alt="profile picture" />
-                <div className="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                  <div className="pr-3 font-medium text-gray-900 dark:text-white">Tareeka Kelly</div>
-                  <div className="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">MNC Development Agent</div>
-                </div>
-              </figcaption>
-            </figure>
+<section className="bg-gradient-to-b from-white to-gray-200 dark:from-gray-800 dark:to-gray-900 mt-8 rounded-lg mb-5">
+  <div className="max-w-screen-xl px-4 py-4 mx-auto text-center lg:py-6 lg:px-6">
+    <figure className="max-w-screen-md mx-auto">
+      <svg
+        className="h-4 mx-auto mb-2 text-gray-400 dark:text-gray-600"
+        viewBox="0 0 24 27"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"
+          fill="currentColor"
+        />
+      </svg>
+      <blockquote>
+        <p className="text-sm font-medium text-gray-900 dark:text-white">
+          "Working with MNC Development has been a game changer for me. Their platform is not only efficient but also incredibly easy to use, allowing me to connect with clients faster than ever. The support from the team is top-notch, and they truly care about helping agents succeed. Since joining, I’ve closed more deals in the past six months than I did all of last year!"
+        </p>
+      </blockquote>
+      <figcaption className="flex items-center justify-center mt-4 space-x-2">
+        <img
+          className="w-5 h-5 rounded-full"
+          src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gouch.png"
+          alt="profile picture"
+        />
+        <div className="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
+          <div className="pr-2 text-xs font-medium text-gray-900 dark:text-white">
+            Tareeka Kelly
           </div>
-        </section>
+          <div className="pl-2 text-xs font-light text-gray-500 dark:text-gray-400">
+            MNC Development Agent
+          </div>
+        </div>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+      
       </div>
       {/* Legal Section */}
-<div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
+<div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white mt-10">
   <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
   <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
     <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
