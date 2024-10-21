@@ -105,7 +105,7 @@ const Payments = () => {
   };
 
   const handleViewPaymentHistory = () => {
-    navigate('/payment-history');
+    navigate('/payment-history/:uid');
   };
 
   return (
@@ -115,7 +115,7 @@ const Payments = () => {
       <div style={styles.formContainer}>
         <form onSubmit={handleSubmit} style={styles.checkoutForm}>
           <h2 style={styles.formTitle}>Make a Payment</h2>
-          <label htmlFor="name" style={styles.label}>Name:</label>
+          <label htmlFor="name" style={styles.label}>First and Last Name:</label>
           <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" required style={styles.input} />
           <label htmlFor="email" style={styles.label}>Email:</label>
           <input type="email" id="email" value={email} onChange={(e) => { setEmail(e.target.value); localStorage.setItem('userEmail', e.target.value); }} placeholder="Enter your email" required style={styles.input} />

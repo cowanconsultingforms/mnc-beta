@@ -161,18 +161,30 @@ const Admin = () => {
 
                     <td className="p-3 md:p-6">
                       {/* Payment Management Section */}
-                      {/* Add code to display or manage payments */}
-                      {currentUserRole === "superadmin" || "admin" && (
-                        <button className="bg-blue-500 text-white p-2 rounded"
-                        onClick={() => navigate(`/payments/${user.id}`)}>View Payments</button>
+                      {/* Allow admins and superadmins to view user payments */}
+                      {currentUserRole === "superadmin" || currentUserRole === "admin" && (
+                        <button
+                          className="bg-blue-500 text-white p-2 rounded"
+                          onClick={() => navigate(`/payment-history/${user.id}`)}  // Pass selected user's ID
+                        >
+                          View Payments
+                        </button>
                       )}
                     </td>
+
                     <td className="p-3 md:p-6">
                       {/* User Documents Section */}
-                      {/* Add code to display or upload leasing documents */}
-                      {currentUserRole === "superadmin" || "admin" && (
-                        <button className="bg-green-500 text-white p-2 rounded"
-                        onClick={() => navigate(`/userDocuments/${user.id}`)}>View Documents</button>
+                      {/* Allow admins and superadmins to view user documents */}
+                      {currentUserRole === "superadmin" || currentUserRole === "admin" && (
+                        <button
+                          className="bg-green-500 text-white p-2 rounded"
+                          onClick={() => {
+                            console.log("Navigating to view documents for user:", user.id); // Log the user ID to verify it's correct
+                            navigate(`/userDocuments/${user.id}`);  // Correctly pass selected user's ID to the route
+                          }}
+                        >
+                          View Documents
+                        </button>
                       )}
                     </td>
 
@@ -181,8 +193,11 @@ const Admin = () => {
                       {/* Add code to display selected user profile */}
                       {currentUserRole === "superadmin" || "admin" && (
                         <button 
-                        className="bg-yellow-500 text-white p-2 rounded" 
-                        onClick={() => navigate(`/viewProfile/${user.id}`)}>View Profile</button>
+                          className="bg-yellow-500 text-white p-2 rounded" 
+                          onClick={() => navigate(`/viewProfile/${user.id}`)}
+                        >
+                          View Profile
+                        </button>
                       )}
                     </td>
                   </tr>

@@ -86,52 +86,6 @@ exports.createPaymentIntent = functions.https.onRequest((req, res) => {
   });
 });
 
-// Endpoint to get payment history
-exports.getPaymentHistory = functions.https.onRequest((req, res) => {
-  cors(corsOptions)(req, res, async () => {
-    handleCors(req, res); // Handle preflight requests
-
-    try {
-      const { userId } = req.query;
-
-      if (!userId) {
-        return res.status(400).send({
-          error: 'Missing userId parameter',
-        });
-      }
-
-      // Fetch payment history from Firestore collection
-      const paymentsRef = db.collection('payments').where('userId', '==', userId);
-      const snapshot = await paymentsRef.get();
-
-      if (snapshot.empty) {
-        return res.status(404).send({
-          error: 'No payment history found for this user',
-        });
-      }
-
-      // Construct the payment history array from Firestore documents
-      const paymentHistory = [];
-      snapshot.forEach((doc) => {
-        paymentHistory.push({
-          id: doc.id,
-          ...doc.data(),
-        });
-      });
-
-      res.set('Access-Control-Allow-Origin', req.headers.origin); // Dynamically set the allowed origin
-      return res.status(200).send(paymentHistory);
-    } catch (error) {
-      console.error('Error retrieving payment history:', error);
-      return res.status(500).send({
-        error: error.message || 'Failed to retrieve payment history',
-      });
-    }
-  });
-});
-
-
-
 const updateNumberOfDaysLeft = async () => {
   try {
     // Step 1: Retrieve all users where role === "vip"

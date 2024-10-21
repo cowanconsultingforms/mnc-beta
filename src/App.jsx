@@ -190,7 +190,7 @@ function App() {
             </Elements>
           }
           />
-          <Route path="/payment-history" element={<ViewPaymentHistory />} />
+          <Route path="/payment-history/:uid" element={<ViewPaymentHistory />} />
           <Route path="/userDocuments/:uid" element={<UserDocuments />} />
 
         </Routes>
