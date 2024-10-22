@@ -87,7 +87,8 @@ const ManageUsersProfile = () => {
         });
         setUsers(users);
 
-        const topAgents = users.filter(user => user.data.role === 'agent').slice(0, 5);
+        // Filter top agents
+        const topAgents = users.filter(user => user.data.isTopAgent === true);
         setTopAgents(topAgents);
 
         setLoading(false);
@@ -173,7 +174,7 @@ const ManageUsersProfile = () => {
                       onClick={() => setSearchTerm(suggestion.data.name)}
                     >
                       <div className="py-2 px-4 hover:bg-gray-200 cursor-pointer">
-                        {suggestion.data.name} - {suggestion.data.address?.city}
+                      {suggestion.data.name} {suggestion.data.address?.city && `- ${suggestion.data.address.city}`} 
                       </div>
                     </Link>
                   ))}
@@ -184,32 +185,39 @@ const ManageUsersProfile = () => {
 
           {/* Top Agents Carousel */}
           <div className="relative w-full mt-20 flex justify-center">
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
-        {topAgents.length > 0 ? (
-          topAgents.map((agent, index) => (
-            <div
-              key={agent.id}
-              className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${
-                index === currentSlide ? "translate-x-0" : "translate-x-full"
-              }`}
-              onMouseEnter={() => setHoveredIndex(index)} // Set hovered index
-              onMouseLeave={() => setHoveredIndex(null)} // Clear hovered index
-            >
-              <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
-                <img
-                  src={agent.data.imageUrl || "default-image-url"}
-                  className="absolute block w-full h-full object-cover filter grayscale"
-                  alt={`${agent.data.name}'s profile`}
-                  style={{
-                    transform: hoveredIndex === index ? "scale(1.05)" : "scale(1)", // Scale effect on hover
-                    transition: "transform 0.3s ease", // Smooth transition
-                    boxShadow: hoveredIndex === index ? "0 8px 20px rgba(0, 0, 0, 0.2)" : "none", // Shadow effect on hover
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-50 text-white text-center py-2">
-                  <h3 className="text-lg font-bold">{agent.data.name}</h3>
-                </div>
-              </Link>
+<div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
+  {topAgents.length > 0 ? (
+    topAgents.map((agent, index) => (
+      <div
+        key={agent.id}
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${
+          index === currentSlide ? "translate-x-0" : "translate-x-full"
+        }`}
+        onMouseEnter={() => setHoveredIndex(index)} // Set hovered index
+        onMouseLeave={() => setHoveredIndex(null)} // Clear hovered index
+      >
+        <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
+          <img
+            src={agent.data.imageUrl || "default-image-url"}
+            className="absolute block w-full h-full object-cover filter grayscale"
+            alt={`${agent.data.name}'s profile`}
+            style={{
+              transform: hoveredIndex === index ? "scale(1.05)" : "scale(1)", // Scale effect on hover
+              transition: "transform 0.3s ease", // Smooth transition
+              boxShadow: hoveredIndex === index ? "0 8px 20px rgba(0, 0, 0, 0.2)" : "none", // Shadow effect on hover
+            }}
+          />
+          <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-50 text-white text-center py-2">
+            <h3 className="text-lg font-bold">{agent.data.name}</h3>
+          </div>
+        </Link>
+      </div>
+    ))
+  ) : (
+    <p className="text-center text-white">No top agents available</p>
+  )}
+</div>
+
             </div>
           ))
         ) : (
@@ -229,12 +237,10 @@ const ManageUsersProfile = () => {
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 6 10"
-                  style={{
-                    filter: "drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6))"
-                  }}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 1 1 5l4 4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </span>
             </button>
@@ -249,17 +255,16 @@ const ManageUsersProfile = () => {
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 6 10"
-                  style={{
-                    filter: "drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6))"
-                  }}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M1 1l4 4-4 4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
             </button>
           </div>
         </div>
+
         {/* Testimonials Section */}
 <section className="bg-gradient-to-b from-white to-gray-200 dark:from-gray-800 dark:to-gray-900 mt-8 rounded-lg mb-5">
   <div className="max-w-screen-xl px-4 py-4 mx-auto text-center lg:py-6 lg:px-6">
@@ -288,7 +293,7 @@ const ManageUsersProfile = () => {
         />
         <div className="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
           <div className="pr-2 text-xs font-medium text-gray-900 dark:text-white">
-            Tareeka Kelly
+            John the Agent
           </div>
           <div className="pl-2 text-xs font-light text-gray-500 dark:text-gray-400">
             MNC Development Agent
@@ -299,8 +304,6 @@ const ManageUsersProfile = () => {
   </div>
 </section>
 
-      
-      </div>
       {/* Legal Section */}
 <div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white mt-10">
   <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
@@ -322,6 +325,7 @@ const ManageUsersProfile = () => {
     MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
   </p>
 </div>
+    </div>
     </div>
   );
 };

@@ -3,9 +3,11 @@ import { collection, getDocs, query, orderBy, doc, getDoc } from "firebase/fires
 import { db } from "../firebase"; // Adjust import if necessary
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ListingItem from "../components/ListingItem"; // Assuming this component displays a listing
+
 import { toast } from "react-toastify"; // Import toast for notifications
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
+
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
