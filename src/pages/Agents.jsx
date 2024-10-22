@@ -12,6 +12,7 @@ const ManageUsersProfile = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [topAgents, setTopAgents] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const navigate = useNavigate();
 
   const handleSearch = (searchInput) => {
@@ -184,31 +185,45 @@ const ManageUsersProfile = () => {
 
           {/* Top Agents Carousel */}
           <div className="relative w-full mt-20 flex justify-center">
-            <div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
-              {topAgents.length > 0 ? (
-                topAgents.map((agent, index) => (
-                  <div
-                    key={agent.id}
-                    className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${
-                      index === currentSlide ? "translate-x-0" : "translate-x-full"
-                    }`}
-                  >
-                    <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
-                      <img
-                        src={agent.data.imageUrl || "default-image-url"}
-                        className="absolute block w-full h-full object-cover filter grayscale"
-                        alt={`${agent.data.name}'s profile`}
-                      />
-                      <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-50 text-white text-center py-2">
-                        <h3 className="text-lg font-bold">{agent.data.name}</h3>
-                      </div>
-                    </Link>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-white">No top agents available</p>
-              )}
+<div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
+  {topAgents.length > 0 ? (
+    topAgents.map((agent, index) => (
+      <div
+        key={agent.id}
+        className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${
+          index === currentSlide ? "translate-x-0" : "translate-x-full"
+        }`}
+        onMouseEnter={() => setHoveredIndex(index)} // Set hovered index
+        onMouseLeave={() => setHoveredIndex(null)} // Clear hovered index
+      >
+        <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
+          <img
+            src={agent.data.imageUrl || "default-image-url"}
+            className="absolute block w-full h-full object-cover filter grayscale"
+            alt={`${agent.data.name}'s profile`}
+            style={{
+              transform: hoveredIndex === index ? "scale(1.05)" : "scale(1)", // Scale effect on hover
+              transition: "transform 0.3s ease", // Smooth transition
+              boxShadow: hoveredIndex === index ? "0 8px 20px rgba(0, 0, 0, 0.2)" : "none", // Shadow effect on hover
+            }}
+          />
+          <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-50 text-white text-center py-2">
+            <h3 className="text-lg font-bold">{agent.data.name}</h3>
+          </div>
+        </Link>
+      </div>
+    ))
+  ) : (
+    <p className="text-center text-white">No top agents available</p>
+  )}
+</div>
+
             </div>
+          ))
+        ) : (
+          <p className="text-center text-white">No agents available</p>
+        )}
+      </div>
 
             {/* Slider controls */}
             <button
