@@ -21,6 +21,8 @@ const SignUp = () => {
     password: "",
     role: "user",
     requestStatus: "completed",
+    isTopAgent: "false",
+    expirationDate: null,
   });
   const { name, email, password } = formData;
   const [isTenant, setIsTenant] = useState(false);
