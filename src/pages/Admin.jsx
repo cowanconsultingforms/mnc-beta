@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import {
   collection,
@@ -5,29 +6,31 @@ import {
   getDocs,
   orderBy,
   query,
+  updateDoc,
   where,
+  doc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
 import Moment from "react-moment";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 import Dropdown from "../components/Dropdown";
-import Spinner from "../components/Spinner";
+import DatePicker from "react-datepicker"; 
+import "react-datepicker/dist/react-datepicker.css"; 
 import { db } from "../firebase";
 
 const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [checkboxValues, setCheckboxValues] = useState({});
+  const [expirationDates, setExpirationDates] = useState({});
   const navigate = useNavigate();
   const auth = getAuth();
 
   useEffect(() => {
-    setLoading(true);
     const fetchUser = async () => {
       try {
-        // Get user info from firestore database
+        setLoading(true);
         const userRef = collection(db, "users");
         const userQuery = query(
           userRef,
@@ -35,83 +38,148 @@ const Admin = () => {
         );
         const user = [];
         const userSnap = await getDocs(userQuery);
-        userSnap.forEach((doc) => {
-          return user.push(doc.data());
-        });
+        userSnap.forEach((doc) => user.push(doc.data()));
 
-        // Gives access to user management data if current account has admin role
         if (["superadmin", "admin"].includes(user[0]?.role)) {
           const usersRef = collection(db, "users");
-
-          // Queries all users
           const q = query(usersRef, orderBy("timestamp", "desc"));
           const querySnap = await getDocs(q);
 
-          // Adds all users from query to 'users' variable
-          let users = [];
+          const usersData = [];
           querySnap.forEach((doc) => {
-            return users.push({
+            usersData.push({
               id: doc.id,
               data: doc.data(),
             });
           });
-          setUsers(users);
+          setUsers(usersData);
+
+          const initialCheckboxValues = {};
+          const initialExpirationDates = {};
+          usersData.forEach((user) => {
+            initialCheckboxValues[user.id] = user.data.isTopAgent || false;
+            initialExpirationDates[user.id] = user.data.expirationDate?.toDate() || null;
+          });
+          setCheckboxValues(initialCheckboxValues);
+          setExpirationDates(initialExpirationDates);
         } else {
-          // Does not allow access to user management data if user does not have admin role
-          // toast.error("You cannot access this page.");
           navigate("/");
         }
-        setLoading(false);
       } catch (error) {
-        // Does not allow access to user management data if firestore rules blocks unauthorized user from accessing page
         toast.error("Insufficient permissions.");
         navigate("/");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, [auth.currentUser.uid, navigate]);
 
-  if (loading) {
-    return <Spinner />;
-  }
+  const updateUser = async (userId, isTopAgent, expirationDate) => {
+    const userDocRef = doc(db, "users", userId);
+    try {
+      await updateDoc(userDocRef, {
+        isTopAgent: isTopAgent,
+        expirationDate: expirationDate || null,
+      });
+      console.log(`Updated user ${userId}: isTopAgent = ${isTopAgent}, expirationDate = ${expirationDate}`);
+      toast.success(`Top agent status ${isTopAgent ? 'granted' : 'revoked'}!`);
+    } catch (error) {
+      toast.error("Failed to update top agent status.");
+      console.error("Error updating document: ", error.message);
+    }
+  };
+
+  const handleCheckboxChange = async (userId) => {
+    const newValue = !checkboxValues[userId];
+    setCheckboxValues((prevState) => ({
+      ...prevState,
+      [userId]: newValue,
+    }));
+
+    const expirationDate = newValue ? expirationDates[userId] : null;
+    await updateUser(userId, newValue, expirationDate);
+  };
+
+  const handleDateChange = async (date, userId) => {
+    setExpirationDates((prevState) => ({
+      ...prevState,
+      [userId]: date,
+    }));
+    await updateUser(userId, checkboxValues[userId], date);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const now = new Date();
+      for (const user of users) {
+        const expirationDate = expirationDates[user.id];
+        if (expirationDate && expirationDate <= now) {
+          console.log(`Expiring user ${user.id}...`);
+          setCheckboxValues((prevState) => ({
+            ...prevState,
+            [user.id]: false,
+          }));
+          setExpirationDates((prevState) => ({
+            ...prevState,
+            [user.id]: null,
+          }));
+          await updateUser(user.id, false, null);
+          toast.info(`Top agent status for ${user.data.name} has expired.`);
+        }
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [users, expirationDates]);
 
   return (
     <div>
-      {/* Only displays table once data is fetched */}
-      {!loading && users?.length > 0 && (
+      {!loading && users.length > 0 && (
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
 
-          {/* Table for all queried users */}
-          <div className="pb-20 text-sm sm:text-base mt-6 overflow-y-scroll overflow-x-visible overflow-visible">
+          <div className="pb-20 text-sm sm:text-base mt-6 overflow-y-hidden overflow-x-visible">
             <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
               <thead>
                 <tr>
                   <th className="p-3 md:p-6 text-center">Role</th>
+                  <th className="p-3 md:p-6 text-center">Top Agent</th>
                   <th className="p-3 md:p-6 text-left">Email</th>
                   <th className="p-3 md:p-6 text-left">Name</th>
                   <th className="p-3 md:p-6 text-left">Creation Date</th>
                 </tr>
               </thead>
               <tbody>
-                {/* Dynamically adds rows for each user */}
                 {users.map((user, index) => (
-                  <tr
-                    key={index}
-                    className={`${index % 2 == 0 ? "bg-gray-200" : "bg-white"}`}
-                  >
-                    {/* Role selector menu */}
-                    <td
-                      onClick={() => {
-                        setSelectedRow(user.id);
-                      }}
-                      className="p-3 md:p-6"
-                    >
-                      <Dropdown
-                        userId={user.id}
-                        selected={selectedRow === user.id}
-                      />
+                  <tr key={user.id} className={`${index % 2 === 0 ? "bg-gray-200" : "bg-white"}`}>
+                    <td onClick={() => setSelectedRow(user.id)} className="p-3 md:p-6">
+                      <Dropdown userId={user.id} selected={selectedRow === user.id} />
+                    </td>
+                    <td className="p-3 md:p-6 text-center">
+                      {user.data.role === 'agent' && (
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={checkboxValues[user.id] || false}
+                            onChange={() => handleCheckboxChange(user.id)}
+                          />
+                          {checkboxValues[user.id] && (
+                            <DatePicker
+                              selected={expirationDates[user.id]}
+                              onChange={(date) => handleDateChange(date, user.id)}
+                              className="ml-2 p-1 border rounded"
+                              placeholderText="Select expiration date"
+                              minDate={new Date()}
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={1}
+                              dateFormat="Pp"
+                            />
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td className="p-3 md:p-6">{user.data.email}</td>
                     <td className="p-3 md:p-6">{user.data.name}</td>
