@@ -388,6 +388,31 @@ const Profile = () => {
             </ul>
           </>
         )}
+        {/* Footer Information */}
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+        <p>info@mncdevelopment.com</p>
+        <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+            <p>All rights reserved.</p>
+            <span className="hidden md:block">|</span>
+            <p>© MNC Development, Inc. 2008-present.</p>
+          </div>
+          <span className="hidden lg:block">|</span>
+          <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
+        </div>
+        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+          <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+          <span className="hidden md:block">|</span>
+          <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+        </div>
+        <p className=" text-justify [text-align-last:center] ">
+          MNC Development and the MNC Development logos are trademarks of MNC
+          Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate
+          Broker fully supports the principles of the Fair Housing Act and the
+          Equal Opportunity Act. Listing information is deemed reliable, but is
+          not guaranteed.
+        </p>
+      </div>
       </div>
     </>
   );

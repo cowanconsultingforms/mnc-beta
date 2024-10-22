@@ -1,0 +1,17 @@
+@media screen and (max-width: 768px) {
+    iframe {
+      object-fit: contain; /* Contain video for smaller screens */
+      object-position: center center;
+      transform: scale(1.2); /* Slight zoom */
+    }
+  }
+  
+  @media screen and (min-width: 769px) {
+    iframe {
+      object-fit: cover; /* Cover larger screens */
+      transform: scale(1.2); /* Slight zoom */
+    }
+  }
+
+
+  
