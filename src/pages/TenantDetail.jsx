@@ -12,11 +12,19 @@ const TenantDetail = () => {
       const docRef = doc(db, "propertyListings", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const tenantDetail = docSnap.data().tenants;
-        if (tenantDetail && tenantDetail.id === tenantId) {
-          setTenant(tenantDetail);
+        const tenantsArray = docSnap.data().tenants; // This is now an array
+        if (tenantsArray && Array.isArray(tenantsArray)) {
+          // Find the tenant by tenantId
+          const tenantDetail = tenantsArray.find(
+            (tenant) => tenant.id === tenantId
+          );
+          if (tenantDetail) {
+            setTenant(tenantDetail);
+          } else {
+            console.error("No tenant found with the given ID");
+          }
         } else {
-          console.error("No tenant found with the given ID");
+          console.error("Tenants data is not an array or is undefined");
         }
       } else {
         console.log("No such document!");
