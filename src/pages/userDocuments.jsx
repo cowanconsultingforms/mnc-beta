@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { storage, db, auth } from '../firebase'; // Ensure Firebase setup
+import { storage, db, auth } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
-import { useParams } from 'react-router-dom'; // For accessing the route parameter (userId)
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getAuth } from 'firebase/auth';
 
 const backgroundStyle = {
-  backgroundImage: 'url("https://c8.alamy.com/comp/2M6021K/document-management-data-system-business-technology-concept-dms-on-virtual-screen-2M6021K.jpg")', // Use a suitable image URL
+  backgroundImage: 'url("https://c8.alamy.com/comp/2M6021K/document-management-data-system-business-technology-concept-dms-on-virtual-screen-2M6021K.jpg")',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
@@ -15,30 +16,29 @@ const backgroundStyle = {
 };
 
 const overlayStyle = {
-  backgroundColor: 'rgba(0, 0, 0, 0.6)', // Add a dark overlay for better readability
+  backgroundColor: 'rgba(0, 0, 0, 0.6)',
   minHeight: '100vh',
   padding: '50px 20px',
 };
 
 const UserDocuments = () => {
-  const { uid: routeUserId } = useParams(); // Get the selected userId from the route parameters
+  const { uid: routeUserId } = useParams();
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedDocs, setUploadedDocs] = useState([]);
   const [comments, setComments] = useState({});
   const [loading, setLoading] = useState(true);
-  const [currentUserRole, setCurrentUserRole] = useState(null); // To store current user's role
-  const [userName, setUserName] = useState(''); // To store the user's name
-  const currentUser = auth.currentUser; // Get the currently logged-in user
+  const [currentUserRole, setCurrentUserRole] = useState(null);
+  const [userName, setUserName] = useState('');
+  const currentUser = auth.currentUser;
 
   useEffect(() => {
     const fetchUserRole = async () => {
       if (currentUser) {
         const userDocRef = doc(db, `users/${currentUser.uid}`);
         const userDoc = await getDoc(userDocRef);
-
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setCurrentUserRole(userData.role); // Set the current user's role (admin, user, etc.)
+          setCurrentUserRole(userData.role);
         } else {
           console.error("User role not found in Firestore.");
         }
@@ -52,13 +52,13 @@ const UserDocuments = () => {
     if (currentUserRole) {
       if (currentUserRole === 'admin' || currentUserRole === 'superadmin') {
         if (routeUserId) {
-          fetchUserName(routeUserId); // Fetch the selected user's name
-          fetchDocuments(routeUserId); // Fetch documents for the selected user
+          fetchUserName(routeUserId);
+          fetchDocuments(routeUserId);
         } else {
           console.error("No routeUserId available for admin.");
         }
       } else {
-        fetchDocuments(currentUser?.uid); // Fetch documents for the current user
+        fetchDocuments(currentUser?.uid);
       }
     }
   }, [routeUserId, currentUserRole]);
@@ -69,7 +69,7 @@ const UserDocuments = () => {
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUserName(userData.name); // Fetch the user's name from Firestore
+        setUserName(userData.name);
       } else {
         console.error("User name not found in Firestore.");
       }
@@ -86,18 +86,18 @@ const UserDocuments = () => {
         return;
       }
 
-      const docsRef = collection(db, `documents/${userId}/files`); // Fetch documents from the subcollection for the selected user
+      const docsRef = collection(db, `documents/${userId}/files`);
       const querySnapshot = await getDocs(docsRef);
 
       if (querySnapshot.empty) {
         console.log(`No documents found for userId: ${userId}`);
-        setUploadedDocs([]); // If no documents are found
+        setUploadedDocs([]);
       } else {
         const documents = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setUploadedDocs(documents); // Set state with fetched documents
+        setUploadedDocs(documents);
       }
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -110,55 +110,76 @@ const UserDocuments = () => {
     setSelectedFile(e.target.files[0]);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return;
-
+  
     const userId = routeUserId && (currentUserRole === 'admin' || currentUserRole === 'superadmin') ? routeUserId : currentUser?.uid;
     const fileName = `${uuidv4()}-${selectedFile.name}`;
-    const storageRef = ref(storage, `documents/${userId}/${fileName}`); // Store under the user's folder in Firebase Storage
-
+    const storageRef = ref(storage, `documents/${userId}/${fileName}`);
+  
     const uploadTask = uploadBytesResumable(storageRef, selectedFile);
-
+  
     uploadTask.on(
       'state_changed',
       (snapshot) => {
         // Handle upload progress
       },
       (error) => {
-        console.error('File upload failed', error);  // Handle error
+        console.error('File upload failed', error);
         toast.error('File upload failed');
       },
       async () => {
         const fileRef = uploadTask.snapshot.ref;
         const downloadURL = await getDownloadURL(fileRef);
-
-        // Add the document details to Firestore under the user's files subcollection
+  
         const docRef = await addDoc(collection(db, `documents/${userId}/files`), {
           name: fileName,
           url: downloadURL,
           comments: '',
           uid: userId,
         });
-
+  
         setUploadedDocs((prev) => [...prev, { id: docRef.id, name: fileName, url: downloadURL, comments: '' }]);
-        setSelectedFile(null);  // Clear selected file
+        setSelectedFile(null);
         toast.success('Document uploaded successfully');
+  
+        // Call sendEmailNotification after successful upload
+        await sendEmailNotification();
       }
     );
+  };  
+
+  // Function to send email notification
+  const sendEmailNotification = async () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    const userName = currentUser?.displayName || "User";
+  
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_API}/sendEmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipients: ['cowanconsultingforms@gmail.com'],
+          subject: `New Document Uploaded By User '${userName}'`,
+          text: 'A document has successfully been uploaded. Navigate to https://mnc-development.web.app/admin to view more information.',
+        }),
+      });
+      console.log('Email notification sent successfully.');
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+    }
   };
 
   const handleFileDelete = async (docId, fileName) => {
     const userId = routeUserId && (currentUserRole === 'admin' || currentUserRole === 'superadmin') ? routeUserId : currentUser?.uid;
-    const storageRef = ref(storage, `documents/${userId}/${fileName}`);  // Path for storage deletion
+    const storageRef = ref(storage, `documents/${userId}/${fileName}`);
 
     try {
-      // Delete the file from Firebase Storage
       await deleteObject(storageRef);
-
-      // Delete the document reference from Firestore (user's files subcollection)
       await deleteDoc(doc(db, `documents/${userId}/files`, docId));
-
-      // Update state to reflect the deleted document
       setUploadedDocs(uploadedDocs.filter(doc => doc.id !== docId));
       toast.success('Document deleted successfully');
     } catch (error) {
@@ -184,10 +205,9 @@ const UserDocuments = () => {
     <div style={backgroundStyle}>
       <div style={overlayStyle}>
         <div className="container mx-auto">
-          {/* Conditionally render the title based on user role */}
           <h2 className="text-4xl font-bold text-white mb-6 text-center">
             {currentUserRole === 'admin' || currentUserRole === 'superadmin' 
-              ? `Manage Documents for ${userName || 'the selected user'}` // Fallback if name is undefined
+              ? `Manage Documents for ${userName || 'the selected user'}`
               : 'Manage Your Documents'}
           </h2>
 

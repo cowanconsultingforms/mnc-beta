@@ -4,14 +4,13 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import nyc from '../assets/nyc.mp4'; // Import the video file
-
+import nyc from '../assets/nyc.mp4';
 
 const Payments = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState(localStorage.getItem('userEmail') || '');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [paymentType, setPaymentType] = useState(''); // Start with an empty state
+  const [paymentType, setPaymentType] = useState('');
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -95,12 +94,35 @@ const Payments = () => {
             paymentIntentId: paymentIntent.id,
             timestamp: new Date(),
           });
+
+          // Send email notification upon successful payment
+          await sendEmailNotification(userId, name);
         }
       }
     } catch (error) {
       setErrorMessage('Payment failed. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to send email notification
+  const sendEmailNotification = async (userId, userName) => {
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_API}/sendEmail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipients: ['cowanconsultingforms@gmail.com'],
+          subject: `New Payment Submitted By User '${userName}'`,
+          text: 'A payment has successfully been completed. Navigate to https://mnc-development.web.app/admin to view more information.',
+        }),
+      });
+      console.log('Email notification sent successfully.');
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
     }
   };
 
@@ -115,7 +137,7 @@ const Payments = () => {
       <div style={styles.formContainer}>
         <form onSubmit={handleSubmit} style={styles.checkoutForm}>
           <h2 style={styles.formTitle}>Make a Payment</h2>
-          <label htmlFor="name" style={styles.label}>First and Last Name:</label>
+          <label htmlFor="name" style={styles.label}>Full Name:</label>
           <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" required style={styles.input} />
           <label htmlFor="email" style={styles.label}>Email:</label>
           <input type="email" id="email" value={email} onChange={(e) => { setEmail(e.target.value); localStorage.setItem('userEmail', e.target.value); }} placeholder="Enter your email" required style={styles.input} />
@@ -123,17 +145,17 @@ const Payments = () => {
           <input type="text" id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Enter your phone number" required style={styles.input} />
           <label htmlFor="paymentType" style={styles.label}>Payment Type:</label>
           <select id="paymentType" value={paymentType} onChange={(e) => setPaymentType(e.target.value)} style={styles.dropdown}>
-            <option value="">--- Select Payment Type ---</option> {/* Default option */}
+            <option value="">--- Select Payment Type ---</option>
             <option value="VIP fee">VIP fee</option>
             <option value="Tenant fee">Tenant fee</option>
             <option value="Partner fee">Partner fee</option>
             <option value="Vendor fee">Vendor fee</option>
             <option value="Other">Other</option>
           </select>
-          <label htmlFor="amount" style={styles.label}>Amount:</label>
-          <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label htmlFor="description" style={styles.label}>Description:</label>
           <input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Payment description" required style={styles.input} />
+          <label htmlFor="amount" style={styles.label}>Amount:</label>
+          <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <CardElement className="card-element" />
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -183,21 +205,25 @@ const styles = {
       borderRadius: '12px',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
       padding: '40px',
-      maxWidth: '500px',
-      width: '90%',
+      maxWidth: '600px',
+      width: '100%',
       textAlign: 'center',
       zIndex: '1', // Ensure the form is above all other elements
+      zoom: 0.75,
     },
     formTitle: {
-      fontSize: '2rem',
-      fontWeight: '600',
-      color: '#2d3748',
-      marginBottom: '1.5rem',
-      borderBottom: '2px solid #e2e8f0',
-      paddingBottom: '10px',
+      fontSize: '2.2rem', // Slightly larger for emphasis
+      fontWeight: '700', // Bolder font weight for prominence
+      color: '#1a202c', // Darker color for better contrast
+      marginBottom: '1.8rem', // Increased spacing below
+      paddingBottom: '12px',
+      textShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)', // Subtle shadow for depth
+      borderBottom: '2px solid', // Slightly thicker for impact
+      borderImage: 'linear-gradient(to right, #4a5568, #718096) 1', // Gradient border effect
     },
+    
     label: {
-      fontSize: '1rem',
+      fontSize: '1.2rem',
       color: '#4a5568',
       textAlign: 'left',
       marginBottom: '8px',
