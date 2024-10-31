@@ -160,7 +160,7 @@ const UserDocuments = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          recipients: ['cowanconsultingforms@gmail.com'],
+          recipients: ['team@mncdevelopment.com'],
           subject: `New Document Uploaded By User '${userName}'`,
           text: 'A document has successfully been uploaded. Navigate to https://mnc-development.web.app/admin to view more information.',
         }),
