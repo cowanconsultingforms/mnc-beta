@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { storage, db, auth } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -111,43 +110,42 @@ const UserDocuments = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
-  
-    const userId = routeUserId && (currentUserRole === 'admin' || currentUserRole === 'superadmin') ? routeUserId : currentUser?.uid;
-    const fileName = `${uuidv4()}-${selectedFile.name}`;
-    const storageRef = ref(storage, `documents/${userId}/${fileName}`);
-  
-    const uploadTask = uploadBytesResumable(storageRef, selectedFile);
-  
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        // Handle upload progress
-      },
-      (error) => {
-        console.error('File upload failed', error);
-        toast.error('File upload failed');
-      },
-      async () => {
-        const fileRef = uploadTask.snapshot.ref;
-        const downloadURL = await getDownloadURL(fileRef);
-  
-        const docRef = await addDoc(collection(db, `documents/${userId}/files`), {
-          name: fileName,
-          url: downloadURL,
-          comments: '',
-          uid: userId,
-        });
-  
-        setUploadedDocs((prev) => [...prev, { id: docRef.id, name: fileName, url: downloadURL, comments: '' }]);
-        setSelectedFile(null);
-        toast.success('Document uploaded successfully');
-  
-        // Call sendEmailNotification after successful upload
-        await sendEmailNotification();
-      }
-    );
-  };  
+  if (!selectedFile) return;
+
+  const userId = routeUserId && (currentUserRole === 'admin' || currentUserRole === 'superadmin') ? routeUserId : currentUser?.uid;
+  const fileName = selectedFile.name;  // Use the original file name without UUID
+  const storageRef = ref(storage, `documents/${userId}/${fileName}`);
+
+  const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+  uploadTask.on(
+    'state_changed',
+    (snapshot) => {
+      // Handle upload progress
+    },
+    (error) => {
+      console.error('File upload failed', error);
+      toast.error('File upload failed');
+    },
+    async () => {
+      const fileRef = uploadTask.snapshot.ref;
+      const downloadURL = await getDownloadURL(fileRef);
+
+      const docRef = await addDoc(collection(db, `documents/${userId}/files`), {
+        name: fileName,
+        url: downloadURL,
+        comments: '',
+        uid: userId,
+      });
+
+      setUploadedDocs((prev) => [...prev, { id: docRef.id, name: fileName, url: downloadURL, comments: '' }]);
+      setSelectedFile(null);
+      toast.success('Document uploaded successfully');
+      await sendEmailNotification();
+    }
+  );
+};
+
 
   // Function to send email notification
   const sendEmailNotification = async () => {
@@ -174,19 +172,29 @@ const UserDocuments = () => {
   };
 
   const handleFileDelete = async (docId, fileName) => {
-    const userId = routeUserId && (currentUserRole === 'admin' || currentUserRole === 'superadmin') ? routeUserId : currentUser?.uid;
+    // Identify the appropriate userId based on role and routeUserId
+    const userId = (currentUserRole === 'admin' || currentUserRole === 'superadmin') && routeUserId 
+      ? routeUserId 
+      : currentUser?.uid;
+  
     const storageRef = ref(storage, `documents/${userId}/${fileName}`);
-
+  
     try {
+      // Delete the file from Firebase Storage
       await deleteObject(storageRef);
+      
+      // Delete the document reference from Firestore
       await deleteDoc(doc(db, `documents/${userId}/files`, docId));
-      setUploadedDocs(uploadedDocs.filter(doc => doc.id !== docId));
+      
+      // Update the state to remove the deleted document from the UI
+      setUploadedDocs((prev) => prev.filter((doc) => doc.id !== docId));
       toast.success('Document deleted successfully');
     } catch (error) {
       console.error('Error deleting document:', error);
       toast.error('Error deleting document');
     }
   };
+  
 
   const handleCommentChange = (docId, comment) => {
     setComments((prev) => ({ ...prev, [docId]: comment }));
