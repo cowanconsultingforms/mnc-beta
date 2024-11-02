@@ -13,8 +13,7 @@ const TenantDetail = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const tenantList = docSnap.data().tenants; // tenants as an array
-        // Check if tenantList is an array and find the tenant
-        const tenantDetail = tenantList.find(tenant => tenant.id === tenantId);
+        const tenantDetail = tenantList.find((tenant) => tenant.id === tenantId);
         if (tenantDetail) {
           setTenant(tenantDetail);
         } else {
@@ -24,13 +23,26 @@ const TenantDetail = () => {
         console.log("No such document!");
       }
     };
-  
+
     fetchTenantDetails();
   }, [id, tenantId]);
 
+  // Placeholder image or tenant profile image
+  const profileImage = tenant?.imageUrl || "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o="; // Use a placeholder if no image
+
   return tenant ? (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+    <div className="bg-white p-4 md:p-6 rounded-lg shadow-md max-w-xl md:max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">Tenant Details</h2>
+
+      {/* Image Section */}
+      <div className="flex justify-center mb-4">
+        <img
+          src={profileImage}
+          alt="Tenant Profile"
+          className="w-32 h-32 rounded-full object-cover"
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Input Fields */}
         {[
@@ -53,7 +65,7 @@ const TenantDetail = () => {
               : "",
           },
         ].map(({ label, value }) => (
-          <div key={label}>
+          <div key={label} className="flex flex-col">
             <label className="font-semibold">{label}:</label>
             <input
               type="text"
@@ -66,12 +78,12 @@ const TenantDetail = () => {
         ))}
 
         {/* Dropdown for Rental Type */}
-        <div>
+        <div className="flex flex-col">
           <label className="font-semibold">Rental Type:</label>
           <select
             className="w-full p-2 border border-gray-300 rounded bg-white"
             value={tenant.rentalType || "Residential"}
-            enabled
+            disabled
           >
             <option value="Residential">Residential</option>
             <option value="Commercial">Commercial</option>
