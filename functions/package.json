@@ -21,7 +21,8 @@
     "firebase-functions": "^4.3.1",
     "fs.promises": "^0.1.2",
     "node-schedule": "^2.1.1",
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "stripe": "^17.1.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.1.0"

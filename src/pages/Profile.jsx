@@ -13,8 +13,6 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState, useRef } from "react";
 import { AiFillHome } from "react-icons/ai";
-import { FaClipboardList } from "react-icons/fa";
-import { VscSymbolProperty } from "react-icons/vsc";
 import { Link, useNavigate } from "react-router-dom";
 
 import { deleteObject, getStorage, ref } from "firebase/storage";
@@ -266,6 +264,23 @@ const Profile = () => {
               Sign out
             </button>
           </form>
+
+            <>
+              <button
+                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
+              >
+                <Link to="/payments/${user.id}" className="flex justify-center items-center">
+                  Payment Management
+                </Link>
+              </button>
+              <button
+                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
+              >
+                <Link to="/userDocuments/${user.id}" className="flex justify-center items-center">
+                  Document Management
+                </Link>
+              </button>
+            </>
 
           <div className="flex justify-center">
             <Menu as="div" className="relative inline-block text-left">
