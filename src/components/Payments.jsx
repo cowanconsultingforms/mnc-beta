@@ -115,7 +115,7 @@ const Payments = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          recipients: ['cowanconsultingforms@gmail.com'],
+          recipients: ['team@mncdevelopment.com'],
           subject: `New Payment Submitted By User '${userName}'`,
           text: 'A payment has successfully been completed. Navigate to https://mnc-development.web.app/admin to view more information.',
         }),
