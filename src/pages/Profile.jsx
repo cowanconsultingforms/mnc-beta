@@ -25,6 +25,8 @@ import { getMessaging, onMessage } from "firebase/messaging";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 // import { createNotification } from "../firebase";
 import { addNotificationToCollection } from "../components/Notification";
+import { Menu } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -229,17 +231,17 @@ const Profile = () => {
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <button onClick={()=>{navigate("/myProfile")}} className="shadow border p-1 hover:ring-2 text-xl text-center mt-6 font-bold">View Your Profile</button>
+        <button
+          onClick={() => {
+            navigate("/myProfile");
+          }}
+          className="shadow border p-1 hover:ring-2 text-xl text-center mt-6 font-bold"
+        >
+          View Your Profile
+        </button>
+
         <div className="w-full max-w-md mt-6 px-3">
-          {/* {signed === "true" && userRole === "admin" && (
-            <div>
-              <button onClick={handleAddNotificationClick(`removed!`)}>
-                Send Notification
-              </button>
-            </div>
-          )} */}
           <form>
-            {/* Name input */}
             <input
               type="text"
               id="name"
@@ -247,8 +249,6 @@ const Profile = () => {
               disabled
               className="mb-6 w-full px-4 py-2 text-lg text-gray-700 border shadow-md rounded transition ease-in-out focus:shadow-lg focus:text-gray-700 bg-white focus:bg-white border-white focus:border-white"
             />
-
-            {/* Email input */}
             <input
               type="email"
               id="email"
@@ -256,9 +256,6 @@ const Profile = () => {
               disabled
               className="mb-6 w-full px-4 py-2 text-lg text-gray-700 border shadow-md rounded transition ease-in-out focus:shadow-lg focus:text-gray-700 bg-white focus:bg-white border-white focus:border-white"
             />
-
-            {/* Sign out button */}
-
             <button
               type="button"
               onClick={onLogout}
@@ -268,8 +265,6 @@ const Profile = () => {
             </button>
           </form>
 
-          {/* Display buttons if not admin or superadmin (available option) */}
-          {/* {!["admin", "superadmin"].includes(userRole) && ( */}
             <>
               <button
                 className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
@@ -286,89 +281,110 @@ const Profile = () => {
                 </Link>
               </button>
             </>
-          {/* )} */}
 
-          {/* Create listing button, navigates to /create-listing page */}
-          {showCreateListing && (
-            <button
-              type="submit"
-              className="w-full mb-3 bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-            >
-              <Link
-                to="/create-listing"
-                className="flex justify-center items-center"
-              >
-                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-                Create a Listing
-              </Link>
-            </button>
-          )}
+          <div className="flex justify-center">
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+                  Options
+                  <ChevronDownIcon className="h-4 w-4 fill-white/60" />
+                  </Menu.Button>
+              </div>
 
-          {showVIPCreateListing && (
-            <button
-              type="submit"
-              className="mt-6 mb-8 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-            >
-              <Link
-                to="/vip-create-listing"
-                className="flex justify-center items-center"
+              <Menu.Items
+                transition
+                anchor="bottom left"
+                className="absolute right-0 z-10 mt-2 w-56 origin-top-right bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
-                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-                Create a VIP Listing
-              </Link>
-            </button>
-          )}
+                {showCreateListing && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        to="/create-listing"
+                        className={`${
+                          active ? "bg-gray-100" : ""
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
+                      >
+                        <AiFillHome className="mr-2" />
+                        Create a Listing
+                      </Link>
+                    )}
+                  </Menu.Item>
+                )}
 
-          {/* {userRole === "agent" ||
-          userRole === "admin" ||
-          userRole === "superadmin" ? (
-            <button
-              type="button"
-              onClick={manageClients}
-              className="flex justify-center items-center mb-9 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-            >
-              <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-              Request Tracker
-            </button>
-          ) : null} */}
-          {showCreateListing && (
-            <button
-              type="submit"
-              className=" w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-            >
-              <Link
-                to="/manageUsersProfile"
-                className="flex justify-center items-center"
-              >
-                <AiFillHome className="mr-2 text-2xl p-1 border-2 rounded-full" />
-                Relationship Management
-              </Link>
-            </button>
-          )}
+                {showVIPCreateListing && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        to="/vip-create-listing"
+                        className={`${
+                          active ? "bg-gray-100" : ""
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
+                      >
+                        <AiFillHome className="mr-2" />
+                        Create a VIP Listing
+                      </Link>
+                    )}
+                  </Menu.Item>
+                )}
+
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      to="/manageUsersProfile"
+                      className={`${
+                        active ? "bg-gray-100" : ""
+                      } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
+                    >
+                      <AiFillHome className="mr-2" />
+                      Relationship Management
+                    </Link>
+                  )}
+                </Menu.Item>
+
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      className={`${
+                        active ? "bg-gray-100" : ""
+                      } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
+                      onClick={() =>
+                        window.open(
+                          "https://docs.google.com/forms/d/e/1FAIpQLSeJEKEmhkNChaStTLliCwconvj07lyfvKA-fQuIpLqQguApMw/viewform?pli=1%22;send_form%26pli%3D1%22%3B&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzc3OGowajeoAgCwAgA&sourceid=chrome&ie=UTF-8",
+                          "_blank"
+                        )
+                      }
+                    >
+                      <FaClipboardList className="mr-2" />
+                      Repair Request Form
+                    </button>
+                  )}
+                </Menu.Item>
+
+                {showCreateListing && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        to="/property-Management"
+                        className={`${
+                          active ? "bg-gray-100" : ""
+                        } flex items-center px-4 py-2 text-sm text-gray-700 rounded-md transition duration-150 ease-in-out`}
+                      >
+                        <VscSymbolProperty className="mr-2" />
+                        Property Management
+                      </Link>
+                    )}
+                  </Menu.Item>
+                )}
+              </Menu.Items>
+            </Menu>
+          </div>
         </div>
       </section>
 
       {/* Display created listings on profile for agents, admins, superadmins */}
       <div className="max-w-6xl px-3 mt-6 mx-auto">
-        {!loading && listings?.length > 0 && (
-          <>
-            <h2 className="text-2xl text-center font-semibold mb-6">
-              Listings
-            </h2>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-              {listings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  id={listing.id}
-                  listing={listing.data}
-                  onDelete={() => onDelete(listing.id)}
-                  onEdit={() => onEdit(listing.id)}
-                  // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
-                />
-              ))}
-            </ul>
-          </>
-        )}
         {!loading && vipListings?.length > 0 && (
           <>
             <h2 className="text-2xl text-center font-semibold mb-6">
@@ -387,6 +403,31 @@ const Profile = () => {
             </ul>
           </>
         )}
+        {/* Footer Information */}
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+        <p>info@mncdevelopment.com</p>
+        <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+            <p>All rights reserved.</p>
+            <span className="hidden md:block">|</span>
+            <p>© MNC Development, Inc. 2008-present.</p>
+          </div>
+          <span className="hidden lg:block">|</span>
+          <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
+        </div>
+        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+          <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+          <span className="hidden md:block">|</span>
+          <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+        </div>
+        <p className=" text-justify [text-align-last:center] ">
+          MNC Development and the MNC Development logos are trademarks of MNC
+          Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate
+          Broker fully supports the principles of the Fair Housing Act and the
+          Equal Opportunity Act. Listing information is deemed reliable, but is
+          not guaranteed.
+        </p>
+      </div>
       </div>
     </>
   );

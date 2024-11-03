@@ -91,30 +91,34 @@ const Dropdown = ({ userId, selected }) => {
 
   const deleteUser = async (userId) => {
     try {
-      setLoadingDeleting(true);
-      const response = await fetch(
-        "https://us-central1-mnc-development.cloudfunctions.net/deleteUser",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
-        }
-      );
+        setLoadingDeleting(true);
+        const response = await fetch(
+            "https://us-central1-mnc-development.cloudfunctions.net/deleteUser",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId }),
+            }
+        );
 
-      if (response.ok) {
-        RefreshButton();
-        console.log("User deleted successfully");
-      } else {
-        console.error("Failed to delete user");
-      }
+        if (response.ok) {
+            // If the response is OK, refresh the data or UI
+            RefreshButton();
+            console.log("User deleted successfully");
+        } else {
+            // Log the status and response text for better debugging
+            const errorMessage = await response.text(); // Get error response text if available
+            console.error(`Failed to delete user: ${response.status} - ${errorMessage}`);
+        }
     } catch (error) {
-      console.error("Error deleting user:", error);
+        console.error("Error deleting user:", error);
     } finally {
-      setLoadingDeleting(false);
+        setLoadingDeleting(false);
     }
-  };
+};
+
 
   return (
     <div>

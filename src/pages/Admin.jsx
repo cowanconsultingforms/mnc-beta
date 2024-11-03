@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import {
   collection,
@@ -5,14 +6,16 @@ import {
   getDocs,
   orderBy,
   query,
+  updateDoc,
   where,
+  doc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
 import Moment from "react-moment";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Dropdown from "../components/Dropdown";
-import Spinner from "../components/Spinner";
+import DatePicker from "react-datepicker"; 
+import "react-datepicker/dist/react-datepicker.css"; 
 import { db } from "../firebase";
 
 const Admin = () => {
@@ -22,11 +25,12 @@ const Admin = () => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState("");
+  const [checkboxValues, setCheckboxValues] = useState({});
+  const [expirationDates, setExpirationDates] = useState({});
   const navigate = useNavigate();
   const auth = getAuth();
 
   useEffect(() => {
-    setLoading(true);
     const fetchUser = async () => {
       try {
         const userRef = collection(db, "users");
@@ -36,42 +40,44 @@ const Admin = () => {
         );
         const user = [];
         const userSnap = await getDocs(userQuery);
-        userSnap.forEach((doc) => {
-          return user.push(doc.data());
-        });
+        userSnap.forEach((doc) => user.push(doc.data()));
 
-        const role = user[0]?.role;
-        setCurrentUserRole(role);
-
-        if (["superadmin", "admin"].includes(role)) {
+        if (["superadmin", "admin"].includes(user[0]?.role)) {
           const usersRef = collection(db, "users");
-
           const q = query(usersRef, orderBy("timestamp", "desc"));
           const querySnap = await getDocs(q);
 
-          let users = [];
+          const usersData = [];
           querySnap.forEach((doc) => {
-            return users.push({
+            usersData.push({
               id: doc.id,
               data: doc.data(),
             });
           });
-          setUsers(users);
-          setFilteredUsers(users);
+
+          setUsers(usersData);
+
+          const initialCheckboxValues = {};
+          const initialExpirationDates = {};
+          usersData.forEach((user) => {
+            initialCheckboxValues[user.id] = user.data.isTopAgent || false;
+            initialExpirationDates[user.id] = user.data.expirationDate?.toDate() || null;
+          });
+          setCheckboxValues(initialCheckboxValues);
+          setExpirationDates(initialExpirationDates);
         } else {
-          toast.error("You cannot access this page.");
           navigate("/");
         }
-        setLoading(false);
       } catch (error) {
         toast.error("Insufficient permissions.");
         navigate("/");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, [auth.currentUser.uid, navigate]);
-
   useEffect(() => {
     if (searchQuery === "") {
       setFilteredUsers(users);
@@ -89,6 +95,64 @@ const Admin = () => {
     return <Spinner />;
   }
 
+    const updateUser = async (userId, isTopAgent, expirationDate) => {
+    const userDocRef = doc(db, "users", userId);
+    try {
+      await updateDoc(userDocRef, {
+        isTopAgent: isTopAgent,
+        expirationDate: expirationDate || null,
+      });
+      console.log(`Updated user ${userId}: isTopAgent = ${isTopAgent}, expirationDate = ${expirationDate}`);
+      toast.success(`Top agent status ${isTopAgent ? 'granted' : 'revoked'}!`);
+    } catch (error) {
+      toast.error("Failed to update top agent status.");
+      console.error("Error updating document: ", error.message);
+    }
+  };
+
+  const handleCheckboxChange = async (userId) => {
+    const newValue = !checkboxValues[userId];
+    setCheckboxValues((prevState) => ({
+      ...prevState,
+      [userId]: newValue,
+    }));
+
+    const expirationDate = newValue ? expirationDates[userId] : null;
+    await updateUser(userId, newValue, expirationDate);
+  };
+
+  const handleDateChange = async (date, userId) => {
+    setExpirationDates((prevState) => ({
+      ...prevState,
+      [userId]: date,
+    }));
+    await updateUser(userId, checkboxValues[userId], date);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const now = new Date();
+      for (const user of users) {
+        const expirationDate = expirationDates[user.id];
+        if (expirationDate && expirationDate <= now) {
+          console.log(`Expiring user ${user.id}...`);
+          setCheckboxValues((prevState) => ({
+            ...prevState,
+            [user.id]: false,
+          }));
+          setExpirationDates((prevState) => ({
+            ...prevState,
+            [user.id]: null,
+          }));
+          await updateUser(user.id, false, null);
+          toast.info(`Top agent status for ${user.data.name} has expired.`);
+        }
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [users, expirationDates]);
+  
   return (
     <div style={{ zoom: 0.75 }}> {/* Contents hard to see, so implimented zoom */}
 
@@ -142,6 +206,28 @@ const Admin = () => {
                         />
                       ) : (
                         <div>{user.data.role}</div>
+                    <td className="p-3 md:p-6 text-center">
+                      {user.data.role === 'agent' && (
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={checkboxValues[user.id] || false}
+                            onChange={() => handleCheckboxChange(user.id)}
+                          />
+                          {checkboxValues[user.id] && (
+                            <DatePicker
+                              selected={expirationDates[user.id]}
+                              onChange={(date) => handleDateChange(date, user.id)}
+                              className="ml-2 p-1 border rounded"
+                              placeholderText="Select expiration date"
+                              minDate={new Date()}
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={1}
+                              dateFormat="Pp"
+                            />
+                          )}
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4">{user.data.email}</td>

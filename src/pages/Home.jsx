@@ -415,7 +415,7 @@ const Home = () => {
                 aria-label="city, zip, address, school"
                 // value={searchTerm}
                 onChange={onChange}
-                style={{ width: "380px", borderRadius: "10px" }}
+                style={{ width: "380px", borderRadius: "6px" }}
               />
               {notFound && (
                 <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
