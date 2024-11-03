@@ -2,18 +2,89 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const serviceAccount = require("./key.json");
 const nodemailer = require("nodemailer");
-const cors = require("cors")({ origin: true });
-require("dotenv").config();
-const schedule = require("node-schedule");
-let emailSent = "false";
-let agentEmailSent = "false";
+const cors = require("cors");
 
+// Load environment variables from .env.local in development
+require("dotenv").config({ path: '../.env.local' });
+const schedule = require("node-schedule");
+
+// Initialize the Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://mnc-development-default-rtdb.firebaseio.com",
 });
 
+let stripeSecretKey;
+
+// Set up Stripe API key based on environment
+if (process.env.NODE_ENV === 'production') {
+  stripeSecretKey = functions.config().stripe.secret; // Use Firebase config in production
+} else {
+  stripeSecretKey = process.env.STRIPE_SECRET_KEY; // Use local .env.local in development
+}
+
+const stripe = require('stripe')(stripeSecretKey);
+
+// Firestore database reference
 const db = admin.firestore();
+
+// Allowed origins for CORS
+const allowedOrigins = ['http://localhost:5175', 'https://us-central1-mnc-development.cloudfunctions.net'];
+
+// CORS options setup
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Check if the incoming origin is in the list of allowed origins or if no origin is provided (like in server-to-server requests)
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+};
+
+// Function to handle preflight CORS requests
+const handleCors = (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Allow-Origin', req.headers.origin);
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(204).send(''); // Send a 204 response for preflight requests
+  }
+};
+
+// Create Payment Intent endpoint for Stripe
+exports.createPaymentIntent = functions.https.onRequest((req, res) => {
+  cors(corsOptions)(req, res, async () => {
+    handleCors(req, res); // Handle preflight requests
+
+    try {
+      const { amount, currency } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).send({ error: 'Invalid amount' });
+      }
+
+      // Create a PaymentIntent with Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount, // Amount should already be in cents from the frontend
+        currency: currency || 'usd',
+      });
+
+      res.set('Access-Control-Allow-Origin', req.headers.origin); // Dynamically set the allowed origin
+      res.status(200).send({
+        clientSecret: paymentIntent.client_secret, // Return the client secret to the frontend
+      });
+    } catch (error) {
+      console.error('Error creating PaymentIntent:', error);
+      res.status(500).send({
+        error: error.message || 'Failed to create payment intent',
+      });
+    }
+  });
+});
 
 const updateNumberOfDaysLeft = async () => {
   try {
