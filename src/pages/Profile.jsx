@@ -27,6 +27,11 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addNotificationToCollection } from "../components/Notification";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { FaClipboardList } from "react-icons/fa";
+import { VscSymbolProperty } from "react-icons/vsc";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { AiOutlineFileText } from "react-icons/ai";
+
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -265,23 +270,6 @@ const Profile = () => {
             </button>
           </form>
 
-            <>
-              <button
-                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
-              >
-                <Link to="/payments/${user.id}" className="flex justify-center items-center">
-                  Payment Management
-                </Link>
-              </button>
-              <button
-                className="mb-3 w-full bg-gray-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-gray-700"
-              >
-                <Link to="/userDocuments/${user.id}" className="flex justify-center items-center">
-                  Document Management
-                </Link>
-              </button>
-            </>
-
           <div className="flex justify-center">
             <Menu as="div" className="relative inline-block text-left">
               <div>
@@ -377,6 +365,31 @@ const Profile = () => {
                     )}
                   </Menu.Item>
                 )}
+                {/* Payment Management Button */}
+    <Menu.Item>
+      {({ active }) => (
+        <button
+          onClick={() => navigate("/payments/${user.id}")}
+          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+        >
+          <FaMoneyBillWave className="mr-2" />
+          Payment Management
+        </button>
+      )}
+    </Menu.Item>
+
+    {/* Document Management Button */}
+    <Menu.Item>
+      {({ active }) => (
+        <button
+          onClick={() => navigate("/userDocuments/${user.id}")}
+          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+        >
+          <AiOutlineFileText className="mr-2" />
+          Document Management
+        </button>
+      )}
+    </Menu.Item>
               </Menu.Items>
             </Menu>
           </div>
