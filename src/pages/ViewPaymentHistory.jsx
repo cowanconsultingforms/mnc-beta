@@ -55,7 +55,7 @@ const PaymentHistory = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>
-        {role === 'admin' && routeUserId ? `Payment History of ${userName}` : 'Your Payment History'}
+        {role === 'admin' && routeUserId ? `Payment History for ${userName || 'Admin'}` : 'Your Payment History'}
       </h2>
       {paymentHistory.length > 0 ? (
         paymentHistory.map((payment, index) => (

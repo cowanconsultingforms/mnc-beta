@@ -215,7 +215,7 @@ const UserDocuments = () => {
         <div className="container mx-auto">
           <h2 className="text-4xl font-bold text-white mb-6 text-center">
             {currentUserRole === 'admin' || currentUserRole === 'superadmin' 
-              ? `Manage Documents for ${userName || 'Legalities'}`
+              ? `Manage Documents for ${userName || 'Admin'}`
               : 'Manage Your Documents'}
           </h2>
 
