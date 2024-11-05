@@ -45,6 +45,7 @@ const EditUser = () => {
     instagramLink: "",
     dob: new Date(),
     about: "",
+    testimonial: "",
     educations: [],
     specialities: [],
     agent: "",
@@ -63,6 +64,7 @@ const EditUser = () => {
     educations,
     specialities,
     agent,
+    testimonial,
   } = formData;
   const navigate = useNavigate();
   const [isTenant, setIsTenant] = useState(false);
@@ -587,6 +589,21 @@ const EditUser = () => {
             onChange={onChange}
             placeholder={user.about ? user.about : "About"}
           />
+          {user.role === "agent" && (
+            <>
+              <label>Testimonial</label>
+              <textarea
+                className="w-full h-40 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+                type="text"
+                id="testimonial"
+                value={testimonial}
+                onChange={onChange}
+                placeholder={
+                  user.testimonial ? user.testimonial : "Testimonial"
+                }
+              />
+            </>
+          )}
           <p>Date of Birth</p>
           <DatePicker
             selected={formData.dob}

@@ -1,18 +1,19 @@
 import emailjs from "@emailjs/browser";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, Fragment } from "react";
 import ContactImage from "../assets/img/contact.jpeg";
 import fetch from 'node-fetch';
-import { Field, Label, Switch } from '@headlessui/react';
+import { Field, Label, Switch, Transition, Dialog } from '@headlessui/react';
 
 const ContactUs = () => {
   const [agreed, setAgreed] = useState(false);
-  const [name, setName] = useState(""); // Updated to a single name state
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message2, setMessage] = useState("");
   const [sent, setSent] = useState("Send Message");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const form = useRef();
-  const textareaRef = useRef(); // Reference for the textarea
+  const textareaRef = useRef();
 
   const contactUs = async (e) => {
     e.preventDefault();
@@ -22,19 +23,14 @@ const ContactUs = () => {
     }
 
     setSent("Sent!");
-
-    // Send the form data to the server
     const subject = "Contact request";
     const to = "team@mncdevelopment.com";
-    const phone2 = phone;
-    const message = `Name: ${name}\nPhone: ${phone2}\nEmail: ${email}\nMessage: ${message2}`;
+    const message = `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nMessage: ${message2}`;
 
     try {
       const response = await fetch('https://us-central1-mnc-development.cloudfunctions.net/contactUs', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, message, subject }),
       });
 
@@ -54,8 +50,8 @@ const ContactUs = () => {
   };
 
   const adjustTextareaHeight = () => {
-    textareaRef.current.style.height = 'auto'; // Reset height to auto to shrink
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set height based on scroll height
+    textareaRef.current.style.height = 'auto';
+    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
   };
 
   return (
@@ -128,13 +124,13 @@ const ContactUs = () => {
               <label htmlFor="message" className="block text-sm font-semibold leading-6 text-gray-900">Message</label>
               <div className="mt-2.5">
                 <textarea
-                  ref={textareaRef} // Attach ref to the textarea
+                  ref={textareaRef}
                   id="message"
                   name="message"
-                  rows={3} // Start with 1 row
+                  rows={3}
                   value={message2}
-                  onChange={handleMessageChange} // Update this to handle message change
-                  className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 resize-none" // Prevent manual resizing
+                  onChange={handleMessageChange}
+                  className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 resize-none"
                   required
                 />
               </div>
@@ -155,9 +151,9 @@ const ContactUs = () => {
               </div>
               <Label className="text-sm leading-6 text-gray-600">
                 By selecting this, you agree to our{' '}
-                <a href="#" className="font-semibold text-gray-600">
+                <button type="button" className="font-semibold text-gray-600 underline" onClick={() => setIsDialogOpen(true)}>
                   privacy&nbsp;policy
-                </a>.
+                </button>.
               </Label>
             </Field>
           </div>
@@ -171,6 +167,107 @@ const ContactUs = () => {
           </div>
         </form>
       </div>
+
+      {/* Privacy Policy Dialog */}
+      <Transition appear show={isDialogOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => setIsDialogOpen(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all mt-12">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                    Privacy Policy
+                  </Dialog.Title>
+                  <div className="mt-2 space-y-4 text-xs text-gray-500">
+                  <p><strong>Who we are</strong><br />
+                    Suggested text: Our website address is: <a href="https://www.mncdevelopment.com" className="underline text-gray-600">https://www.mncdevelopment.com</a>.
+                  </p>
+
+                  <p><strong>Comments</strong><br />
+                    When visitors leave comments on the site we may collect the data shown in the comments form, and also the visitor’s IP address and browser user agent string to help spam detection.
+                  </p>
+
+                  <p>An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service to see if you are using it. The Gravatar service privacy policy is available here: <a href="https://automattic.com/privacy/" className="underline text-gray-600">https://automattic.com/privacy/</a>. After approval of your comment, your profile picture may be visible to the public in the context of your comment.
+                  </p>
+
+                  <p><strong>Media</strong><br />
+                    If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.
+                  </p>
+
+                  <p><strong>Cookies</strong><br />
+                    If you leave a comment on our site you may opt-in to saving your name, email address, and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies may last for one year.
+                  </p>
+
+                  <p>If you visit our login page, we may set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.
+                  </p>
+
+                  <p>When you log in, we may also set up several cookies to save your login information and your screen display choices. Login cookies may last for two days, and screen options cookies may last for a year. If you select “Remember Me”, your login may persist for two weeks. If you log out of your account, the login cookies may be removed.
+                  </p>
+
+                  <p>If you edit or publish an article, an additional cookie may be saved in your browser. This cookie includes no personal data and simply indicates the post ID of the article you just edited. It may expire after 1 day.
+                  </p>
+
+                  <p><strong>Embedded content from other websites</strong><br />
+                    Articles on this site may include embedded content (e.g., videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.
+                  </p>
+
+                  <p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracking your interaction with the embedded content if you have an account and are logged in to that website.
+                  </p>
+
+                  <p><strong>Who we share your data with</strong><br />
+                    If you request a password reset, your IP address may be included in the reset email.
+                  </p>
+
+                  <p><strong>How long we retain your data</strong><br />
+                    If you leave a comment, the comment and its metadata may be retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.
+                  </p>
+
+                  <p>For users that register on our website (if any), we also store the personal information they provide in their user profile. Some users may see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.
+                  </p>
+
+                  <p><strong>What rights you have over your data</strong><br />
+                    If you have an account on this site, or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.
+                  </p>
+
+                  <p><strong>Where your data is sent</strong><br />
+                    Visitor comments may be checked through an automated spam detection service.
+                  </p>
+                </div>
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-600 focus-visible:ring-offset-2"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
 
       {/* Legal Section as Footer */}
       <footer className="mt-auto justify-center items-center text-center mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
