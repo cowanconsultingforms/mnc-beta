@@ -311,6 +311,13 @@ const MyProfile = () => {
             <p className="text-base leading-6 font-normal">{user.about}</p>
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-4 mx-10 mb-20 justify-center ">
+        <div className="col-span-1"></div>
+        <div className="col-span-1">
+          <h1 className="text-3xl">Testimonial</h1>
+          <p className="text-base leading-6 font-normal">{user.testimonial}</p>
+        </div>
+        </div>
       </section>
     </div>
   );
