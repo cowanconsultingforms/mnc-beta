@@ -26,6 +26,7 @@
     "express": "^4.18.2",
     "firebase": "^10.1.0",
     "firebase-cli": "^1.2.0",
+    "fuse.js": "^7.0.0",
     "nodemailer": "^6.9.7",
     "react": "^18.2.0",
     "react-chatbot-kit": "^2.1.2",
