@@ -1,10 +1,10 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import ListingItem from "../components/ListingItem";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { Link } from "react-router-dom";
 
 const PropertyManagement = () => {
   const [propertyListings, setPropertyListings] = useState([]);
@@ -20,7 +20,7 @@ const PropertyManagement = () => {
 
       setPropertyListings(listings);
     } catch (error) {
-      console.log("there was an error", error);
+      console.log("There was an error fetching property listings:", error);
     }
   };
 
@@ -32,41 +32,26 @@ const PropertyManagement = () => {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 3,
-      slidesToSlide: 3, // optional, default to 1.
+      slidesToSlide: 3,
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 2,
-      slidesToSlide: 2, // optional, default to 1.
+      slidesToSlide: 2,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 1,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
   };
 
   return (
-    <div>
-      {/* {!propertyListings.length ? (
-        <p>No properties available</p>
-      ) : (
-        <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-          {propertyListings.map((listing) => (
-            <ListingItem
-              key={listing.id}
-              id={listing.id}
-              listing={listing.data}
-              onDelete={() => onDelete(listing.id)}
-              onEdit={() => onEdit(listing.id)}
-              // onClick ={() => handleAddNotificationClick(`${listingName} is removed!`)}
-            />
-          ))}
-        </ul>
-      )} */}
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Property Management</h1>
       <Carousel
-        swipeable={false}
-        draggable={false}
+        swipeable={true}
+        draggable={true}
         showDots={true}
         responsive={responsive}
         ssr={true}
@@ -86,13 +71,22 @@ const PropertyManagement = () => {
             key={listing.id}
             id={listing.id}
             listing={listing.data}
-            onDelete={() => onDelete(listing.id)}
-            onEdit={() => onEdit(listing.id)}
             isPropertyManagement={true}
           />
         ))}
       </Carousel>
-      ;
+
+      {/* Single Add Tenant Button - Positioned Below Carousel */}
+      {propertyListings.length > 0 && (
+        <div className="flex justify-center mt-6">
+          <Link
+            to={`/add-tenant/${propertyListings[0].id}`} // Link to AddTenant with the first property's ID
+            className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
+          >
+            Add Tenant
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
