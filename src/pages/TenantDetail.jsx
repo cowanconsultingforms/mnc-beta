@@ -42,13 +42,20 @@ const TenantDetail = () => {
     try {
       const docRef = doc(db, "propertyListings", id);
       const docSnap = await getDoc(docRef);
+
       if (docSnap.exists()) {
-        // Get current tenants list from Firestore
+        // Get current tenants list from Firestore or initialize as an empty array
         const tenants = docSnap.data().tenants || [];
+
         // Update the specific tenant in the tenants array
         const updatedTenants = tenants.map((tenant) =>
           tenant.id === tenantId ? { ...editableTenant } : tenant
         );
+
+        // If tenant doesn't exist in the array, push the new tenant to the list
+        if (!updatedTenants.some(tenant => tenant.id === tenantId)) {
+          updatedTenants.push({ ...editableTenant });
+        }
 
         // Save the updated tenants array back to Firestore
         await updateDoc(docRef, { tenants: updatedTenants });

@@ -68,6 +68,7 @@ const Home = () => {
   const [elevator, setElevator] = useState("");
   const [garage, setGarage] = useState("");
   const [airCondition, setAirCondition] = useState("");
+  const [smartHome, setSmartHome] = useState("");
   const [parkingChecked, setParkingChecked] = useState(false);
   const [filter, setFilter] = useState();
   const [applyFilt, setApplyFilt] = useState();
@@ -357,6 +358,10 @@ const Home = () => {
 
   const HandleAircondition = () => {
     setAirCondition(!airCondition);
+  };
+
+  const SmartHome = () => {
+    setSmartHome(!smartHome);
   };
   const handleParkingCheckboxChange = () => {
     setParkingChecked(!parkingChecked);
@@ -1276,6 +1281,17 @@ const Home = () => {
                     &nbsp; Must Have Air Conditioning
                   </label>
                 </div>
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={smartHome}
+                      onChange={SmartHome}
+                    />
+                    &nbsp; Smart Home Compatible
+                  </label>
+                </div>
+                
               </div>
 
               <div style={{ marginTop: "10px" }}>

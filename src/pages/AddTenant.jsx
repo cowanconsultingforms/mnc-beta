@@ -39,7 +39,9 @@ const AddTenant = () => {
         setProperties(listings);
 
         if (propertyId) {
-          const selectedProperty = listings.find((property) => property.id === propertyId);
+          const selectedProperty = listings.find(
+            (property) => property.id === propertyId
+          );
           if (selectedProperty) {
             setSelectedPropertyId(propertyId);
             setTenant((prev) => ({
@@ -59,7 +61,10 @@ const AddTenant = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTenant((prev) => ({ ...prev, [name]: value }));
+    setTenant((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleAddTenant = async () => {
@@ -68,9 +73,21 @@ const AddTenant = () => {
       return;
     }
 
+    // Ensure tenant object has property data before adding
+    if (!tenant.propertyName || !tenant.building) {
+      setError("Property details are missing.");
+      return;
+    }
+
     try {
+      // Logging tenant object to check if all fields are correctly populated
+      console.log("Adding tenant:", tenant);
+
+      // Adding tenant to Firestore
       const tenantsRef = collection(db, "tenants");
       await addDoc(tenantsRef, tenant);
+
+      // Clear error and navigate to the property management page
       setError("");
       console.log("Tenant added successfully");
       navigate("/property-management");
@@ -93,7 +110,9 @@ const AddTenant = () => {
           onChange={(e) => {
             const selectedId = e.target.value;
             setSelectedPropertyId(selectedId);
-            const selectedProperty = properties.find((property) => property.id === selectedId);
+            const selectedProperty = properties.find(
+              (property) => property.id === selectedId
+            );
             if (selectedProperty) {
               setTenant((prev) => ({
                 ...prev,
@@ -103,7 +122,9 @@ const AddTenant = () => {
             }
           }}
         >
-          <option value="" disabled>Select a Property</option>
+          <option value="" disabled>
+            Select a Property
+          </option>
           {properties.map((property) => (
             <option key={property.id} value={property.id}>
               {property.data.name}
