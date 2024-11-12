@@ -1,0 +1,65 @@
+.review {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.review:hover {
+  transform: scale(1.05);
+}
+
+.img-container {
+  position: relative;
+  width: 100%;
+  height: 75%;
+  overflow: hidden;
+}
+
+.person-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.quote-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--clr-primary-5);
+  color: white;
+  border-radius: 50%;
+  transform: translateY(25%);
+}
+
+.author {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.job {
+  color: var(--clr-primary-5);
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.blockquote {
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+.text-right {
+  text-align: right;
+}
+
+button:hover {
+  background: var(--clr-primary-5);
+}
