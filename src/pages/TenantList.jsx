@@ -8,6 +8,7 @@ const TenantList = () => {
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState("active"); // Add state for filter (active or past)
 
   const fetchSingleListing = async (listingId) => {
     try {
@@ -16,15 +17,24 @@ const TenantList = () => {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        const fetchedTenants = Array.isArray(data.tenants)
-          ? data.tenants
-          : [data.tenants];
-        setTenants(fetchedTenants);
+        
+        let fetchedTenants = [];
+        if (Array.isArray(data.tenants)) {
+          fetchedTenants = data.tenants;
+        } else if (data.tenants) {
+          fetchedTenants = [data.tenants];
+        }
+
+        // Filter tenants based on the selected status filter
+        const filteredTenants = fetchedTenants.filter(tenant => tenant.status === filter);
+        setTenants(filteredTenants);
+        console.log("Fetched tenants:", filteredTenants); // Debugging log
       } else {
         setError("No such document exists.");
       }
     } catch (error) {
       setError("Failed to fetch tenants.");
+      console.error("Fetch error:", error); // Debugging log
     } finally {
       setLoading(false);
     }
@@ -32,12 +42,21 @@ const TenantList = () => {
 
   useEffect(() => {
     fetchSingleListing(id);
-  }, [id]);
+  }, [id, filter]); // Fetch again if the filter or id changes
 
   const formatDate = (timestamp) => {
-    if (timestamp) {
+    if (timestamp && typeof timestamp.toDate === 'function') {
       const date = timestamp.toDate();
       return date.toLocaleDateString();
+    }
+    if (timestamp instanceof Date) {
+      return timestamp.toLocaleDateString();
+    }
+    if (typeof timestamp === "string") {
+      const date = new Date(timestamp);
+      if (!isNaN(date)) {
+        return date.toLocaleDateString();
+      }
     }
     return "N/A";
   };
@@ -52,31 +71,50 @@ const TenantList = () => {
 
   return (
     <div className="flex justify-center bg-gray-50 py-10">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl px-4">
-        {tenants.length === 0 ? (
-          <p className="text-gray-600 text-center col-span-full">
-            No tenants found for this property
-          </p>
-        ) : (
-          tenants.map((tenant, index) => (
-            <Link
-              key={tenant.id || index}
-              to={`/property-management/${id}/tenant/${tenant.id}`}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 flex flex-col items-center text-center"
-              style={{ height: "auto" }} // Ensures box height is only as large as needed
-            >
-              <p className="text-lg font-semibold text-gray-800">
-                {tenant.name}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                DOB:{" "}
-                <span className="font-medium text-gray-700">
-                  {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}
-                </span>
-              </p>
-            </Link>
-          ))
-        )}
+      <div className="max-w-6xl w-full px-4">
+        {/* Filter Buttons */}
+        <div className="mb-4 text-center">
+          <button 
+            onClick={() => setFilter("active")} 
+            className={`px-4 py-2 mx-2 ${filter === "active" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            Active Tenants
+          </button>
+          <button 
+            onClick={() => setFilter("past")} 
+            className={`px-4 py-2 mx-2 ${filter === "past" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            Past Tenants
+          </button>
+        </div>
+
+        {/* Tenant List */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {tenants.length === 0 ? (
+            <p className="text-gray-600 text-center col-span-full">
+              No tenants found for this property
+            </p>
+          ) : (
+            tenants.map((tenant, index) => (
+              <Link
+                key={tenant.id || index}
+                to={`/property-management/${id}/tenant/${tenant.id}`}
+                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 flex flex-col items-center text-center"
+                style={{ height: "auto" }} // Ensures box height is only as large as needed
+              >
+                <p className="text-lg font-semibold text-gray-800">
+                  {tenant.name || "Unnamed Tenant"}
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  DOB:{" "}
+                  <span className="font-medium text-gray-700">
+                    {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}
+                  </span>
+                </p>
+              </Link>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

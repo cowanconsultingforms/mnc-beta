@@ -3,10 +3,17 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Link } from "react-router-dom";
 import "../css/faq.css";
 import { Dialog, Transition } from "@headlessui/react";
+import { useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
+
 
 function FAQPage() {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [openDialog, setOpenDialog] = useState(null);
+  const navigate = useNavigate();
+  const auth = getAuth();
+  const user = auth.currentUser ? auth.currentUser.uid : null;
+
 
   const faqData = [
     {
@@ -42,8 +49,25 @@ function FAQPage() {
       answer: "As a paid VIP subscriber:\n\n1) Be the first to browse exclusive listings to RENT or BUY before they hit the market.\n2) SELL your home while maintaining your privacy. Listing your home as a private exclusive allows you to control what information is shared about you and your home while still getting exposure to top agents at MNC Development. A private exclusive listing is an off-market home that can be shared by an agent directly with their colleagues and their buyers. Property details aren't disseminated widely and won't appear on public home search websites.\n\nDiscretion: Privacy is the ultimate commodity and the decision to sell your home is a personal one.\nFlexibility: Decide when to share details about your home, including price, more broadly on your own timing.\nQuality: Retain exposure to Compass agents, including premium placement on our agent facing platform.\nValue: Get the best offer by testing the market privately to gather key insights without your listing getting stale.\n\nReasons why you might choose to sell your home as a private exclusive:\nNew job or relocation\nFamily changes like marriage or divorce\nEvolving financial circumstances\nHealth issues\nValuable belongings like art or furniture\nOpposition to holding open houses.\n\nContact us now for pricing.",
     },
     {
-      question: "What's the step by step procedure to obtain the VIP membership?",
-      answer: "If interested in a VIP subscription, register for a normal user account. Then contact us for a VIP subscription quote. Pay the agreed yearly VIP membership fee via Zelle @ mncdevelopmentapartments@gmail.com. In the memo of the Zelle transfer, type: VIP yearly membership fee. Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 'VIP'.",
+      question: "What's the step-by-step procedure to obtain the VIP membership?",
+      answer: (
+        <span>
+          If interested in a VIP subscription, register for a normal user account. Then contact us for a VIP subscription quote. Pay the agreed yearly VIP membership fee via Zelle @ mncdevelopmentapartments@gmail.com. In the memo of the Zelle transfer, type: VIP yearly membership fee. Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 'VIP'.
+          <br />
+          <button onClick={() => navigate(`/payments/${user.id}`)}
+            style={{
+              color: 'blue',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              textDecoration: 'underline'
+            }}
+            >
+            Go to Payment Page
+          </button>
+        </span>
+      ),
     },
   ];
 
