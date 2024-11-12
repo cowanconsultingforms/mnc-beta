@@ -29,6 +29,9 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addNotificationToCollection } from "../components/Notification";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import "../css/Home1.css";
+import "../css/PopUp.css";
+import SavedSearches from "../pages/SavedSearches";
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -368,26 +371,15 @@ const Profile = () => {
         </div>
       </section>
 
-      {/* Display created listings on profile for agents, admins, superadmins */}
-      <div className="max-w-6xl px-3 mt-6 mx-auto">
-        {!loading && vipListings?.length > 0 && (
-          <>
-            <h2 className="text-2xl text-center font-semibold mb-6">
-              VIP Listings
-            </h2>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-              {vipListings.map((vipListing) => (
-                <VipListingItem
-                  key={vipListing.id}
-                  id={vipListing.id}
-                  vipListing={vipListing.data}
-                  onDelete={() => vipOnDelete(vipListing.id)}
-                  onEdit={() => vipOnEdit(vipListing.id)}
-                />
-              ))}
-            </ul>
-          </>
-        )}
+      {/* Saved Searches Section */}
+      <>
+    <section className="max-w-6xl mt-6 mx-auto flex justify-center items-center flex-col">
+      
+      <SavedSearches userId={userId} /> 
+
+    </section>
+  </>
+      
         {/* Footer Information */}
       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
         <p>info@mncdevelopment.com</p>
@@ -413,7 +405,7 @@ const Profile = () => {
           not guaranteed.
         </p>
       </div>
-      </div>
+    
     </>
   );
 };
