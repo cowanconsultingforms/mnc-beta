@@ -9,13 +9,18 @@ const TenantDetail = () => {
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
 
-  useEffect(() => {
-    const fetchTenantDetails = async () => {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const tenantList = docSnap.data().tenants || [];
+ useEffect(() => {
+  const fetchTenantDetails = async () => {
+    const docRef = doc(db, "propertyListings", id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const tenantList = docSnap.data().tenants || []; // Default to empty array if tenants doesn't exist
+      
+      if (Array.isArray(tenantList)) {
+        // Find the tenant by tenantId
         const tenantDetail = tenantList.find((tenant) => tenant.id === tenantId);
+        
         if (tenantDetail) {
           setTenant(tenantDetail);
           setEditableTenant({ ...tenantDetail }); // Create editable copy
@@ -23,13 +28,15 @@ const TenantDetail = () => {
           console.error("No tenant found with the given ID");
         }
       } else {
-        console.log("No such document!");
+        console.error("Tenants data is not an array or is undefined");
       }
-    };
+    } else {
+      console.log("No such document!");
+    }
+  };
 
-    fetchTenantDetails();
-  }, [id, tenantId]);
-
+  fetchTenantDetails();
+}, [id, tenantId]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditableTenant((prev) => ({
