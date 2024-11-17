@@ -13,7 +13,18 @@ function FAQPage() {
   const navigate = useNavigate();
   const auth = getAuth();
   const user = auth.currentUser ? auth.currentUser.uid : null;
+  const [showModal, setShowModal] = useState(false);
 
+  const handleStripeLinkClick = (e) => {
+    if (!user) {
+      e.preventDefault(); // Prevent navigation
+      setShowModal(true); // Show the popup
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   const faqData = [
     {
@@ -51,22 +62,86 @@ function FAQPage() {
     {
       question: "What's the step-by-step procedure to obtain the VIP membership?",
       answer: (
-        <span>
-          If interested in a VIP subscription, register for a normal user account. Then contact us for a VIP subscription quote. Pay the agreed yearly VIP membership fee via Zelle @ mncdevelopmentapartments@gmail.com. In the memo of the Zelle transfer, type: VIP yearly membership fee. Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 'VIP'.
-          <br />
-          <button onClick={() => navigate(`/payments/${user.id}`)}
-            style={{
-              color: 'blue',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
+        <>
+          <p className="mb-4 text-lg text-gray-700">
+            If interested in a VIP subscription, register for a normal user account, if you have not done so already 
+            (<a 
+              href="/sign-up" 
+              target="_blank" 
+              className="text-blue-600 hover:underline"
             >
-            Go to Payment Page
-          </button>
-        </span>
+              sign up
+            </a>). Then email us for a VIP subscription quote
+            (<a 
+              href="mailto:team@mncdevelopment.com" 
+              className="text-blue-600 hover:underline"
+            >
+              team@mncdevelopment.com
+            </a>). 
+            Then you must pay the requisite fee via Zelle or Stripe:
+          </p>
+          <ol className="list-decimal ml-6 mb-4 text-gray-700">
+            <li className="mb-4">
+              Pay the agreed yearly VIP membership fee via Zelle at 
+              <span className="font-semibold text-gray-900"> mncdevelopmentapartments@gmail.com</span>. 
+              In the memo of the Zelle transfer, type: 
+              <span className="font-medium italic"> VIP yearly membership fee</span>. 
+              Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 
+              <span className="font-semibold"> 'VIP'</span>.
+            </li>
+            <li>
+              Pay the agreed yearly VIP membership fee via {' '}
+              <a 
+                href="/payments/:uid"
+                onClick={handleStripeLinkClick} // Check authentication on click
+                className="text-blue-600 hover:underline"
+              >
+                Stripe
+              </a>.
+              In the memo section of the Stripe transfer, type: 
+              <span className="font-medium italic"> VIP yearly membership fee</span>. 
+              Within 48 hours of receipt of the Stripe payment, an admin will change your regular user account to 
+              <span className="font-semibold"> 'VIP'</span>.
+            </li>
+          </ol>
+
+          {/* Popup Given If User Not Logged In and Attempts to Access Stripe Payment Page */}
+          {showModal && (
+            <div
+              className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+              role="dialog"
+              aria-live="polite"
+            >
+              <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center justify-center">
+                  <span className="mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v6m0 0a2 2 0 01-2-2v-4m4 0v4a2 2 0 01-2 2zm-8-6V7a4 4 0 018-0v2a4 4 0 01-8 0z" />
+                    </svg>
+                  </span>
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You must be logged in to access the Stripe payment page. Please log in and try again.
+                </p>
+                <div className="flex justify-center space-x-4">
+                  <button
+                    onClick={() => window.location.href = '/login'} // Redirect to login page
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={closeModal}
+                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       ),
     },
   ];

@@ -77,7 +77,7 @@ const PaymentHistory = () => {
       )}
 
       <button style={styles.backButton} onClick={() => navigate(-1)}>
-        {role === 'admin' ? 'Back to Admin Page' : 'Back to Payments'}
+        {role === 'admin' ? 'Back to Previous Page' : 'Back to Payments'}
       </button>
     </div>
   );
@@ -126,7 +126,7 @@ const styles = {
   amount: {
     fontSize: '1.8rem',
     fontWeight: 'bold',
-    color: '#2b6cb0',
+    color: 'black',
     textAlign: 'right',
   },
   paymentType: {
@@ -145,7 +145,7 @@ const styles = {
     display: 'block',
     width: '100%',
     padding: '12px 0',
-    backgroundColor: '#2b6cb0',
+    backgroundColor: 'grey',
     color: '#fff',
     textAlign: 'center',
     borderRadius: '8px',
