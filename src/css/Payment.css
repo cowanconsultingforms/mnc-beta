@@ -1,10 +1,12 @@
 .card-element {
-  border: 1px solid #cbd5e0; /* Black outline */
-  border-radius: 8px; /* Oval rectangular shape */
-  padding: 12px; /* Space inside the field */
-  height: 45px; /* Fixed height */
-  width: 100%; /* Full width */
-  box-sizing: border-box; /* Ensure padding is included in width/height */
-  margin-bottom: 8px; /* Add spacing between fields */
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  padding: 12px;
+  height: auto; /* Allow height to adjust dynamically */
+  min-height: 55px; /* Ensure it has a minimum height */
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
   font-size: 1rem;
+  overflow: visible;
 }
