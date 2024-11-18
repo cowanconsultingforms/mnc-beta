@@ -7,9 +7,9 @@ import { toast } from 'react-toastify';
 import { getAuth } from 'firebase/auth';
 
 const backgroundStyle = {
-  backgroundImage: 'url("https://c8.alamy.com/comp/2M6021K/document-management-data-system-business-technology-concept-dms-on-virtual-screen-2M6021K.jpg")',
+  backgroundImage: 'url("https://images.unsplash.com/photo-1581398618822-bc404e38a82f?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
   backgroundSize: 'cover',
-  backgroundPosition: 'center',
+  backgroundPosition: 'top',
   backgroundRepeat: 'no-repeat',
   minHeight: '100vh',
 };
@@ -224,7 +224,7 @@ const UserDocuments = () => {
             <input type="file" onChange={handleFileChange} className="w-full mb-4" />
             <button
               onClick={handleUpload}
-              className="py-2 px-4 w-full bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+              className="py-2 px-4 w-full bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition duration-300"
             >
               Upload Document
             </button>
@@ -256,7 +256,7 @@ const UserDocuments = () => {
                         />
                         <button
                           onClick={() => handleAddComment(doc.id)}
-                          className="mt-2 py-2 px-4 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+                          className="mt-2 py-2 px-4 bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition duration-300"
                         >
                           Save Comment
                         </button>

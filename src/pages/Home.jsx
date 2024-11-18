@@ -350,10 +350,10 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600" // Selected state
+                  : "bg-white text-black ring-gray-300" // Non-selected state
               }`}
               onClick={() => setSelectedButton(1)}
             >
@@ -362,10 +362,10 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600"
+                  : "bg-white text-black ring-gray-300"
               }`}
               onClick={() => setSelectedButton(2)}
             >
@@ -374,10 +374,10 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 font-medium ring-1 uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600"
+                  : "bg-white text-black ring-gray-300"
               }`}
               onClick={() => setSelectedButton(3)}
             >
@@ -487,7 +487,7 @@ const Home = () => {
                     <ul style={styles.suggestionsList}>
                       {suggestions.length > 0 && (
                         <>
-                          <li style={styles.categoryHeader}>Cities & ZIPs</li>
+                          <li style={styles.categoryHeader}>PLACES</li>
                           {Array.from(
                             new Set(
                               suggestions.map((suggestion) => {
@@ -659,8 +659,8 @@ const styles = {
     transform: "scale(1.02)",
   },
   suggestionIcon: {
-    fontSize: "18px",
-    color: "#6b7280",
+    filter: 'grayscale(100%)', // Make the icon greyscale
+    marginRight: '8px', // Add spacing
+    fontSize: '1.2rem', // Optional: Adjust size
   },
 };
-
