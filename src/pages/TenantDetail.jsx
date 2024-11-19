@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
 import { db } from "../firebase";
 
 const TenantDetail = () => {
@@ -9,34 +9,35 @@ const TenantDetail = () => {
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
 
- useEffect(() => {
-  const fetchTenantDetails = async () => {
-    const docRef = doc(db, "propertyListings", id);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const tenantList = docSnap.data().tenants || []; // Default to empty array if tenants doesn't exist
-      
-      if (Array.isArray(tenantList)) {
-        // Find the tenant by tenantId
-        const tenantDetail = tenantList.find((tenant) => tenant.id === tenantId);
-        
-        if (tenantDetail) {
-          setTenant(tenantDetail);
-          setEditableTenant({ ...tenantDetail }); // Create editable copy
+  useEffect(() => {
+    const fetchTenantDetails = async () => {
+      const docRef = doc(db, "propertyListings", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const tenantList = docSnap.data().tenants || []; // Default to empty array if tenants doesn't exist
+
+        if (Array.isArray(tenantList)) {
+          // Find the tenant by tenantId
+          const tenantDetail = tenantList.find((tenant) => tenant.id === tenantId);
+
+          if (tenantDetail) {
+            setTenant(tenantDetail);
+            setEditableTenant({ ...tenantDetail }); // Create editable copy
+          } else {
+            console.error("No tenant found with the given ID");
+          }
         } else {
-          console.error("No tenant found with the given ID");
+          console.error("Tenants data is not an array or is undefined");
         }
       } else {
-        console.error("Tenants data is not an array or is undefined");
+        console.log("No such document!");
       }
-    } else {
-      console.log("No such document!");
-    }
-  };
+    };
 
-  fetchTenantDetails();
-}, [id, tenantId]);
+    fetchTenantDetails();
+  }, [id, tenantId]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditableTenant((prev) => ({
@@ -60,7 +61,7 @@ const TenantDetail = () => {
         );
 
         // If tenant doesn't exist in the array, push the new tenant to the list
-        if (!updatedTenants.some(tenant => tenant.id === tenantId)) {
+        if (!updatedTenants.some((tenant) => tenant.id === tenantId)) {
           updatedTenants.push({ ...editableTenant });
         }
 
@@ -75,6 +76,33 @@ const TenantDetail = () => {
       }
     } catch (error) {
       console.error("Error updating tenant details:", error);
+    }
+  };
+
+  const handleDeleteTenant = async () => {
+    try {
+      const docRef = doc(db, "propertyListings", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const tenants = docSnap.data().tenants || [];
+
+        // Remove tenant from the tenants array
+        const updatedTenants = tenants.filter((tenant) => tenant.id !== tenantId);
+
+        // Save the updated tenants array back to Firestore
+        await updateDoc(docRef, { tenants: updatedTenants });
+
+        // After deletion, clear the current tenant data
+        setTenant(null);
+        setEditableTenant(null);
+
+        console.log("Tenant deleted successfully!");
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error deleting tenant:", error);
     }
   };
 
@@ -171,14 +199,29 @@ const TenantDetail = () => {
             </button>
           </>
         ) : (
-          <button onClick={() => setIsEditing(true)} className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-            Edit Tenant
-          </button>
+          <>
+            <button onClick={() => setIsEditing(true)} className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+              Edit Tenant
+            </button>
+
+            {/* Add space between Edit and Delete button */}
+            <div className="mt-4">
+              {/* Delete Tenant Button (only visible when not in editing mode) */}
+              {!isEditing && (
+                <button
+                  onClick={handleDeleteTenant}
+                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                >
+                  Delete Tenant
+                </button>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
   ) : (
-    <p>Loading tenant details...</p>
+    <p>Tenant not found</p>
   );
 };
 
