@@ -32,6 +32,7 @@ import notification from "../assets/img/notification.png";
 import { useContext } from "react";
 const Home = () => {
   const [suggestions, setSuggestions] = useState([]);
+  const [propertySuggestions, setPropertySuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -281,70 +282,51 @@ const Home = () => {
   const fetchProperties = async (searchTerm) => {
     if (searchTerm !== "") {
       const listingRef = collection(db, "propertyListings");
-
-      // Get the category based on the selectedButton
-      const category = getCategory(selectedButton);
-
-      // Build the query based on the selectedButton and the searchTerm
-      let q = query(listingRef, where("type", "==", category));
-
-      // If there's a searchTerm, add the where clause for address field
-      // If there's a searchTerm, create an array of address tokens and query against it
-
-      const querySnap = await getDocs(q);
-
-      // Adds all listings from query to 'listings' variable
+  
+      const querySnap = await getDocs(query(listingRef));
+  
       let listings = [];
       querySnap.forEach((doc) => {
-        //if searchTerm != null, only return properties that contian the search term in the address
-
-        return listings.push({
+        listings.push({
           id: doc.id,
           data: doc.data(),
         });
       });
-
-      // const filteredProperties = listings.filter((listing) =>
-      //   listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-      // );
-
-      // setInputValue(searchTerm);
+  
+      // Filter for property suggestions
+      const filteredProperties = listings.filter((listing) =>
+        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  
+      // Filter for cities and ZIP codes suggestions
       const filteredSuggestions = listings.filter((listing) => {
         const regexZipCode = /^\d{1,5}$/;
         const regexCity = /^[a-zA-Z\s]+$/;
-
+  
         if (regexZipCode.test(searchTerm)) {
-          setZip("true");
-          setCity("false");
-          // console.log("zip", {zipcode});
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
+  
         if (regexCity.test(searchTerm)) {
-          setCity("true");
-          setZip("false");
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
-
-        setZip("false");
-        setCity("false");
-        return listing.data.address
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+  
+        return false;
       });
-
-      // setSuggestions(uniqueSuggestions);
-      // setFilteredProperties(filteredProperties);
-      if (searchTerm == "") {
-        setSuggestions([]);
-      } else {
-        setSuggestions(filteredSuggestions);
-      }
+  
+      // Update states
+      setPropertySuggestions(filteredProperties);
+      setSuggestions(filteredSuggestions);
+    } else {
+      setPropertySuggestions([]);
+      setSuggestions([]);
     }
   };
+  
 
   const handleVip = () => {
     navigate("/faqPage");
@@ -499,113 +481,58 @@ const Home = () => {
                 </div>
               )} */}
               
-            <div>
-              {!searchTerm && (
-                <button
-                  onClick={handleVip}
-                  className="ml-8 underline mouse-cursor"
-                >
-                  Interested in VIP access to exclusive listings?
-                </button>
-              )}
-              {city === "true" ? (
-                <>
-                  {searchTerm && suggestions.length > 0 && (
-                    <ul className="suggestions-list">
-                      {Array.from(
-                        new Set(
-                          suggestions.map((suggestion) => {
-                            const addressParts =
-                              suggestion.data.address.split(",");
-                            const city =
-                              addressParts[addressParts.length - 2]?.trim() ||
-                              "Unknown City";
-                            const stateAndZip =
-                              addressParts[addressParts.length - 1]?.trim() ||
-                              "Unknown State";
-                            const stateAndZipParts = stateAndZip.split(" ");
-                            const state = stateAndZipParts[0];
-                            return `${city}, ${state}`;
-                          })
-                        )
-                      ).map((cityStatePair, index) => (
-                        <li key={index}>
-                          <Link
-                            to={{
-                              pathname: `/afterSearch/${encodeURIComponent(
-                                cityStatePair.replace(/ /g, "%20")
-                              )}`,
-                              state: { fromListing: false },
-                            }}
-                          >
-                            {cityStatePair}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              ) : zipcode === "true" ? (
-                <>
-                  {searchTerm && suggestions.length > 0 && (
-                    <ul className="suggestions-list">
-                      {Array.from(
-                        new Set(
-                          suggestions.map((suggestion) => {
-                            const addressParts =
-                              suggestion.data.address.split(",");
-                            const stateAndZip =
-                              addressParts[addressParts.length - 1]?.trim() ||
-                              "Unknown State";
-                            return `${stateAndZip}`;
-                          })
-                        )
-                      ).map((cityStatePair, index) => (
-                        <li key={index}>
-                          <Link
-                            to={`/afterSearch/${encodeURIComponent(
-                              cityStatePair
-                            )}`}
-                          >
-                            {cityStatePair}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              ) : (
-                <>
-                  {searchTerm && suggestions.length > 0 && (
-                    <>
-                      <ul className="suggestions-list">
-                        {Array.from(
-                          new Set(
-                            suggestions.map((suggestion) => {
-                              const addressParts =
-                                suggestion.data.address.split(",");
-                              return `${addressParts}`;
-                            })
-                          )
-                        ).map((cityStatePair, index) => (
-                          <li key={index}>
-                            <Link
-                              to={`/afterSearch/${encodeURIComponent(
-                                cityStatePair
-                              )}`}
+              {/* Search Bar Suggestions */}
+              <div>
+                {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) && (
+                  <div style={styles.suggestionsDropdown}>
+                    <ul style={styles.suggestionsList}>
+                      {suggestions.length > 0 && (
+                        <>
+                          <li style={styles.categoryHeader}>Cities & ZIPs</li>
+                          {Array.from(
+                            new Set(
+                              suggestions.map((suggestion) => {
+                                const addressParts = suggestion.data.address.split(",");
+                                const city = addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                                const stateAndZip = addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                                const stateAndZipParts = stateAndZip.split(" ");
+                                const state = stateAndZipParts[0];
+                                return `${city}, ${state}`;
+                              })
+                            )
+                          ).map((cityStatePair, index) => (
+                            <li
+                              key={`city-${index}`}
+                              style={styles.suggestionItem}
+                              className="suggestion-item"
+                              onClick={() => navigate(`/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`)}
                             >
-                              {cityStatePair}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
+                              <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
+                            </li>
+                          ))}
+                        </>
+                      )}
 
-           
+                      {propertySuggestions.length > 0 && (
+                        <>
+                          <li style={styles.categoryHeader}>Properties</li>
+                          {propertySuggestions.map((property) => (
+                            <li
+                              key={property.id}
+                              style={styles.suggestionItem}
+                              className="suggestion-item"
+                              onClick={() => navigate(`/category/${property.data.type}/${property.id}`)}
+                            >
+                              <span style={styles.suggestionIcon}>🏠</span> {property.data.address}
+                            </li>
+                          ))}
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+    
           </div>
         </div>
       </section>
@@ -686,3 +613,55 @@ const Home = () => {
 };
 
 export default Home;
+
+
+const styles = {
+  suggestionsDropdown: {
+    position: "absolute",
+    top: "100%",
+    left: "0",
+    width: "100%",
+    maxHeight: "400px",
+    overflowY: "auto",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "12px",
+    boxShadow: "0 8px 15px rgba(0, 0, 0, 0.1)",
+    zIndex: 20,
+    animation: "fadeIn 0.3s ease",
+  },
+  suggestionsList: {
+    listStyle: "none",
+    margin: "0",
+    padding: "10px",
+  },
+  categoryHeader: {
+    padding: "12px 20px",
+    backgroundColor: "#f9fafb",
+    fontWeight: "600",
+    fontSize: "16px",
+    color: "#1f2937",
+    borderBottom: "1px solid #e5e7eb",
+    textTransform: "uppercase",
+  },
+  suggestionItem: {
+    padding: "12px 20px",
+    fontSize: "15px",
+    color: "#374151",
+    cursor: "pointer",
+    borderRadius: "8px",
+    transition: "background-color 0.2s ease, transform 0.1s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  suggestionItemHover: {
+    backgroundColor: "#f3f4f6",
+    transform: "scale(1.02)",
+  },
+  suggestionIcon: {
+    fontSize: "18px",
+    color: "#6b7280",
+  },
+};
+

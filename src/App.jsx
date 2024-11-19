@@ -45,6 +45,15 @@ import PropertyManagement from "./pages/PropertyManagement";
 import TenantList from "./pages/TenantList";
 import ListingsPage from "./pages/ListingsPage";
 import TenantDetail from "./pages/TenantDetail";
+import AddTenant from "./pages/AddTenant";
+import Payments from "./components/Payments";
+import UserDocuments from "./pages/userDocuments";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import ViewPaymentHistory from "./pages/ViewPaymentHistory";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
 
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -158,12 +167,14 @@ function App() {
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
           <Route path="/property-management" element={<PropertyManagement />} />
+          <Route path="/add-tenant/:propertyId" element={<AddTenant />} />
           <Route
             path="/property-management/:id/tenants"
             element={<TenantList />}
           />
           <Route path="/property-management/:id/tenant/:tenantId" element={<TenantDetail />} />
           <Route path="/listings" element={<ListingsPage />} />
+          
 
           <Route
             path="/trackIndividualDealsProgress/:uid"
@@ -172,7 +183,19 @@ function App() {
           <Route path="/taskManager/:uid" element={<TaskManager />} />
           {/* <Route path="/editTenant" element={<PrivateRoute />}> */}
           <Route path="/tenant/:uid" element={<EditUser />} />
-          {/* </Route> */}
+
+          {/* Payments and User Documents from Profile Page */}
+          <Route
+          path="/payments/:uid"
+          element={
+            <Elements stripe={stripePromise}>
+              <Payments />
+            </Elements>
+          }
+          />
+          <Route path="/payment-history/:uid" element={<ViewPaymentHistory />} />
+          <Route path="/userDocuments/:uid" element={<UserDocuments />} />
+
         </Routes>
 
         <div>
