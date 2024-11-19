@@ -60,25 +60,17 @@ function FAQPage() {
   };
 
   return (
-    <div className="relative font-semibold text-gray-900">
+    <div className="flex flex-col min-h-screen">
       {/* Video Background */}
-      <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
+      <div className="video-container">
         <iframe
-          className="absolute top-0 left-0 w-full h-full"
+          
           src="https://www.youtube.com/embed/YWGfcrqXo50?si=8khE0ad0Tpc1Uzaw&autoplay=1&mute=1&controls=0&loop=1&playlist=YWGfcrqXo50&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
           title="YouTube video player"
           frameBorder="0"
           allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          style={{
-            width: '100vw',
-            height: '100vh',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            pointerEvents: 'none',
-          }}
-        />
+          ></iframe>
       </div>
 
       {/* FAQ Content */}

@@ -17,6 +17,7 @@ import Dropdown from "../components/Dropdown";
 import DatePicker from "react-datepicker"; 
 import "react-datepicker/dist/react-datepicker.css"; 
 import { db } from "../firebase";
+import "../css/admin.css";
 
 const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
@@ -135,64 +136,58 @@ const Admin = () => {
   }, [users, expirationDates]);
 
   return (
-    <div>
-      {!loading && users.length > 0 && (
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl text-center mt-6 font-bold">Users</h1>
-
-          <div className="pb-20 text-sm sm:text-base mt-6 overflow-y-hidden overflow-x-visible">
-            <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
-              <thead>
-                <tr>
-                  <th className="p-3 md:p-6 text-center">Role</th>
-                  <th className="p-3 md:p-6 text-center">Top Agent</th>
-                  <th className="p-3 md:p-6 text-left">Email</th>
-                  <th className="p-3 md:p-6 text-left">Name</th>
-                  <th className="p-3 md:p-6 text-left">Creation Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={user.id} className={`${index % 2 === 0 ? "bg-gray-200" : "bg-white"}`}>
-                    <td onClick={() => setSelectedRow(user.id)} className="p-3 md:p-6">
-                      <Dropdown userId={user.id} selected={selectedRow === user.id} />
-                    </td>
-                    <td className="p-3 md:p-6 text-center">
-                      {user.data.role === 'agent' && (
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={checkboxValues[user.id] || false}
-                            onChange={() => handleCheckboxChange(user.id)}
-                          />
-                          {checkboxValues[user.id] && (
-                            <DatePicker
-                              selected={expirationDates[user.id]}
-                              onChange={(date) => handleDateChange(date, user.id)}
-                              className="ml-2 p-1 border rounded"
-                              placeholderText="Select expiration date"
-                              minDate={new Date()}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={1}
-                              dateFormat="Pp"
-                            />
-                          )}
-                        </div>
+    <div className="admin-container">
+      <div className="pb-20 text-sm sm:text-base mt-6 overflow-y-hidden overflow-x-auto">
+        <table className="w-full lg:m-4 min-w-6xl lg:mx-auto rounded shadow-lg bg-white lg:space-x-5">
+          <thead>
+            <tr>
+              <th className="p-3 md:p-6 text-center">Role</th>
+              <th className="p-3 md:p-6 text-center">Top Agent</th>
+              <th className="p-3 md:p-6 text-left">Email</th>
+              <th className="p-3 md:p-6 text-left">Name</th>
+              <th className="p-3 md:p-6 text-left">Creation Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, index) => (
+              <tr key={user.id} className={`${index % 2 === 0 ? "bg-gray-200" : "bg-white"}`}>
+                <td onClick={() => setSelectedRow(user.id)} className="p-3 md:p-6">
+                  <Dropdown userId={user.id} selected={selectedRow === user.id} />
+                </td>
+                <td className="p-3 md:p-6 text-center">
+                  {user.data.role === 'agent' && (
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={checkboxValues[user.id] || false}
+                        onChange={() => handleCheckboxChange(user.id)}
+                      />
+                      {checkboxValues[user.id] && (
+                        <DatePicker
+                          selected={expirationDates[user.id]}
+                          onChange={(date) => handleDateChange(date, user.id)}
+                          className="ml-2 p-1 border rounded"
+                          placeholderText="Select expiration date"
+                          minDate={new Date()}
+                          showTimeSelect
+                          timeFormat="HH:mm"
+                          timeIntervals={1}
+                          dateFormat="Pp"
+                        />
                       )}
-                    </td>
-                    <td className="p-3 md:p-6">{user.data.email}</td>
-                    <td className="p-3 md:p-6">{user.data.name}</td>
-                    <td className="p-3 md:p-6">
-                      <Moment local>{user.data.timestamp?.toDate()}</Moment>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                    </div>
+                  )}
+                </td>
+                <td className="p-3 md:p-6">{user.data.email}</td>
+                <td className="p-3 md:p-6">{user.data.name}</td>
+                <td className="p-3 md:p-6">
+                  <Moment local>{user.data.timestamp?.toDate()}</Moment>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
