@@ -5,8 +5,7 @@ import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import agent from "../css/agent.css";
-
+import "../css/agent.css";
 
 const Agents = () => {
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,6 @@ const Agents = () => {
   const carouselRef = useRef(null);
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
-  
 
   const checkNumber = (number) => {
     if (number > topAgents.length - 1) return 0;
@@ -148,31 +146,27 @@ const Agents = () => {
   }
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div className="flex flex-col min-h-screen">
       {/* Background video */}
-      <iframe
-        src="https://www.youtube.com/embed/37ZwT0H67R8?autoplay=1&mute=1&controls=0&loop=1&playlist=37ZwT0H67R8&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
-        title="YouTube video player"
-        frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        style={{
-          width: "100vw",
-          height: "100vh",
-          position: "fixed",
-          top: "0",
-          left: "0",
-          zIndex: "-1",
-          pointerEvents: "none",
-        }}
-      ></iframe>
+      <div className="video-container">
+        <iframe
+          src="https://www.youtube.com/embed/37ZwT0H67R8?autoplay=1&mute=1&controls=0&loop=1&playlist=37ZwT0H67R8&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
 
       {/* Foreground content */}
-      <div className="flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "100px" }}>
+      <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "60px" }}>
         <div style={{ maxWidth: "100%" }}>
           {/* Search bar */}
+          <h1 className="text-4xl font-bold text-white mb-6" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}>
+            Agents
+          </h1>
           <form
-            className="mt-6 mb-15 flex items-center"
+            className="mt-10 mb-15 flex items-center"
             style={{
               maxWidth: "456px",
               marginLeft: "auto",
@@ -215,9 +209,7 @@ const Agents = () => {
             </div>
           </form>
           {/* Agent Carousel */}
-          <h1 className="mt-20 text-4xl font-bold text-white mb-6" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}>
-            MNC Agents
-          </h1>
+          
           <div className="mb-20 relative w-full flex justify-center">
             <div
               className="relative h-80 overflow-hidden md:h-96 flex items-center w-full max-w-3xl"
@@ -255,8 +247,10 @@ const Agents = () => {
                                 “{agent.data.testimonial}”
                               </blockquote>
                             )}
-                            <div className="w-full flex flex-col items-end justify-end mt-5">
-                              <p className="text-sm font-semibold md:text-md mr-7"> {agent.data.name}</p>
+                            <div className="short-divider">
+                            <hr className="w-full border-t border-white" />                            </div>
+                            <div className="w-full flex flex-col items-end justify-end">
+                              <p className="text-sm font-semibold md:text-md mr-7"> -  {agent.data.name}</p>
                               <p className="text-xs font-semibold md:text-md mr-10">MNC Agent</p>
                             </div>
                           </div>
@@ -269,42 +263,42 @@ const Agents = () => {
                 )}
               </div>
 
-          {/* Navigation arrows */}
-          <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
-            <FaChevronLeft className="text-white text-4xl" />
-          </div>
-          <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
-            <FaChevronRight className="text-white text-4xl" />
+              {/* Navigation arrows */}
+              <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
+                <FaChevronLeft className="text-white text-4xl" />
+              </div>
+              <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
+                <FaChevronRight className="text-white text-4xl" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-          {/* Footer */}
-          <footer
-            className="fixed bottom-0 left-0 right-0 mt-auto justify-center items-center text-center mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white"
-            style={{ marginTop: "20px", maxHeight: "150px", overflowY: "auto" }}
-          >
-            <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>info@mncdevelopment.com</p>
-            <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
-              <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-                <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>All rights reserved.</p>
-                <span className="hidden md:block">|</span>
-                <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>© MNC Development, Inc. 2008-present.</p>
-              </div>
-              <span className="hidden lg:block">|</span>
-              <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>31 Buffalo Avenue, Brooklyn, New York 11233</p>
-            </div>
-            <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-              <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>Phone: 1-718-771-5811 or 1-877-732-3492</p>
-              <span className="hidden md:block">|</span>
-              <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>Fax: 1-877-760-2763 or 1-718-771-5900</p>
-            </div>
-            <p className="text-center text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.8rem" }}>
-              MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
-            </p>
-          </footer>
+      {/* Footer */}
+      <footer
+        className="mt-auto justify-center items-center text-center mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white"
+        style={{ marginTop: "20px" }}
+      >
+        <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>info@mncdevelopment.com</p>
+        <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+            <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>All rights reserved.</p>
+            <span className="hidden md:block">|</span>
+            <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>© MNC Development, Inc. 2008-present.</p>
+          </div>
+          <span className="hidden lg:block">|</span>
+          <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>31 Buffalo Avenue, Brooklyn, New York 11233</p>
         </div>
-      </div>
+        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+          <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+          <span className="hidden md:block">|</span>
+          <p className="text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.9rem" }}>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+        </div>
+        <p className="text-center text-white" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)", fontSize: "0.8rem" }}>
+          MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
+        </p>
+      </footer>
     </div>
   );
 };

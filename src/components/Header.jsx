@@ -670,7 +670,6 @@ const Header = () => {
             >
               Home
             </li>
-            
             {/* VIP button */}
             {["vip", "agent", "admin", "superadmin"].includes(role) && (
               <li
@@ -722,30 +721,7 @@ const Header = () => {
             >
               Map
             </li>
-            {/* saved searches */}
-            {user === "true" && (
-              <ul>
-                <div style={{ display: "flex" }}>
-                  <li
-                    className={`cursor-pointer py-3 text-lg font-semibold ${
-                      !pathMatchRoute("/savedSearches") &&
-                      "text-gray-400 border-b-transparent"
-                    } ${
-                      pathMatchRoute("/savedSearches") &&
-                      "text-black border-b-gray-900"
-                    }`}
-                    onClick={() => {
-                      navigate("/savedSearches"),
-                        setMobileMenuOpen(false),
-                        setToolsDropdownOpen(false);
-                      setToolsClicked(false);
-                    }}
-                  >
-                    Saved Searches
-                  </li>
-                </div>
-              </ul>
-            )}
+            
             {/* Contact button */}
             <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent

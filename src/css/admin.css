@@ -1,0 +1,43 @@
+.admin-container {
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    .admin-container {
+      padding: 10px;
+    }
+  
+    /* Adjust font sizes */
+    .admin-container h1 {
+      font-size: 1.2rem;
+    }
+  
+    .admin-container p {
+      font-size: 0.9rem;
+    }
+  
+    /* Adjust table layout */
+    .admin-container .pb-20 {
+      overflow-x: auto;
+    }
+  
+    .admin-container table {
+      width: 100%;
+      min-width: 100%; /* Ensure table fits within the viewport */
+      transform: scale(0.8); /* Scale down the table content */
+      transform-origin: top left; /* Ensure scaling starts from the top left */
+      
+    }
+  
+    .admin-container th, .admin-container td {
+      padding: 2px; /* Further reduce padding */
+      font-size: 0.6rem; /* Further reduce font size */
+    }
+  
+    /* Hide less important content */
+    .admin-container .optional-content {
+      display: none;
+    }
+  }

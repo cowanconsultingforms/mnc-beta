@@ -18,6 +18,7 @@ import Spinner from "../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { db } from "../firebase";
+import "../css/admin.css";
 
 const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
