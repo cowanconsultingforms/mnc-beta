@@ -13,6 +13,8 @@ import {
   FaMapMarkerAlt,
   FaParking,
   FaShare,
+  FaLeaf,
+  FaMobileAlt,
 } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -154,8 +156,8 @@ const VipListing = () => {
             {listing.description}
           </p>
 
-          {/* Beds, baths, parking, furnished */}
-          <ul className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
+          {/* Beds, baths, parking, and furnished */}
+          <ul className="flex flex-wrap items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-4">
             {/* Bedrooms */}
             <li className="flex items-center whitespace-nowrap">
               <FaBed className="text-lg mr-1" />
@@ -182,6 +184,23 @@ const VipListing = () => {
             <li className="flex items-center whitespace-nowrap">
               <FaChair className="text-lg mr-1" />
               {listing.furnished ? "Furnished" : "Not furnished"}
+            </li>
+          </ul>
+
+          {/* Smart Technology and Eco-Friendly */}
+          <ul className="flex flex-wrap items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-10 text-sm font-semibold mb-6">
+            {/* Smart Technology */}
+            <li className="flex items-center whitespace-nowrap">
+              <FaMobileAlt className="text-lg mr-1" />
+              {listing.smartHome ? "Smart Technology" : "No Smart Technology"}
+            </li>
+
+            {/* Eco-Friendly/Green Technology */}
+            <li className="flex items-center whitespace-nowrap">
+              <FaLeaf className="text-lg mr-1" />
+              {listing.ecoFriendly
+                ? "Eco-Friendly/Green Technology"
+                : "Not Eco-Friendly/Green Technology"}
             </li>
           </ul>
 

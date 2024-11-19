@@ -24,6 +24,8 @@ import {
   FaElevator,
   FaCar,
   FaSnowflake,
+  FaMobileAlt,
+  FaLeaf,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -242,6 +244,18 @@ const Listing = () => {
                 {listing.airConditioning
                   ? "Air conditioning"
                   : "No air conditioning"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaMobileAlt className="text-lg mr-1" />
+                {listing.smartHome
+                  ? "Smart Technology"
+                  : "No Smart Technology"}
+              </li>
+              <li className="flex items-center whitespace-nowrap">
+                <FaLeaf className="text-lg mr-1" />
+                {listing.ecoFriendly
+                  ? "Eco-Friendly/Green Technology"
+                  : "Not Eco-Friendly/Green Technology"}
               </li>
             </ul>
           </div>
