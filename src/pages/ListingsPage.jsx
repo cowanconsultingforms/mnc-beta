@@ -105,9 +105,9 @@ const ListingsPage = () => {
   };
 
   return (
-    <div className="relative font-semibold text-gray-900">
+    <div className="flex flex-col min-h-screen">
       {/* Video Background */}
-      <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
+      <div className="video-container">
         <iframe
           className="absolute top-0 left-0 w-full h-full"
           src="https://www.youtube.com/embed/8BBE1Ui8yo4?si=5BNr_sLaivrlXusM&controls=0&autoplay=1&mute=1&loop=1&playlist=8BBE1Ui8yo4&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
@@ -115,15 +115,6 @@ const ListingsPage = () => {
           frameBorder="0"
           allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          style={{
-            width: "100vw",
-            height: "100vh",
-            position: "absolute",
-            top: "0",
-            left: "0",
-            objectFit: "cover",
-            pointerEvents: "none",
-          }}
         />
       </div>
       {/* VIP Listings Section */}

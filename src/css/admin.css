@@ -1,14 +1,9 @@
 .admin-container {
-    padding: 20px;
-    margin: 0 auto;
-    max-width: 1200px;
+    
   }
   
   @media only screen and (max-width: 768px) {
-    .admin-container {
-      padding: 10px;
-    }
-  
+    
     /* Adjust font sizes */
     .admin-container h1 {
       font-size: 1.2rem;
@@ -32,12 +27,8 @@
     }
   
     .admin-container th, .admin-container td {
-      padding: 2px; /* Further reduce padding */
-      font-size: 0.6rem; /* Further reduce font size */
-    }
-  
-    /* Hide less important content */
-    .admin-container .optional-content {
-      display: none;
+      padding: 3px; /* Further reduce padding */
+      padding-right: 20px;
+      font-size: 1.5rem; /* Further reduce font size */
     }
   }

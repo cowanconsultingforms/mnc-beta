@@ -139,7 +139,7 @@ const Admin = () => {
 
   return (
     <div style={{ zoom: 0.825 }}>
-      <div className="min-h-screen h-auto bg-gradient-to-b from-gray-100 to-gray-200 text-gray-900 p-8">
+      <div className="min-h-screen h-auto bg-gradient-to-b from-gray-100 to-gray-200 text-gray-900 p-8 admin-container">
         <div className="max-w-full mx-auto mt-auto">
           <input
             type="text"

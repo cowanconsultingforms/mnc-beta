@@ -208,19 +208,19 @@ function FAQPage() {
           <div className="mt-6 flex justify-around">
             <button
               onClick={() => openPolicyDialog('privacy')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Privacy Policy
             </button>
             <button
               onClick={() => openPolicyDialog('terms')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Terms of Service
             </button>
             <button
               onClick={() => openPolicyDialog('copyright')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Copyright
             </button>
