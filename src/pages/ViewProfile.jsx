@@ -725,6 +725,10 @@ const ViewProfile = () => {
           <div className="col-span-1 ">
             <h1 className="text-3xl">About</h1>
             <p className="text-base leading-6 font-normal">{user.about}</p>
+            <div className="col-span-1">
+          <h1 className="text-3xl">Testimonial</h1>
+          <p className="text-base leading-6 font-normal">{user.testimonial}</p>
+        </div>
           </div>
         </div>
       </section>

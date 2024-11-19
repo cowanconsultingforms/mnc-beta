@@ -1,19 +1,15 @@
-@media screen and (max-width: 768px) {
-    iframe {
-      object-fit: contain; /* Contain video for smaller screens */
-      object-position: center center;
-      transform: scale(1.2); /* No quotes */
-      width: 110%; /* Slightly increase width to cover */
-      height: auto; /* Maintain aspect ratio */
-    }
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  iframe {
+    transform: scale(90); /* Slight zoom to fill the screen on mobile */
   }
-  
-  @media screen and (min-width: 769px) {
-    iframe {
-      object-fit: cover; /* Cover larger screens */
-      transform: scale(1.12); /* No quotes */
-      width: 100%;
-      height: 100%;
-    }
-  }
-  
+}

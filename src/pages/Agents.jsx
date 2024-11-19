@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 
-const ManageUsersProfile = () => {
+const Agents = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,7 +49,7 @@ const ManageUsersProfile = () => {
       const querySnap = await getDocs(q);
       let agents = [];
       querySnap.forEach((doc) => {
-        return agents.push({
+        agents.push({
           id: doc.id,
           data: doc.data(),
         });
@@ -87,7 +87,8 @@ const ManageUsersProfile = () => {
         });
         setUsers(users);
 
-        const topAgents = users.filter(user => user.data.role === 'agent').slice(0, 5);
+        // Filter top agents
+        const topAgents = users.filter(user => user.data.isTopAgent === true);
         setTopAgents(topAgents);
 
         setLoading(false);
@@ -140,7 +141,7 @@ const ManageUsersProfile = () => {
           <form
             className="mt-6 mb-15 flex items-center"
             style={{
-              maxWidth: "456px", // Set the same width as the carousel
+              maxWidth: "456px",
               marginLeft: "auto",
               marginRight: "auto",
             }}
@@ -153,8 +154,8 @@ const ManageUsersProfile = () => {
                 value={searchTerm}
                 onChange={onChange}
                 style={{
-                  width: "100%",  // Takes up the full width of the form
-                  maxWidth: "456px", // Matches the carousel's width
+                  width: "100%",
+                  maxWidth: "456px",
                   boxShadow: "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)"
                 }}
                 className="rounded-lg text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
@@ -164,7 +165,7 @@ const ManageUsersProfile = () => {
               {suggestions.length > 0 && (
                 <div
                   className="absolute bg-white shadow-lg z-10 w-full mt-1 rounded-lg"
-                  style={{ width: "456px" }} // Consistent width with search input
+                  style={{ width: "456px" }}
                 >
                   {suggestions.map((suggestion) => (
                     <Link
@@ -173,7 +174,7 @@ const ManageUsersProfile = () => {
                       onClick={() => setSearchTerm(suggestion.data.name)}
                     >
                       <div className="py-2 px-4 hover:bg-gray-200 cursor-pointer">
-                        {suggestion.data.name} - {suggestion.data.address?.city}
+                        {suggestion.data.name} {suggestion.data.address?.city && `- ${suggestion.data.address.city}`} 
                       </div>
                     </Link>
                   ))}
@@ -182,148 +183,87 @@ const ManageUsersProfile = () => {
             </div>
           </form>
 
-          {/* Top Agents Carousel */}
-          <div className="relative w-full mt-20 flex justify-center">
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
-        {topAgents.length > 0 ? (
-          topAgents.map((agent, index) => (
-            <div
-              key={agent.id}
-              className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${
-                index === currentSlide ? "translate-x-0" : "translate-x-full"
-              }`}
-              onMouseEnter={() => setHoveredIndex(index)} // Set hovered index
-              onMouseLeave={() => setHoveredIndex(null)} // Clear hovered index
-            >
-              <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
-                <img
-                  src={agent.data.imageUrl || "default-image-url"}
-                  className="absolute block w-full h-full object-cover filter grayscale"
-                  alt={`${agent.data.name}'s profile`}
-                  style={{
-                    transform: hoveredIndex === index ? "scale(1.05)" : "scale(1)", // Scale effect on hover
-                    transition: "transform 0.3s ease", // Smooth transition
-                    boxShadow: hoveredIndex === index ? "0 8px 20px rgba(0, 0, 0, 0.2)" : "none", // Shadow effect on hover
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 w-full bg-gray-800 bg-opacity-50 text-white text-center py-2">
-                  <h3 className="text-lg font-bold">{agent.data.name}</h3>
-                </div>
-              </Link>
+          {/* Top Agents Carousel with Testimonials */}
+          <h1 className="mt-20 text-4xl font-bold text-white mb-6" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
+          Top MNC Agents
+        </h1>
+          <div className="mb-20 relative w-full mt-20 flex justify-center">
+            <div className="relative h-56 overflow-hidden rounded-lg md:h-96" style={{ width: "456px" }}>
+              {topAgents.length > 0 ? (
+                topAgents.map((agent, index) => (
+                  <div
+                    key={agent.id}
+                    className={`absolute top-0 left-0 w-full h-full transition-transform duration-700 ease-in-out ${index === currentSlide ? "translate-x-0" : "translate-x-full"}`}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
+                      <div className={`flex flex-col h-full transition-transform duration-300 ${hoveredIndex === index ? "scale-105" : "scale-100"}`}> {/* Scale entire card */}
+                        {/* Agent Picture (75% height) */}
+                        <img
+                          src={agent.data.imageUrl || "default-image-url"}
+                          className="rounded-t-lg w-full h-3/4 object-contain filter grayscale" // Use contain to ensure the image fits
+                          alt={`${agent.data.name}'s profile`}
+                        />
+                        {/* Testimonial Section (25% height) */}
+                        <div className="flex flex-col justify-center bg-gradient-to-t from-gray-900 to-gray-700 p-4 rounded-b-lg h-1/4 text-white"> {/* Darker gradient for the testimonial */}
+                        <blockquote className="italic text-lg md:text-xl"> {/* Adjust text size */}
+                          “{agent.data.testimonial || "No testimonial available."}”
+                        </blockquote>
+                        <cite className="mt-2 text-sm md:text-base text-gray-300"> {/* Adjust text size */}
+                          - {agent.data.name} <br />
+                          {agent.data.title}
+                        </cite>
+                      </div>
+                      </div>
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <p>No top agents found.</p>
+              )}
             </div>
-          ))
-        ) : (
-          <p className="text-center text-white">No agents available</p>
-        )}
-      </div>
 
-            {/* Slider controls */}
-            <button
-              type="button"
-              className="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
-              onClick={prevSlide}
-            >
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
-                <svg
-                  className="w-4 h-4 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                  style={{
-                    filter: "drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6))"
-                  }}
-                >
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5 1 1 5l4 4" />
-                </svg>
-              </span>
+            {/* Navigation Buttons */}
+            <button onClick={prevSlide} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+              Prev
             </button>
-            <button
-              type="button"
-              className="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
-              onClick={nextSlide}
-            >
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
-                <svg
-                  className="w-4 h-4 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 6 10"
-                  style={{
-                    filter: "drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6))"
-                  }}
-                >
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M1 1l4 4-4 4" />
-                </svg>
-              </span>
+            <button onClick={nextSlide} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+              Next
             </button>
           </div>
         </div>
-        {/* Testimonials Section */}
-<section className="bg-gradient-to-b from-white to-gray-200 dark:from-gray-800 dark:to-gray-900 mt-8 rounded-lg mb-5">
-  <div className="max-w-screen-xl px-4 py-4 mx-auto text-center lg:py-6 lg:px-6">
-    <figure className="max-w-screen-md mx-auto">
-      <svg
-        className="h-4 mx-auto mb-2 text-gray-400 dark:text-gray-600"
-        viewBox="0 0 24 27"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"
-          fill="currentColor"
-        />
-      </svg>
-      <blockquote>
-        <p className="text-sm font-medium text-gray-900 dark:text-white">
-          "Working with MNC Development has been a game changer for me. Their platform is not only efficient but also incredibly easy to use, allowing me to connect with clients faster than ever. The support from the team is top-notch, and they truly care about helping agents succeed. Since joining, I’ve closed more deals in the past six months than I did all of last year!"
-        </p>
-      </blockquote>
-      <figcaption className="flex items-center justify-center mt-4 space-x-2">
-        <img
-          className="w-5 h-5 rounded-full"
-          src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gouch.png"
-          alt="profile picture"
-        />
-        <div className="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-          <div className="pr-2 text-xs font-medium text-gray-900 dark:text-white">
-            Tareeka Kelly
-          </div>
-          <div className="pl-2 text-xs font-light text-gray-500 dark:text-gray-400">
-            MNC Development Agent
-          </div>
-        </div>
-      </figcaption>
-    </figure>
+        
+        <footer 
+  className="fixed bottom-0 left-0 right-0 mt-auto justify-center items-center text-center mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white" 
+  style={{ marginTop: "20px", maxHeight: '150px', overflowY: 'auto' }} // Adjust maxHeight as needed
+>
+  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>info@mncdevelopment.com</p>
+  <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+    <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+      <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>All rights reserved.</p>
+      <span className="hidden md:block">|</span>
+      <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>© MNC Development, Inc. 2008-present.</p>
+    </div>
+    <span className="hidden lg:block">|</span>
+    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>31 Buffalo Avenue, Brooklyn, New York 11233</p>
   </div>
-</section>
+  <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+    <span className="hidden md:block">|</span>
+    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.9rem' }}>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+  </div>
+  <p className="text-center text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', fontSize: '0.8rem' }}>
+    MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
+  </p>
+</footer>
+
 
       
       </div>
-      {/* Legal Section */}
-<div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white mt-10">
-  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
-  <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
-    <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-      <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>All rights reserved.</p> {/* Apply text shadow here */}
-      <span className="hidden md:block">|</span>
-      <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>© MNC Development, Inc. 2008-present.</p> {/* Apply text shadow here */}
-    </div>
-    <span className="hidden lg:block">|</span>
-    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>31 Buffalo Avenue, Brooklyn, New York 11233</p> {/* Apply text shadow here */}
-  </div>
-  <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Phone: 1-718-771-5811 or 1-877-732-3492</p> {/* Apply text shadow here */}
-    <span className="hidden md:block">|</span>
-    <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Fax: 1-877-760-2763 or 1-718-771-5900</p> {/* Apply text shadow here */}
-  </div>
-  <p className="text-justify text-white text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
-    MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
-  </p>
-</div>
     </div>
   );
 };
 
-export default ManageUsersProfile;
+export default Agents;
+

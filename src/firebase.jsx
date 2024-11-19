@@ -11,6 +11,8 @@ import {
 import { getToken, getMessaging, onMessage } from "firebase/messaging";
 import { getAnalytics } from "firebase/analytics";
 
+import { getStorage } from 'firebase/storage';
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,9 +31,10 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 setPersistence(auth, browserSessionPersistence);
 export const db = getFirestore();
+export const storage = getStorage(app);
 
 // const getOrRegisterServiceWorker = async () => {
 //   if ('serviceWorker' in navigator) {

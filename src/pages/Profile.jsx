@@ -13,8 +13,6 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState, useRef } from "react";
 import { AiFillHome } from "react-icons/ai";
-import { FaClipboardList } from "react-icons/fa";
-import { VscSymbolProperty } from "react-icons/vsc";
 import { Link, useNavigate } from "react-router-dom";
 
 import { deleteObject, getStorage, ref } from "firebase/storage";
@@ -29,6 +27,11 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addNotificationToCollection } from "../components/Notification";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { FaClipboardList } from "react-icons/fa";
+import { VscSymbolProperty } from "react-icons/vsc";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { AiOutlineFileText } from "react-icons/ai";
+
 
 const Profile = () => {
   const [listings, setListings] = useState(null);
@@ -362,6 +365,31 @@ const Profile = () => {
                     )}
                   </Menu.Item>
                 )}
+                {/* Payment Management Button */}
+    <Menu.Item>
+      {({ active }) => (
+        <button
+          onClick={() => navigate("/payments/${user.id}")}
+          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+        >
+          <FaMoneyBillWave className="mr-2" />
+          Payment Management
+        </button>
+      )}
+    </Menu.Item>
+
+    {/* Document Management Button */}
+    <Menu.Item>
+      {({ active }) => (
+        <button
+          onClick={() => navigate("/userDocuments/${user.id}")}
+          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+        >
+          <AiOutlineFileText className="mr-2" />
+          Document Management
+        </button>
+      )}
+    </Menu.Item>
               </Menu.Items>
             </Menu>
           </div>
