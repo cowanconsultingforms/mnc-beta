@@ -670,9 +670,6 @@ const Header = () => {
             >
               Home
             </li>
-            
-
-
             {/* VIP button */}
             {["vip", "agent", "admin", "superadmin"].includes(role) && (
               <li
