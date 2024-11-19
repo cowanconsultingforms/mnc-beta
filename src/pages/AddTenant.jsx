@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, getDoc, Timestamp } from "firebase/firestore";
+import { db, storage } from "../firebase"; // Import Firebase storage
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 
 const AddTenant = () => {
   const { propertyId } = useParams();
@@ -24,7 +25,10 @@ const AddTenant = () => {
     DOB: "",
     rentalType: "Residential",
     internalNotes: "",
+    status: "active",
+    imageUrl: "", // New imageUrl field
   });
+  const [file, setFile] = useState(null); // State to store the file
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -67,10 +71,37 @@ const AddTenant = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+  };
+
   const handleAddTenant = async () => {
-    if (!tenant.name || !tenant.unitNumber) {
-      setError("Name and Unit Number are required.");
+    if (!tenant.name || !tenant.unitNumber || !tenant.DOB) {
+      setError("Name, Unit Number, and Date of Birth are required.");
       return;
+    }
+
+    // Convert DOB to Firebase Timestamp
+    const dobTimestamp = tenant.DOB ? Timestamp.fromDate(new Date(tenant.DOB)) : null;
+
+    // Handle file upload if a file was selected
+    let imageUrl = "";
+    if (file) {
+      const storageRef = ref(storage, `images/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          console.error("Error uploading file:", error);
+          setError("Failed to upload image.");
+        },
+        async () => {
+          imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+        }
+      );
     }
 
     // Ensure tenant object has property data before adding
@@ -80,14 +111,31 @@ const AddTenant = () => {
     }
 
     try {
-      // Logging tenant object to check if all fields are correctly populated
-      console.log("Adding tenant:", tenant);
-
-      // Adding tenant to Firestore
       const tenantsRef = collection(db, "tenants");
-      await addDoc(tenantsRef, tenant);
+      const tenantData = { ...tenant, DOB: dobTimestamp, imageUrl };
 
-      // Clear error and navigate to the property management page
+      const tenantDocRef = await addDoc(tenantsRef, tenantData);
+
+      // After adding the tenant, get the document ID
+      const tenantId = tenantDocRef.id;
+      console.log("Tenant added with ID:", tenantId);
+
+      const tenantDoc = await getDoc(tenantDocRef);
+      const tenantDataWithTimestamp = tenantDoc.data();
+
+      const propertyRef = doc(db, "propertyListings", selectedPropertyId);
+
+      const propertyDoc = await getDoc(propertyRef);
+      const propertyData = propertyDoc.data();
+
+      const updatedTenants = propertyData.tenants
+        ? [...propertyData.tenants, { id: tenantId, ...tenantDataWithTimestamp }]
+        : [{ id: tenantId, ...tenantDataWithTimestamp }];
+
+      await updateDoc(propertyRef, {
+        tenants: updatedTenants,
+      });
+
       setError("");
       console.log("Tenant added successfully");
       navigate("/property-management");
@@ -98,12 +146,12 @@ const AddTenant = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4">Add Tenant</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="p-4 md:p-6">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Add Tenant</h2>
+      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
       <div className="mb-4">
-        <label className="font-semibold">Select Property:</label>
+        <label className="font-semibold block">Select Property:</label>
         <select
           className="w-full p-2 border border-gray-300 rounded bg-white"
           value={selectedPropertyId}
@@ -133,8 +181,9 @@ const AddTenant = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[
+      {/* Grid for Desktop, Single-column on Mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {[ 
           { label: "Name", name: "name" },
           { label: "Property Name", name: "propertyName" },
           { label: "Building #", name: "building" },
@@ -147,14 +196,14 @@ const AddTenant = () => {
           { label: "Security Deposit", name: "securityDeposit" },
           { label: "Pet Deposit", name: "petDeposit" },
           { label: "Guarantee Bond", name: "guaranteeBond" },
-          { label: "Date of Birth", name: "DOB" },
-        ].map(({ label, name }) => (
+          { label: "Date of Birth", name: "DOB", type: "date" },
+        ].map(({ label, name, type = "text" }) => (
           <div key={name}>
-            <label className="font-semibold">{label}:</label>
+            <label className="font-semibold block">{label}:</label>
             <input
-              type="text"
+              type={type}
               name={name}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-3 border border-gray-300 rounded"
               placeholder={`Enter ${label}`}
               value={tenant[name]}
               onChange={handleInputChange}
@@ -163,10 +212,10 @@ const AddTenant = () => {
         ))}
 
         <div>
-          <label className="font-semibold">Rental Type:</label>
+          <label className="font-semibold block">Rental Type:</label>
           <select
             name="rentalType"
-            className="w-full p-2 border border-gray-300 rounded bg-white"
+            className="w-full p-3 border border-gray-300 rounded bg-white"
             value={tenant.rentalType}
             onChange={handleInputChange}
           >
@@ -176,23 +225,43 @@ const AddTenant = () => {
           </select>
         </div>
 
-        <div className="col-span-2 border-t border-gray-200 mt-4 pt-4">
-          <label className="font-semibold text-lg text-gray-700 mb-2 block">
-            Internal Notes:
-          </label>
+        <div>
+          <label className="font-semibold block">Status:</label>
+          <select
+            name="status"
+            className="w-full p-3 border border-gray-300 rounded bg-white"
+            value={tenant.status}
+            onChange={handleInputChange}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="font-semibold block">Internal Notes:</label>
           <textarea
             name="internalNotes"
-            className="w-full p-4 border border-gray-300 rounded h-24 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder-gray-400 resize-none"
-            placeholder="Enter internal notes here"
+            className="w-full p-3 border border-gray-300 rounded"
+            placeholder="Enter internal notes"
             value={tenant.internalNotes}
             onChange={handleInputChange}
-          ></textarea>
+          />
+        </div>
+
+        <div>
+          <label className="font-semibold block">Upload Image:</label>
+          <input
+            type="file"
+            className="w-full p-3 border border-gray-300 rounded"
+            onChange={handleFileChange}
+          />
         </div>
       </div>
 
-      <div className="text-center mt-6">
+      <div className="mt-6">
         <button
-          className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          className="w-full bg-blue-500 text-white py-3 rounded-md font-semibold hover:bg-blue-600 transition"
           onClick={handleAddTenant}
         >
           Add Tenant

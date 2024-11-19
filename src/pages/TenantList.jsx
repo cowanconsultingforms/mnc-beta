@@ -76,13 +76,13 @@ const TenantList = () => {
         <div className="mb-4 text-center">
           <button 
             onClick={() => setFilter("active")} 
-            className={`px-4 py-2 mx-2 ${filter === "active" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 mx-2 ${filter === "active" ? "bg-gray-500 text-white" : "bg-gray-200"}`}
           >
             Active Tenants
           </button>
           <button 
             onClick={() => setFilter("past")} 
-            className={`px-4 py-2 mx-2 ${filter === "past" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 mx-2 ${filter === "past" ? "bg-gray-500 text-white" : "bg-gray-200"}`}
           >
             Past Tenants
           </button>

@@ -10,11 +10,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import {
-  doc,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDocs, updateDoc } from "firebase/firestore";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { addNotificationToCollection } from "../components/Notification";
@@ -43,6 +39,8 @@ const CreateListing = () => {
     elevator: false,
     garage: false,
     airConditioning: false,
+    smartHome: false,
+    ecoFriendly: false,
     offer: false,
     regularPrice: 0,
     discountedPrice: 0,
@@ -73,6 +71,8 @@ const CreateListing = () => {
     elevator,
     garage,
     airConditioning,
+    smartHome,
+    ecoFriendly,
     offer,
     regularPrice,
     discountedPrice,
@@ -81,7 +81,6 @@ const CreateListing = () => {
     images,
   } = formData;
 
-  
   const handleAddNotificationClick = (notification) => {
     return async () => {
       addNotificationToCollection(notification);
@@ -125,7 +124,7 @@ const CreateListing = () => {
       if (e.target.files) {
         const selectedImages = Array.from(e.target.files);
         setImages(selectedImages);
-        
+
         setFormData((prevState) => ({
           ...prevState,
           images: e.target.files,
@@ -283,19 +282,18 @@ const CreateListing = () => {
     return <Spinner />;
   }
 
-  const cancelUpdate =(e)=>{
+  const cancelUpdate = (e) => {
     e.preventDefault();
     navigate(-1);
-  }
+  };
 
   return (
     <main className="max-w-md px-2 mx-auto">
-       <div className="flex flex-col">
+      <div className="flex flex-col">
         <h1 className="text-3xl text-center py-4 font-bold">
-        Create a Listing
+          Create a Listing
         </h1>
-       
-          </div>
+      </div>
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
@@ -634,9 +632,7 @@ const CreateListing = () => {
           </div>
           <div
             style={{
-              marginTop: "50px",
-              display: "flex",
-              justifyContent: "space-between",
+              marginTop: "40px", display: "flex", justifyContent: "space-between"
             }}
           >
             <p style={{ width: "150px" }} className="text-lg font-semibold">
@@ -672,7 +668,9 @@ const CreateListing = () => {
             style={{
               marginTop: "25px",
               display: "flex",
-              justifyContent: "space-between",
+              flexWrap: "wrap", 
+              gap: "20px", 
+              alignItems: "center", 
             }}
           >
             <p className="text-lg font-semibold">
@@ -714,10 +712,29 @@ const CreateListing = () => {
                 onChange={onChange}
               />
             </p>
+
+            <p className="text-lg font-semibold">
+              Smart Technology &nbsp;
+              <input
+                type="checkbox"
+                id="smartHome"
+                checked={smartHome}
+                onChange={onChange}
+              />
+            </p>
+
+            <p className="text-lg font-semibold">
+              Eco-Friendly/Green Technology &nbsp;
+              <input
+                type="checkbox"
+                id="ecoFriendly"
+                checked={ecoFriendly}
+                onChange={onChange}
+              />
+            </p>
           </div>
         </div>{" "}
         &nbsp;
-
         {/* Submit images field */}
         <div className="mb-6">
           <p className="text-lg font-semibold">Images</p>
@@ -734,7 +751,6 @@ const CreateListing = () => {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
           />
         </div>
-
         {Array.isArray(selectedImages) && selectedImages.length > 0 && (
           <div>
             {selectedImages.map((image, index) => (
@@ -750,16 +766,15 @@ const CreateListing = () => {
             ))}
           </div>
         )}
-
         <button
-            onClick={cancelUpdate}
-            className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
-          >
-            Cancel
-          </button>
+          onClick={cancelUpdate}
+          className="mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
+        >
+          Cancel
+        </button>
         {/* Submit form data button */}
         <button
-        onClick={handleAddNotificationClick(`${name} is added!`)}
+          onClick={handleAddNotificationClick(`${name} is added!`)}
           type="submit"
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
         >

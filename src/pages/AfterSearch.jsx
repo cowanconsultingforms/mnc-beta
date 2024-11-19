@@ -6,7 +6,7 @@ import {
   where,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, createContext, useState, useRef  } from "react";
+import { useEffect, createContext, useState, useRef } from "react";
 import { arrayUnion } from "firebase/firestore";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../css/Home1.css";
@@ -69,6 +69,7 @@ const Home = () => {
   const [garage, setGarage] = useState("");
   const [airCondition, setAirCondition] = useState("");
   const [smartHome, setSmartHome] = useState("");
+  const [ecoFriendly, setEcoFriendly] = useState("");
   const [parkingChecked, setParkingChecked] = useState(false);
   const [filter, setFilter] = useState();
   const [applyFilt, setApplyFilt] = useState();
@@ -91,7 +92,7 @@ const Home = () => {
       setNotFound(!notFound);
     }
   };
-  
+
   useEffect(() => {
     async function fetchData() {
       const listingRef = collection(db, "propertyListings");
@@ -300,6 +301,10 @@ const Home = () => {
       const meetsGarageFilter = (listing) => !garage || listing.data.garage;
       const meetsAirFilter = (listing) =>
         !airCondition || listing.data.airConditioning;
+      const meetsSmartFilter = (listing) =>
+        !smartHome || listing.data.smartHome;
+      const meetsEcoFilter = (listing) =>
+        !ecoFriendly || listing.data.ecoFriendly;
       // return prices && beds && meetsschoolRatingFilter && meetsBathroomFilter && meetsLandFilter && meetsYearBuiltFilter && meetsStoriesFilter;
       return (
         prices &&
@@ -316,7 +321,9 @@ const Home = () => {
         meetsDoormanFilter(listing) &&
         meetsBasementFilter(listing) &&
         meetsGarageFilter(listing) &&
-        meetsAirFilter(listing)
+        meetsAirFilter(listing) &&
+        meetsSmartFilter(listing) &&
+        meetsEcoFilter (listing)
       );
     });
     setSuggestions(filteredProperties);
@@ -360,9 +367,14 @@ const Home = () => {
     setAirCondition(!airCondition);
   };
 
-  const SmartHome = () => {
+  const HandleSmartHome = () => {
     setSmartHome(!smartHome);
   };
+
+  const HandleEcoFriendly = () => {
+    setEcoFriendly(!ecoFriendly);
+  };
+
   const handleParkingCheckboxChange = () => {
     setParkingChecked(!parkingChecked);
   };
@@ -579,8 +591,6 @@ const Home = () => {
     setSuggestions(filteredProperties);
   };
 
- 
-
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -628,7 +638,7 @@ const Home = () => {
         </div>
         <div>
           <form
-           onSubmit={(e) => handleNotFound(e)}
+            onSubmit={(e) => handleNotFound(e)}
             className="max-w-md mt-6 w-full text flex justify-center"
           >
             {/* Search bar */}
@@ -1286,15 +1296,25 @@ const Home = () => {
                     <input
                       type="checkbox"
                       checked={smartHome}
-                      onChange={SmartHome}
+                      onChange={HandleSmartHome}
                     />
-                    &nbsp; Smart Home Compatible
+                    &nbsp; Must Have Smart Technology
                   </label>
                 </div>
-                
+                <div style={{ marginTop: "10px" }}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={ecoFriendly}
+                      onChange={HandleEcoFriendly}
+                    />
+                    &nbsp; Must Have Eco-Friendly/Green Technology
+                  </label>
+                </div>
+              
+          
               </div>
-
-              <div style={{ marginTop: "10px" }}>
+                <div style={{ marginTop: "10px" }}>
                 <button
                   className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                     applyFilt === "true"
