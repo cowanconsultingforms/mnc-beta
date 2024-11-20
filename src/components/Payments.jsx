@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import nyc from '../assets/nyc.mp4';
+import "../css/Payment.css?inline";
 import Payment from '../css/Payment.css';
 
 const Payments = () => {

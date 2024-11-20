@@ -2,9 +2,10 @@
   border: 1px solid #cbd5e0;
   border-radius: 8px;
   padding: 12px;
-  height: auto; /* Allow height to adjust dynamically */
-  min-height: 55px; /* Ensure it has a minimum height */
-  width: 100%;
+  height: auto;
+  min-height: 55px;
+  max-height: none; /* Remove any maximum height constraints */
+  width: calc(100% - 24px); /* Adjust for padding if applicable */
   box-sizing: border-box;
   margin-bottom: 8px;
   font-size: 1rem;
