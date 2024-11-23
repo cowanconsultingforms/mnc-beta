@@ -374,16 +374,16 @@ const Home = () => {
   
 
   return (
-    <>
-      <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
+    <div className="bg-gray-300 min-h-[calc(100vh-48px)] h-auto">
+      <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 pt-16">
         <div className="w-full px-3">
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-6">
+          <div className="flex flex-row space-x-3 mt-6 disable-hover">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
                   ? "bg-gray-600 text-white ring-gray-600" // Selected state
                   : "bg-white text-black ring-gray-300" // Non-selected state
@@ -395,7 +395,7 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
                   ? "bg-gray-600 text-white ring-gray-600"
                   : "bg-white text-black ring-gray-300"
@@ -407,7 +407,7 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
                   ? "bg-gray-600 text-white ring-gray-600"
                   : "bg-white text-black ring-gray-300"
@@ -425,7 +425,7 @@ const Home = () => {
               <input
                 type="text"
                 id="location-lookup-input"
-                className="uc-omnibox-input cx-textField ring-1"
+                className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
                 // value={searchTerm}
@@ -641,7 +641,7 @@ const Home = () => {
           not guaranteed.
         </p>
       </div>
-    </>
+    </div>
   );
 };
 

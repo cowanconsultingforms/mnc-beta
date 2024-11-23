@@ -3,3 +3,11 @@
       display: block;
     }
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .disable-hover button:hover {
+    background-color: #4a5568 !important; /* Matches bg-gray-600 */
+    color: #ffffff !important; /* Matches text-white */
+    border-color: #4a5568 !important; /* Matches ring-gray-600 */
+  }
+}
