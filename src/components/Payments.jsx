@@ -130,6 +130,13 @@ const Payments = () => {
     navigate('/payment-history/:uid');
   };
 
+  useEffect(() => {
+    const cardElement = document.querySelector('.StripeElement');
+    console.log('CardElement dimensions:', cardElement?.getBoundingClientRect());
+  }, []);
+  
+  
+
   return (
     <div style={styles.container}>
       <div style={styles.background}>
@@ -160,22 +167,23 @@ const Payments = () => {
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label style={styles.label}>Card Details:</label>
           <div style={styles.cardElement}>
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px', // Adjust to match other form inputs
-                    color: '#32325d',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa755a',
-                  },
-                },
-              }}  
-            />
+          <CardElement
+  options={{
+    style: {
+      base: {
+        fontSize: '2rem', // Larger font size to increase iframe height
+        color: '#32325d',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+      },
+      invalid: {
+        color: '#fa755a',
+      },
+    },
+  }}
+/>
+
           </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -201,6 +209,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    zoom: '60%',
   },
   background: {
     position: 'absolute',
@@ -237,9 +246,10 @@ const styles = {
     backgroundColor: '#ffffff', // Clean, professional white background
     borderRadius: '12px',
     boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', // Light shadow for subtle depth
-    padding: '50px',
+    padding: '40px',
     textAlign: 'center',
-    zoom: 0.65,
+    overflow: 'hidden', // Prevent cutting off child elements
+    height: 'auto'
   },
   checkoutForm: {
     display: 'flex',
@@ -248,7 +258,7 @@ const styles = {
     alignItems: 'center',
   },
   formTitle: {
-    fontSize: '2.3rem', // Slightly larger for prominence
+    fontSize: '2.5rem', // Slightly larger for prominence
     fontWeight: '600', // Balanced boldness
     color: '#1a202c', // Neutral, professional dark color
     textAlign: 'center', // Centered for better visual balance
@@ -260,7 +270,7 @@ const styles = {
   },
   
   label: {
-    fontSize: '1rem',
+    fontSize: '1.2rem',
     color: '#343a40', // Muted dark gray
     marginBottom: '5px',
     alignSelf: 'flex-start',
@@ -333,14 +343,15 @@ const styles = {
     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
   },
   cardElement: {
+    width: '100%',
+    height: '100px', // Explicit height
+    minHeight: '100px', // Prevent collapsing
+    padding: '12px',
     border: '1px solid #cbd5e0',
     borderRadius: '8px',
-    padding: '12px',
-    minHeight: '55px',
-    width: '100%',
-    boxSizing: 'border-box',
-    marginBottom: '8px',
-    fontSize: '1rem',
     backgroundColor: '#fdfdfd',
+    boxSizing: 'border-box',
+    overflow: 'visible',
+    marginBottom: '8px',
   },
 };
