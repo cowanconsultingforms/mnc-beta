@@ -5,8 +5,6 @@ import { db } from '../firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import nyc from '../assets/nyc.mp4';
-import "../css/Payment.css?inline";
-import Payment from '../css/Payment.css';
 
 const Payments = () => {
   const [name, setName] = useState('');
@@ -161,7 +159,24 @@ const Payments = () => {
           <label htmlFor="amount" style={styles.label}>Amount:</label>
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label style={styles.label}>Card Details:</label>
-          <CardElement className="card-element"/>
+          <div style={styles.cardElement}>
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px', // Adjust to match other form inputs
+                    color: '#32325d',
+                    '::placeholder': {
+                      color: '#aab7c4',
+                    },
+                  },
+                  invalid: {
+                    color: '#fa755a',
+                  },
+                },
+              }}  
+            />
+          </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
           </button>
@@ -316,5 +331,16 @@ const styles = {
     border: 'none',
     marginTop: '10px',
     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+  },
+  cardElement: {
+    border: '1px solid #cbd5e0',
+    borderRadius: '8px',
+    padding: '12px',
+    minHeight: '55px',
+    width: '100%',
+    boxSizing: 'border-box',
+    marginBottom: '8px',
+    fontSize: '1rem',
+    backgroundColor: '#fdfdfd',
   },
 };
