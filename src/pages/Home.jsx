@@ -153,6 +153,7 @@ const Home = () => {
       console.log("emptu");
     }
   };
+
   const copyNotificationsToUserNotifications = async (userId) => {
     const notificationsRef = collection(db, "notifications");
     const userRef = doc(db, "users", userId);
@@ -245,19 +246,21 @@ const Home = () => {
   };
 
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
-
-    if (searchTerm !== "") {
-      // Displays results after 500ms delay
+    const input = e.target.value;
+    setSearchTerm(input);
+  
+    if (input.trim() !== "") {
       clearTimeout(timer);
       const newTimer = setTimeout(() => {
-        fetchProperties(searchTerm);
-      }, 500);
+        console.log(`Fetching for input: ${input}`);
+        fetchProperties(input);
+      }, 500); // 500ms delay
       setTimer(newTimer);
+    } else {
+      setSuggestions([]);
+      setPropertySuggestions([]);
     }
   };
-
-
 
   // Get the category based on the selectedButton
   const getCategory = (button) => {
@@ -268,9 +271,21 @@ const Home = () => {
         return "rent";
       case 3:
         return "sold";
+      default:
+        console.error("Invalid button selected:", button);
+        return "";
     }
   };
+
+  const handleCategoryChange = (button) => {
+    console.log(`Category changed to button: ${button}`);
+    setSelectedButton(button);
   
+    // Re-fetch properties to ensure updated "PROPERTIES" section
+    if (searchTerm) {
+      fetchProperties(searchTerm, button); // Pass the category (button)
+    }
+  };
 
   // Submit function for searchbar
   const handleSearch = (e) => {
@@ -279,13 +294,20 @@ const Home = () => {
   };
 
   // Filters properties based on searchbar form data
-  const fetchProperties = async (searchTerm) => {
-    if (searchTerm !== "") {
-      const listingRef = collection(db, "propertyListings");
+  const fetchProperties = async (searchTerm, selectedCategoryButton) => {
+    if (!searchTerm) {
+      setPropertySuggestions([]);
+      setSuggestions([]);
+      return;
+    }
   
-      const querySnap = await getDocs(query(listingRef));
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
+    console.log(`Fetching properties for category: ${category}, searchTerm: ${searchTerm}`);
   
-      let listings = [];
+    try {
+      const querySnap = await getDocs(listingRef);
+      const listings = [];
       querySnap.forEach((doc) => {
         listings.push({
           id: doc.id,
@@ -293,39 +315,50 @@ const Home = () => {
         });
       });
   
-      // Filter for property suggestions
-      const filteredProperties = listings.filter((listing) =>
-        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      console.log("Fetched listings:", listings);
+  
+      // Filter for property suggestions based on category
+      const filteredProperties = listings.filter(
+        (listing) =>
+          listing.data.type === category &&
+          listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
       );
   
-      // Filter for cities and ZIP codes suggestions
-      const filteredSuggestions = listings.filter((listing) => {
-        const regexZipCode = /^\d{1,5}$/;
-        const regexCity = /^[a-zA-Z\s]+$/;
+      console.log("Filtered properties:", filteredProperties);
   
+      // Filter for cities and ZIP codes suggestions
+      const regexZipCode = /^\d{1,5}$/;
+      const regexCity = /^[a-zA-Z\s]+$/;
+      const filteredSuggestions = listings.filter((listing) => {
         if (regexZipCode.test(searchTerm)) {
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
-  
         if (regexCity.test(searchTerm)) {
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
-  
         return false;
       });
   
-      // Update states
+      console.log("Filtered suggestions:", filteredSuggestions);
+  
       setPropertySuggestions(filteredProperties);
       setSuggestions(filteredSuggestions);
-    } else {
+    } catch (error) {
+      console.error("Error fetching properties:", error);
       setPropertySuggestions([]);
       setSuggestions([]);
     }
   };
+  
+  useEffect(() => {
+    if (searchTerm) {
+      fetchProperties(searchTerm, selectedButton); // Re-fetch with the new category
+    }
+  }, [selectedButton]);
   
 
   const handleVip = () => {
@@ -340,7 +373,6 @@ const Home = () => {
   };
   
 
-
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -348,7 +380,7 @@ const Home = () => {
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-6">
+          <div className="flex flex-row space-x-3 mt-6 disable-hover">
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
@@ -356,7 +388,7 @@ const Home = () => {
                   ? "bg-gray-600 text-white ring-gray-600" // Selected state
                   : "bg-white text-black ring-gray-300" // Non-selected state
               }`}
-              onClick={() => setSelectedButton(1)}
+              onClick={() => handleCategoryChange(1)}
             >
               Buy
             </button>
@@ -368,7 +400,7 @@ const Home = () => {
                   ? "bg-gray-600 text-white ring-gray-600"
                   : "bg-white text-black ring-gray-300"
               }`}
-              onClick={() => setSelectedButton(2)}
+              onClick={() => handleCategoryChange(2)}
             >
               Rent
             </button>
@@ -380,7 +412,7 @@ const Home = () => {
                   ? "bg-gray-600 text-white ring-gray-600"
                   : "bg-white text-black ring-gray-300"
               }`}
-              onClick={() => setSelectedButton(3)}
+              onClick={() => handleCategoryChange(3)}
             >
               Sold
             </button>
@@ -486,6 +518,7 @@ const Home = () => {
                 {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) && (
                   <div style={styles.suggestionsDropdown}>
                     <ul style={styles.suggestionsList}>
+                      {/* PLACES Section */}
                       {suggestions.length > 0 && (
                         <>
                           <li style={styles.categoryHeader}>PLACES</li>
@@ -513,9 +546,10 @@ const Home = () => {
                         </>
                       )}
 
+                      {/* PROPERTIES Section */}
                       {propertySuggestions.length > 0 && (
                         <>
-                          <li style={styles.categoryHeader}>Properties</li>
+                          <li style={styles.categoryHeader}>PROPERTIES</li>
                           {propertySuggestions.map((property) => (
                             <li
                               key={property.id}
@@ -532,7 +566,6 @@ const Home = () => {
                   </div>
                 )}
               </div>
-    
           </div>
         </div>
       </section>

@@ -63,27 +63,27 @@ function FAQPage() {
       question: "What's the step-by-step procedure to obtain the VIP membership?",
       answer: (
         <>
-          <p className="mb-4 text-lg text-gray-700">
-            If interested in a VIP subscription, register for a normal user account, if you have not done so already 
-            (<a 
+          <p className="list-decimal ml-6 mb-4 text-gray-700 text-[15.3px]">
+            If interested in a VIP subscription {' '}  
+            <a 
               href="/sign-up" 
               target="_blank" 
-              className="text-blue-600 hover:underline"
+              className="font-black text-gray-700 hover:underline"
             >
-              sign up
-            </a>). Then email us for a VIP subscription quote
+              register
+            </a> for a normal user account, if you have not done so already. Then email us for a VIP subscription quote
             (<a 
               href="mailto:team@mncdevelopment.com" 
-              className="text-blue-600 hover:underline"
+              className="font-black text-gray-700 hover:underline"
             >
               team@mncdevelopment.com
             </a>). 
             Then you must pay the requisite fee via Zelle or Stripe:
           </p>
-          <ol className="list-decimal ml-6 mb-4 text-gray-700">
+          <ol className="list-decimal ml-6 mb-4 text-gray-700 text-[15.3px]">
             <li className="mb-4">
-              Pay the agreed yearly VIP membership fee via Zelle at 
-              <span className="font-semibold text-gray-900"> mncdevelopmentapartments@gmail.com</span>. 
+              Pay the agreed yearly VIP membership fee via Zelle using 
+              <span className="font-semibold"> mncdevelopmentapartments@gmail.com</span>. 
               In the memo of the Zelle transfer, type: 
               <span className="font-medium italic"> VIP yearly membership fee</span>. 
               Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 
@@ -94,7 +94,7 @@ function FAQPage() {
               <a 
                 href="/payments/:uid"
                 onClick={handleStripeLinkClick} // Check authentication on click
-                className="text-blue-600 hover:underline"
+                className="font-black text-gray-700 hover:underline"
               >
                 Stripe
               </a>.
@@ -126,8 +126,8 @@ function FAQPage() {
                 </p>
                 <div className="flex justify-center space-x-4">
                   <button
-                    onClick={() => window.location.href = '/login'} // Redirect to login page
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={() => window.location.href = '/sign-in'} // Redirect to login page
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                   >
                     Log In
                   </button>
