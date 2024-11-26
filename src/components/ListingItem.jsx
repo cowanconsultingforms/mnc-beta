@@ -106,6 +106,7 @@ const ListingItem = ({
           <p className="font-bold text-xs">{`Year Built: ${listing.yearBuilt}`}</p>
         </div>
       </Link>
+      
 
       {/* Conditionally render the Edit and Delete buttons based on showActions */}
       {!showActions && <div className ="mb-4"></div>}

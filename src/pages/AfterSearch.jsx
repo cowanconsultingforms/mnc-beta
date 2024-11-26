@@ -775,16 +775,17 @@ const Home = () => {
           )}
 
           <div className={`filter-panel ${showFilters ? "open" : ""}`}>
-            <span id="panel-title" className="font-sm ">
+            <span id="panel-title" className="font-semibold ">
               Explore This Neighborhood
               <button
                 id="close-filters2"
+                className="px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out bg-gray-600 text-white flex items-center justify-center"
                 onClick={() => {
                   closeFilters();
                   handleClick();
                 }}
               >
-                Close Filters
+                Close
               </button>
             </span>
 
@@ -841,7 +842,7 @@ const Home = () => {
                       setIsSortOpen(false);
                       setSortName("PRICE");
                     }}
-                    className="px-4 py-2  text-left text-sm text-gray-700 hover:bg-gray-100"
+                    className="px-4 py-2  text-left  text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Price
                   </button>
@@ -953,7 +954,7 @@ const Home = () => {
                     value={input1Value}
                     onChange={(e) => setInput1Value(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>
@@ -964,7 +965,7 @@ const Home = () => {
                     value={input2Value}
                     onChange={(e) => setInput2Value(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -988,7 +989,7 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1013,7 +1014,7 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 11 }, (_, i) => i + 1).map(
@@ -1036,7 +1037,7 @@ const Home = () => {
               >
                 <button
                   onClick={handleDecrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
                 >
                   -
                 </button>
@@ -1049,11 +1050,13 @@ const Home = () => {
                     height: "35px",
                     textAlign: "center",
                     fontSize: "14px",
+                    borderRadius:"8px",
+                    border: "0px solid",
                   }}
                 />
                 <button
                   onClick={handleIncrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
                 >
                   +
                 </button>
@@ -1078,7 +1081,7 @@ const Home = () => {
                     value={land1}
                     onChange={(e) => setLand(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>&nbsp;
@@ -1088,7 +1091,7 @@ const Home = () => {
                     value={land2}
                     onChange={(e) => setLand2(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -1109,7 +1112,7 @@ const Home = () => {
                     value={year1}
                     onChange={(e) => setYear1(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>&nbsp;
@@ -1119,7 +1122,7 @@ const Home = () => {
                     value={year2}
                     onChange={(e) => setYear2(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -1140,7 +1143,7 @@ const Home = () => {
                       value = "None";
                     }
                   }}
-                  style={{ fontSize: "14px", width: "170px", height: "36px" }}
+                  style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
                 >
                   <option>None</option>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
@@ -1173,7 +1176,7 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "36px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1198,7 +1201,7 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
