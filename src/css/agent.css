@@ -184,3 +184,49 @@ button:hover {
     z-index: 999999;
   }
 }
+
+
+.search-bar-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.suggestion-item {
+  padding: 12px 20px;
+  font-size: 15px;
+  color: #374151;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestion-item:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  transform: scale(1.02);
+}

@@ -174,7 +174,7 @@ const Agents = () => {
             }}
             onSubmit={handleSubmit}
           >
-            <div className="px-3 relative" style={{ width: "100%", margin: "auto" }}>
+            <div className="search-bar-container" style={{ width: "100%", margin: "auto" }}>
               <input
                 type="search"
                 placeholder="Search agents by address or name"
@@ -185,7 +185,7 @@ const Agents = () => {
                   maxWidth: "456px",
                   boxShadow: "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)",
                 }}
-                className="rounded-md text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
+                className="search-bar rounded-md text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
               />
               {/* Suggestions */}
               {suggestions.length > 0 && (
