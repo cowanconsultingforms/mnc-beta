@@ -3,6 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { collection, getDocs, addDoc, doc, updateDoc, getDoc, Timestamp } from "firebase/firestore";
 import { db, storage } from "../firebase"; // Import Firebase storage
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
+import { v4 as uuidv4 } from "uuid";
+import { getStorage } from "firebase/storage";
+import { uploadBytes } from "firebase/storage";
+
 
 const AddTenant = () => {
   const { propertyId } = useParams();
@@ -76,6 +80,29 @@ const AddTenant = () => {
     setFile(file);
   };
 
+  // Assuming handleImageUpload is defined here
+  const handleImageUpload = async (file) => {
+    if (!file) return "";  // Return early if no file selected
+    try {
+      const uniqueFileName = `${file.name}-${uuidv4()}`;
+      const storageRef = ref(storage, `images/${uniqueFileName}`);
+  
+      // Upload the file to Firebase Storage using the uploadBytes function
+      const snapshot = await uploadBytes(storageRef, file); 
+  
+      // Get the download URL of the uploaded image
+      const downloadURL = await getDownloadURL(snapshot.ref);
+  
+      console.log("Download URL:", downloadURL);  // Log the download URL
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setError("Failed to upload image. Please ensure the file is valid.");
+      return ""; // Return empty if upload fails
+    }
+  };
+  
+
   const handleAddTenant = async () => {
     if (!tenant.name || !tenant.unitNumber || !tenant.DOB) {
       setError("Name, Unit Number, and Date of Birth are required.");
@@ -88,20 +115,8 @@ const AddTenant = () => {
     // Handle file upload if a file was selected
     let imageUrl = "";
     if (file) {
-      const storageRef = ref(storage, `images/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          console.error("Error uploading file:", error);
-          setError("Failed to upload image.");
-        },
-        async () => {
-          imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        }
-      );
+      imageUrl = await handleImageUpload(file);
+      if (!imageUrl) return; // Exit if image upload fails
     }
 
     // Ensure tenant object has property data before adding
@@ -114,28 +129,25 @@ const AddTenant = () => {
       const tenantsRef = collection(db, "tenants");
       const tenantData = { ...tenant, DOB: dobTimestamp, imageUrl };
 
+      // Add the tenant to the Firestore collection
       const tenantDocRef = await addDoc(tenantsRef, tenantData);
 
       // After adding the tenant, get the document ID
       const tenantId = tenantDocRef.id;
       console.log("Tenant added with ID:", tenantId);
 
-      const tenantDoc = await getDoc(tenantDocRef);
-      const tenantDataWithTimestamp = tenantDoc.data();
-
+      // Fetch property data and update tenants array
       const propertyRef = doc(db, "propertyListings", selectedPropertyId);
-
       const propertyDoc = await getDoc(propertyRef);
       const propertyData = propertyDoc.data();
 
       const updatedTenants = propertyData.tenants
-        ? [...propertyData.tenants, { id: tenantId, ...tenantDataWithTimestamp }]
-        : [{ id: tenantId, ...tenantDataWithTimestamp }];
+        ? [...propertyData.tenants, { id: tenantId, ...tenantData }]
+        : [{ id: tenantId, ...tenantData }];
 
-      await updateDoc(propertyRef, {
-        tenants: updatedTenants,
-      });
+      await updateDoc(propertyRef, { tenants: updatedTenants });
 
+      // Reset error state and navigate
       setError("");
       console.log("Tenant added successfully");
       navigate("/property-management");

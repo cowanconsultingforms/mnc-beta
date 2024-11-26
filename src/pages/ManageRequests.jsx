@@ -258,7 +258,7 @@ const ManageRequests = () => {
           opacity: 0.5,
         }}
       ></div>
-      <div className="pt-20 ">
+      <div className="flex items-center justify-center pt-20">
         <div
           className=" relative  bg-gray-100 rounded px-6 py-6 mx-auto"
           style={{ width: "550px" }}
