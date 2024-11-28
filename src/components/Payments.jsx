@@ -160,22 +160,7 @@ const Payments = () => {
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label style={styles.label}>Card Details:</label>
           <div style={styles.cardElement}>
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px', // Adjust to match other form inputs
-                    color: '#32325d',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa755a',
-                  },
-                },
-              }}  
-            />
+            <CardElement />
           </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -336,8 +321,8 @@ const styles = {
     border: '1px solid #cbd5e0',
     borderRadius: '8px',
     padding: '12px',
-    minHeight: '55px',
-    width: '100%',
+    minHeight: '100%',
+    width: '800px',
     boxSizing: 'border-box',
     marginBottom: '8px',
     fontSize: '1rem',

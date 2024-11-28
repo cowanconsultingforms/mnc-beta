@@ -428,144 +428,98 @@ const Home = () => {
                 className="uc-omnibox-input cx-textField ring-1"
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
-                // value={searchTerm}
                 onChange={onChange}
                 style={{ width: "380px", borderRadius: "6px" }}
               />
-              {notFound && (
-                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                    <div className="flex">
-                      <p className="font-semibold">
-                        We couldn't find '{searchTerm}'
-                      </p>
-                      <button
-                        className="mx-0 font-semibold text-xl ml-auto"
-                        onClick={() => {
-                          setNotFound(false);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <br></br>
-                    <p>
-                      Please check the spelling, try clearing the search box, or
-                      try reformatting to match these examples:
-                    </p>
-                    <br></br>
-                    <span className="font-semibold">Address:</span> 123 Main St,
-                    Seattle, WA <br></br>
-                    <span className="font-semibold">Neighborhood: </span>
-                    Downtown
-                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                    <br></br>
-                    <span className="font-semibold">City: </span> 'Seattle' or
-                    'Seattle, WA' <br></br>
-                    <br></br> Don't see what you're looking for? Your search
-                    might be outside our service areas.
-                  </div>
-                </div>
-              )}
               <button
-              type="submit"
-              className="absolute right-[20px] top-[12px] cursor-pointer"
-            >
-              <AiOutlineSearch className="text-gray-700 text-2xl" />
-            </button>
+                type="submit"
+                className="absolute right-[20px] top-[12px] cursor-pointer"
+              >
+                <AiOutlineSearch className="text-gray-700 text-2xl" />
+              </button>
             </form>
-             {/* Search button */}
-             
-            {/* {notFound && (
-                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                    <div className="flex">
-                      <p className="font-semibold">
-                        We couldn't find '{searchTerm}'
-                      </p>
-                      <button
-                        className="mx-0 font-semibold text-xl ml-auto"
-                        onClick={() => {
-                          setNotFound(false);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <br></br>
-                    <p>
-                      Please check the spelling, try clearing the search box, or
-                      try reformatting to match these examples:
-                    </p>
-                    <br></br>
-                    <span className="font-semibold">Address:</span> 123 Main St,
-                    Seattle, WA <br></br>
-                    <span className="font-semibold">Neighborhood: </span>
-                    Downtown
-                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                    <br></br>
-                    <span className="font-semibold">City: </span> 'Seattle' or
-                    'Seattle, WA' <br></br>
-                    <br></br> Don't see what you're looking for? Your search
-                    might be outside our service areas.
-                    {console.log('sssss')}
-                  </div>
-                </div>
-              )} */}
-              
-              {/* Search Bar Suggestions */}
-              <div>
-                {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) && (
-                  <div style={styles.suggestionsDropdown}>
-                    <ul style={styles.suggestionsList}>
-                      {/* PLACES Section */}
-                      {suggestions.length > 0 && (
-                        <>
-                          <li style={styles.categoryHeader}>PLACES</li>
-                          {Array.from(
-                            new Set(
-                              suggestions.map((suggestion) => {
-                                const addressParts = suggestion.data.address.split(",");
-                                const city = addressParts[addressParts.length - 2]?.trim() || "Unknown City";
-                                const stateAndZip = addressParts[addressParts.length - 1]?.trim() || "Unknown State";
-                                const stateAndZipParts = stateAndZip.split(" ");
-                                const state = stateAndZipParts[0];
-                                return `${city}, ${state}`;
-                              })
-                            )
-                          ).map((cityStatePair, index) => (
-                            <li
-                              key={`city-${index}`}
-                              style={styles.suggestionItem}
-                              className="suggestion-item"
-                              onClick={() => navigate(`/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`)}
-                            >
-                              <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
-                            </li>
-                          ))}
-                        </>
-                      )}
 
-                      {/* PROPERTIES Section */}
-                      {propertySuggestions.length > 0 && (
-                        <>
-                          <li style={styles.categoryHeader}>PROPERTIES</li>
-                          {propertySuggestions.map((property) => (
-                            <li
-                              key={property.id}
-                              style={styles.suggestionItem}
-                              className="suggestion-item"
-                              onClick={() => navigate(`/category/${property.data.type}/${property.id}`)}
-                            >
-                              <span style={styles.suggestionIcon}>🏠</span> {property.data.address}
-                            </li>
-                          ))}
-                        </>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
+            {/* Search Bar Suggestions or No Results */}
+            <div>
+              {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) ? (
+                <div style={styles.suggestionsDropdown}>
+                  <ul style={styles.suggestionsList}>
+                    {/* PLACES Section */}
+                    {suggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PLACES</li>
+                        {Array.from(
+                          new Set(
+                            suggestions.map((suggestion) => {
+                              const addressParts = suggestion.data.address.split(",");
+                              const city =
+                                addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                              const stateAndZip =
+                                addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                              const stateAndZipParts = stateAndZip.split(" ");
+                              const state = stateAndZipParts[0];
+                              return `${city}, ${state}`;
+                            })
+                          )
+                        ).map((cityStatePair, index) => (
+                          <li
+                            key={`city-${index}`}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(
+                                `/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`
+                              )
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
+                          </li>
+                        ))}
+                      </>
+                    )}
+
+                    {/* PROPERTIES Section */}
+                    {propertySuggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PROPERTIES</li>
+                        {propertySuggestions.map((property) => (
+                          <li
+                            key={property.id}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(`/category/${property.data.type}/${property.id}`)
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>🏠</span>{" "}
+                            {property.data.address}
+                          </li>
+                        ))}
+                      </>
+                    )}
+                  </ul>
+                </div>
+              ) : searchTerm && !suggestions.length && !propertySuggestions.length ? (
+                // No Results Message
+                <div className="no-results-message">
+                  <p>
+                    Please check the spelling, try clearing the search box, or try
+                    reformatting to match these examples:
+                  </p>
+                  <br />
+                  <span className="font-semibold">Address:</span> 123 Main St, Seattle, WA
+                  <br />
+                  <span className="font-semibold">Neighborhood:</span> Downtown
+                  <br />
+                  <span className="font-semibold">Zip:</span> 98115
+                  <br />
+                  <span className="font-semibold">City:</span> 'Seattle' or 'Seattle, WA'
+                  <br />
+                  <br />
+                  <p>Don't see what you're looking for? Your search might be outside our service areas.</p>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>

@@ -1,3 +1,38 @@
+.no-results-message {
+  position: absolute; /* Make it overlap content */
+  top: 100%; /* Position it below the search bar */
+  left: 0; /* Align it with the search bar */
+  width: 100%; /* Match the width of the search bar */
+  max-width: 600px; /* Optional: Limit width to ensure readability */
+  background-color: #ffffff; /* White background for consistency */
+  border: 1px solid #e2e8f0; /* Subtle border for separation */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  z-index: 1000; /* Ensure it appears above other content */
+  padding: 16px; /* Add space inside the box */
+  font-size: 14px; /* Standard font size */
+  line-height: 1.6; /* Improve readability */
+  color: #4a5568; /* Neutral text color */
+  text-align: left; /* Align text to the left */
+}
+
+/* Styling for bolded text in the message */
+.no-results-message .font-semibold {
+  font-weight: 700; /* Bold text for emphasis */
+  color: #1a202c; /* Darker color for important text */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+  .no-results-message {
+    font-size: 13px; /* Adjust font size for smaller screens */
+    padding: 12px; /* Adjust padding */
+    width: calc(100% - 32px); /* Add padding to match search bar spacing */
+    left: 16px; /* Center the message on smaller screens */
+  }
+}
+
+
 @media (max-width: 600px) {
     .writing {
       display: block;
