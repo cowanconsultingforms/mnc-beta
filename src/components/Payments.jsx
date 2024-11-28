@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import nyc from '../assets/nyc.mp4';
+import { min } from 'date-fns';
 
 const Payments = () => {
   const [name, setName] = useState('');
@@ -166,24 +167,8 @@ const Payments = () => {
           <label htmlFor="amount" style={styles.label}>Amount:</label>
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label style={styles.label}>Card Details:</label>
-          <div style={styles.cardElement}>
-          <CardElement
-  options={{
-    style: {
-      base: {
-        fontSize: '2rem', // Larger font size to increase iframe height
-        color: '#32325d',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-      },
-      invalid: {
-        color: '#fa755a',
-      },
-    },
-  }}
-/>
-
+          <div style={styles.input}>
+          <CardElement/>
           </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -209,7 +194,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    zoom: '60%',
+    zoom: '61%',
   },
   background: {
     position: 'absolute',
@@ -278,6 +263,9 @@ const styles = {
   },
   input: {
     width: '100%',
+    height: '100%',
+    minHeight: '100%',
+    minWidth: '100%', 
     padding: '12px',
     borderRadius: '6px',
     border: '1px solid #ced4da', // Light border
@@ -287,6 +275,7 @@ const styles = {
     backgroundColor: '#fdfdfd',
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
     boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.05)', // Subtle shadow for realism
+    overflow: 'visible',
   },
   inputFocus: {
     borderColor: '#007bff', // Professional blue focus color
@@ -342,16 +331,16 @@ const styles = {
     marginTop: '10px',
     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
   },
-  cardElement: {
-    width: '100%',
-    height: '100px', // Explicit height
-    minHeight: '100px', // Prevent collapsing
-    padding: '12px',
-    border: '1px solid #cbd5e0',
-    borderRadius: '8px',
-    backgroundColor: '#fdfdfd',
-    boxSizing: 'border-box',
-    overflow: 'visible',
-    marginBottom: '8px',
-  },
+  // cardElement: {
+  //   width: '100%',
+  //   height: '100%', // Explicit height
+  //   minHeight: '100%', // Prevent collapsing
+  //   padding: '12px',
+  //   border: '1px solid #cbd5e0',
+  //   borderRadius: '8px',
+  //   backgroundColor: '#fdfdfd',
+  //   boxSizing: 'border-box',
+  //   overflow: 'visible',
+  //   marginBottom: '8px',
+  // },
 };
