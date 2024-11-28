@@ -131,13 +131,6 @@ const Payments = () => {
     navigate('/payment-history/:uid');
   };
 
-  useEffect(() => {
-    const cardElement = document.querySelector('.StripeElement');
-    console.log('CardElement dimensions:', cardElement?.getBoundingClientRect());
-  }, []);
-  
-  
-
   return (
     <div style={styles.container}>
       <div style={styles.background}>
@@ -167,8 +160,8 @@ const Payments = () => {
           <label htmlFor="amount" style={styles.label}>Amount:</label>
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
           <label style={styles.label}>Card Details:</label>
-          <div style={styles.input}>
-          <CardElement/>
+          <div style={styles.cardElement}>
+            <CardElement />
           </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -194,7 +187,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    zoom: '61%',
+    zoom: '62%',
   },
   background: {
     position: 'absolute',
@@ -331,16 +324,15 @@ const styles = {
     marginTop: '10px',
     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
   },
-  // cardElement: {
-  //   width: '100%',
-  //   height: '100%', // Explicit height
-  //   minHeight: '100%', // Prevent collapsing
-  //   padding: '12px',
-  //   border: '1px solid #cbd5e0',
-  //   borderRadius: '8px',
-  //   backgroundColor: '#fdfdfd',
-  //   boxSizing: 'border-box',
-  //   overflow: 'visible',
-  //   marginBottom: '8px',
-  // },
+  cardElement: {
+    border: '1px solid #cbd5e0',
+    borderRadius: '8px',
+    padding: '12px',
+    minHeight: '100%',
+    width: '800px',
+    boxSizing: 'border-box',
+    marginBottom: '8px',
+    fontSize: '1rem',
+    backgroundColor: '#fdfdfd',
+  },
 };

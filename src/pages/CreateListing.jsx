@@ -14,6 +14,7 @@ import { doc, getDocs, updateDoc } from "firebase/firestore";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { addNotificationToCollection } from "../components/Notification";
+import Home1 from "../css/Home1.css?inline"; // For button fixes
 
 const CreateListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
@@ -297,18 +298,18 @@ const CreateListing = () => {
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="type"
             value="buy"
             onClick={onChange}
-            className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${
-              type === "rent" || type === "sold"
-                ? "bg-white text-black"
-                : "bg-gray-500 text-white"
-            }`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                type === "rent" || type === "sold"
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}  
           >
             Buy
           </button>
@@ -317,12 +318,12 @@ const CreateListing = () => {
             id="type"
             value="rent"
             onClick={onChange}
-            className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${
-              type === "buy" || type === "sold"
-                ? "bg-white text-black"
-                : "bg-gray-500 text-white"
-            }`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                type === "buy" || type === "sold"
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             Rent
           </button>
@@ -331,12 +332,12 @@ const CreateListing = () => {
             id="type"
             value="sold"
             onClick={onChange}
-            className={`ml-3 mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${
-              type === "rent" || type === "buy"
-                ? "bg-white text-black"
-                : "bg-gray-500 text-white"
-            }`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                type === "rent" || type === "buy"
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             Sold
           </button>
@@ -388,14 +389,18 @@ const CreateListing = () => {
         </div>
         {/* Parking availability buttons */}
         <p className="text-lg mt-6 font-semibold">Parking Spot</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="parking"
             value={true}
             onClick={onChange}
-            className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                !parking
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             Yes
           </button>
@@ -404,22 +409,30 @@ const CreateListing = () => {
             id="parking"
             value={false}
             onClick={onChange}
-            className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                parking
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             No
           </button>
         </div>
         {/* Furnished buttons */}
         <p className="text-lg mt-6 font-semibold">Furnished</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="furnished"
             value={true}
             onClick={onChange}
-            className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!furnished ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                !furnished
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             Yes
           </button>
@@ -428,8 +441,12 @@ const CreateListing = () => {
             id="furnished"
             value={false}
             onClick={onChange}
-            className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${furnished ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                furnished
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             No
           </button>
@@ -489,14 +506,18 @@ const CreateListing = () => {
         />
         {/* Add discount buttons */}
         <p className="text-lg font-semibold">Add Discount?</p>
-        <div className="flex mb-6">
+        <div className="flex mb-6 disable-hover">
           <button
             type="button"
             id="offer"
             value={true}
             onClick={onChange}
-            className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                !offer
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             Yes
           </button>
@@ -505,8 +526,12 @@ const CreateListing = () => {
             id="offer"
             value={false}
             onClick={onChange}
-            className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            className={`mr-3 px-7 py-3 font-medium text-sm uppercase rounded shadow-md transition duration-150 ease-in-out w-full 
+              ${
+                offer
+                  ? "bg-white text-gray-800 hover:bg-white hover:text-gray-700 active:bg-gray-200"
+                  : "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:text-white active:bg-gray-700"
+              }`}
           >
             No
           </button>

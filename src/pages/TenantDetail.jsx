@@ -8,6 +8,8 @@ const TenantDetail = () => {
   const [tenant, setTenant] = useState(null);
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
+  const [imageFile, setImageFile] = useState(null); // Store selected image file
+
 
   useEffect(() => {
     const fetchTenantDetails = async () => {
@@ -19,7 +21,9 @@ const TenantDetail = () => {
 
         if (Array.isArray(tenantList)) {
           // Find the tenant by tenantId
-          const tenantDetail = tenantList.find((tenant) => tenant.id === tenantId);
+          const tenantDetail = tenantList.find(
+            (tenant) => tenant.id === tenantId
+          );
 
           if (tenantDetail) {
             setTenant(tenantDetail);
@@ -88,7 +92,9 @@ const TenantDetail = () => {
         const tenants = docSnap.data().tenants || [];
 
         // Remove tenant from the tenants array
-        const updatedTenants = tenants.filter((tenant) => tenant.id !== tenantId);
+        const updatedTenants = tenants.filter(
+          (tenant) => tenant.id !== tenantId
+        );
 
         // Save the updated tenants array back to Firestore
         await updateDoc(docRef, { tenants: updatedTenants });
@@ -106,7 +112,9 @@ const TenantDetail = () => {
     }
   };
 
-  const profileImage = tenant?.imageUrl || "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=";
+  const profileImage =
+    tenant?.imageUrl ||
+    "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=";
 
   return tenant ? (
     <div className="bg-white p-4 md:p-6 rounded-lg shadow-md max-w-xl md:max-w-2xl mx-auto">
@@ -125,21 +133,59 @@ const TenantDetail = () => {
         {/* Input Fields */}
         {[
           { label: "Name", name: "name", value: editableTenant?.name || "" },
-          { label: "Property Name", name: "propertyName", value: editableTenant?.propertyName || "" },
-          { label: "Building #", name: "building", value: editableTenant?.building || "" },
+          {
+            label: "Property Name",
+            name: "propertyName",
+            value: editableTenant?.propertyName || "",
+          },
+          {
+            label: "Building #",
+            name: "building",
+            value: editableTenant?.building || "",
+          },
           { label: "Floor", name: "floor", value: editableTenant?.floor || "" },
-          { label: "Unit #", name: "unitNumber", value: editableTenant?.unitNumber || "" },
-          { label: "Unit Type", name: "unitType", value: editableTenant?.unitType || "" },
-          { label: "Unit Rent", name: "unitRent", value: editableTenant?.unitRent || "" },
+          {
+            label: "Unit #",
+            name: "unitNumber",
+            value: editableTenant?.unitNumber || "",
+          },
+          {
+            label: "Unit Type",
+            name: "unitType",
+            value: editableTenant?.unitType || "",
+          },
+          {
+            label: "Unit Rent",
+            name: "unitRent",
+            value: editableTenant?.unitRent || "",
+          },
           { label: "SqFt", name: "sqFt", value: editableTenant?.sqFt || "" },
-          { label: "Bedrooms", name: "bedrooms", value: editableTenant?.bedrooms || "" },
-          { label: "Security Deposit", name: "securityDeposit", value: editableTenant?.securityDeposit || "" },
-          { label: "Pet Deposit", name: "petDeposit", value: editableTenant?.petDeposit || "" },
-          { label: "Guarantee Bond", name: "guaranteeBond", value: editableTenant?.guaranteeBond || "" },
+          {
+            label: "Bedrooms",
+            name: "bedrooms",
+            value: editableTenant?.bedrooms || "",
+          },
+          {
+            label: "Security Deposit",
+            name: "securityDeposit",
+            value: editableTenant?.securityDeposit || "",
+          },
+          {
+            label: "Pet Deposit",
+            name: "petDeposit",
+            value: editableTenant?.petDeposit || "",
+          },
+          {
+            label: "Guarantee Bond",
+            name: "guaranteeBond",
+            value: editableTenant?.guaranteeBond || "",
+          },
           {
             label: "Date of Birth",
             name: "DOB",
-            value: editableTenant?.DOB ? new Date(editableTenant.DOB.seconds * 1000).toLocaleDateString() : "",
+            value: editableTenant?.DOB
+              ? new Date(editableTenant.DOB.seconds * 1000).toLocaleDateString()
+              : "",
           },
         ].map(({ label, name, value }) => (
           <div key={label} className="flex flex-col">
@@ -191,16 +237,25 @@ const TenantDetail = () => {
       <div className="text-center mt-6">
         {isEditing ? (
           <>
-            <button onClick={handleSaveChanges} className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors mr-2">
+            <button
+              onClick={handleSaveChanges}
+              className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors mr-2"
+            >
               Save Changes
             </button>
-            <button onClick={() => setIsEditing(false)} className="p-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors">
+            <button
+              onClick={() => setIsEditing(false)}
+              className="p-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors"
+            >
               Cancel
             </button>
           </>
         ) : (
           <>
-            <button onClick={() => setIsEditing(true)} className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+            >
               Edit Tenant
             </button>
 
@@ -209,8 +264,15 @@ const TenantDetail = () => {
               {/* Delete Tenant Button (only visible when not in editing mode) */}
               {!isEditing && (
                 <button
-                  onClick={handleDeleteTenant}
-                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                  onClick={() => {
+                    const confirmed = window.confirm(
+                      "Are you sure you want to delete this tenant? This action cannot be undone."
+                    );
+                    if (confirmed) {
+                      handleDeleteTenant();
+                    }
+                  }}
+                  className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
                 >
                   Delete Tenant
                 </button>

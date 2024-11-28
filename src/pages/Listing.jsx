@@ -5,7 +5,9 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState, Link, useNavigate } from "react";
+import { useEffect, useState, Link } from "react";
+import { useNavigate } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import {
   FaBath,
   FaBed,
@@ -26,6 +28,7 @@ import {
   FaSnowflake,
   FaMobileAlt,
   FaLeaf,
+  FaArrowLeft,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -47,7 +50,7 @@ const Listing = () => {
   const [loading, setLoading] = useState(true);
   const [contactCreator, setContactCreator] = useState(false);
   const [listingData, setListingData] = useState("");
-
+  const navigate = useNavigate();
   // Loads google maps api script
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
@@ -116,6 +119,16 @@ const Listing = () => {
         }}
       >
         <FaShare className="text-lg text-gray-600" />
+      </div>
+
+      {/* Back button */}
+      <div
+        className="fixed top-[13%] left-[3%] z-10 bg-white cursor-pointer border-2 border-gray-400 rounded-full w-12 h-12 flex justify-center items-center transform scaleY-[-1]"
+        onClick={() => {
+          navigate(-1); // Navigate to the previous page
+        }}
+      >
+        <FaArrowLeft className="text-lg text-gray-600" />
       </div>
 
       {/* Information section */}
