@@ -432,8 +432,31 @@ const Home = () => {
                 style={{ width: "380px", borderRadius: "6px" }}
               />
               <button
-                type="submit"
-                className="absolute right-[20px] top-[12px] cursor-pointer"
+                type="button"
+                className="ml-3 cursor-pointer"
+                onClick={() => {
+                  const firstSuggestion = Array.from(
+                    new Set(
+                      suggestions.map((suggestion) => {
+                        const addressParts = suggestion.data.address.split(",");
+                        const city =
+                          addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                        const stateAndZip =
+                          addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                        const stateAndZipParts = stateAndZip.split(" ");
+                        const state = stateAndZipParts[0];
+                        return `${city}, ${state}`;
+                      })
+                    )
+                  )[0]; // Get the first city-state pair
+                  if (firstSuggestion) {
+                    navigate(
+                      `/afterSearch/${encodeURIComponent(firstSuggestion.replace(/ /g, "%20"))}`
+                    );
+                  } else {
+                    console.warn("No valid first suggestion available.");
+                  }
+                }}
               >
                 <AiOutlineSearch className="text-gray-700 text-2xl" />
               </button>
