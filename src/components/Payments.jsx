@@ -159,9 +159,27 @@ const Payments = () => {
           <input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Payment description" required style={styles.input} />
           <label htmlFor="amount" style={styles.label}>Amount:</label>
           <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
-          <label style={styles.label}>Card Details:</label>
-          <div style={styles.cardElement}>
-            <CardElement />
+          <div className="w-full max-w-md mx-auto border border-gray-300 rounded-lg p-4 shadow-sm bg-white">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Card Details
+            </label>
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#333',
+                    '::placeholder': {
+                      color: '#aaa',
+                    },
+                  },
+                  invalid: {
+                    color: '#e3342f',
+                  },
+                },
+              }}
+              className="w-full"
+            />
           </div>
           <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
             {loading ? 'Processing...' : `Pay $${amount}`}
@@ -324,15 +342,15 @@ const styles = {
     marginTop: '10px',
     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
   },
-  cardElement: {
-    border: '1px solid #cbd5e0',
-    borderRadius: '8px',
-    padding: '12px',
-    minHeight: '100%',
-    width: '800px',
-    boxSizing: 'border-box',
-    marginBottom: '8px',
-    fontSize: '1rem',
-    backgroundColor: '#fdfdfd',
-  },
+  // cardElement: {
+  //   border: '1px solid #cbd5e0',
+  //   borderRadius: '8px',
+  //   padding: '12px',
+  //   minHeight: '100%',
+  //   width: '800px',
+  //   boxSizing: 'border-box',
+  //   marginBottom: '8px',
+  //   fontSize: '1rem',
+  //   backgroundColor: '#fdfdfd',
+  // },
 };

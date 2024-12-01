@@ -89,6 +89,7 @@ function FAQPage() {
               Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 
               <span className="font-semibold"> 'VIP'</span>.
             </li>
+            <p className="font-semibold">OR</p> <br />
             <li>
               Pay the agreed yearly VIP membership fee via {' '}
               <a 
