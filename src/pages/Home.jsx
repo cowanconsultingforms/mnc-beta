@@ -432,8 +432,34 @@ const Home = () => {
                 style={{ width: "380px", borderRadius: "6px" }}
               />
               <button
-                type="submit"
+                type="button"
                 className="absolute right-[20px] top-[12px] cursor-pointer"
+                onClick={() => {
+                  if (suggestions.length > 0) {
+                    // Access the first suggestion under "PLACES"
+                    const firstSuggestion = suggestions[0];
+                    if (firstSuggestion?.data?.address) {
+                      // Extract city and state from the address
+                      const addressParts = firstSuggestion.data.address.split(",");
+                      const city =
+                        addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                      const state =
+                        addressParts[addressParts.length - 1]?.trim().split(" ")[0] || "Unknown State";
+
+                      // Format the city-state pair
+                      const cityStatePair = `${city}, ${state}`;
+                      const suggestionUrl = `/afterSearch/${encodeURIComponent(
+                        cityStatePair.replace(/ /g, "%20")
+                      )}`;
+
+                      navigate(suggestionUrl); // Navigate to the formatted URL
+                    } else {
+                      console.warn("First suggestion does not have a valid address.");
+                    }
+                  } else {
+                    console.warn("No suggestions available to navigate.");
+                  }
+                }}
               >
                 <AiOutlineSearch className="text-gray-700 text-2xl" />
               </button>

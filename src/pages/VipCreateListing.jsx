@@ -14,7 +14,8 @@ import { doc, getDocs, updateDoc } from "firebase/firestore";
 import { addNotificationToCollection } from "../components/Notification";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
-import Home1 from "../css/Home1.css"; // For button fixes
+
+import Home1 from "../css/Home1.css?inline"; // For button fixes
 
 const createVIPListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
