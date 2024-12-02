@@ -205,7 +205,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    zoom: '62%',
+    zoom: '65%',
   },
   background: {
     position: 'absolute',
@@ -244,7 +244,6 @@ const styles = {
     boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', // Light shadow for subtle depth
     padding: '50px',
     textAlign: 'center',
-    zoom: 0.65,
   },
   checkoutForm: {
     display: 'flex',
