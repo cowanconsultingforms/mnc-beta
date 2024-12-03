@@ -239,7 +239,7 @@ const TenantDetail = () => {
           <>
             <button
               onClick={handleSaveChanges}
-              className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors mr-2"
+              className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors mr-2"
             >
               Save Changes
             </button>

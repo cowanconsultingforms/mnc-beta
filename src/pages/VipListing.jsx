@@ -200,7 +200,7 @@ const VipListing = () => {
               <FaLeaf className="text-lg mr-1" />
               {listing.ecoFriendly
                 ? "Eco-Friendly/Green Technology"
-                : "Not Eco-Friendly/Green Technology"}
+                : "No Eco-Friendly/Green Technology"}
             </li>
           </ul>
 

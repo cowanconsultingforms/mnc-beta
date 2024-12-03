@@ -321,7 +321,7 @@ const Home = () => {
         meetsGarageFilter(listing) &&
         meetsAirFilter(listing) &&
         meetsSmartFilter(listing) &&
-        meetsEcoFilter (listing)
+        meetsEcoFilter(listing)
       );
     });
     setSuggestions(filteredProperties);
@@ -1325,10 +1325,8 @@ const Home = () => {
                     &nbsp; Must Have Eco-Friendly/Green Technology
                   </label>
                 </div>
-              
-          
               </div>
-                <div style={{ marginTop: "10px" }}>
+              <div style={{ marginTop: "10px" }}>
                 <button
                   className={`px-4 py-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                     applyFilt === "true"
@@ -1341,6 +1339,16 @@ const Home = () => {
                   }}
                 >
                   Apply Filters
+                </button>
+                <button
+                  id="close-filters3"
+                  className="px-4 py-1 mt-4 bg-white text-black border border-gray-300 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full"
+                  onClick={() => {
+                    closeFilters();
+                    handleClick();
+                  }}
+                >
+                  Close Filters
                 </button>
               </div>
             </div>

@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { collection, getDocs, addDoc, doc, updateDoc, getDoc, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  Timestamp,
+} from "firebase/firestore";
 import { db, storage } from "../firebase"; // Import Firebase storage
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 import { v4 as uuidv4 } from "uuid";
 import { getStorage } from "firebase/storage";
 import { uploadBytes } from "firebase/storage";
 
-
 const AddTenant = () => {
   const { propertyId } = useParams();
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
-  const [selectedPropertyId, setSelectedPropertyId] = useState(propertyId || "");
+  const [selectedPropertyId, setSelectedPropertyId] = useState(
+    propertyId || ""
+  );
   const [tenant, setTenant] = useState({
     name: "",
     propertyName: "",
@@ -82,18 +91,18 @@ const AddTenant = () => {
 
   // Assuming handleImageUpload is defined here
   const handleImageUpload = async (file) => {
-    if (!file) return "";  // Return early if no file selected
+    if (!file) return ""; // Return early if no file selected
     try {
       const uniqueFileName = `${file.name}-${uuidv4()}`;
       const storageRef = ref(storage, `images/${uniqueFileName}`);
-  
+
       // Upload the file to Firebase Storage using the uploadBytes function
-      const snapshot = await uploadBytes(storageRef, file); 
-  
+      const snapshot = await uploadBytes(storageRef, file);
+
       // Get the download URL of the uploaded image
       const downloadURL = await getDownloadURL(snapshot.ref);
-  
-      console.log("Download URL:", downloadURL);  // Log the download URL
+
+      console.log("Download URL:", downloadURL); // Log the download URL
       return downloadURL;
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -101,7 +110,6 @@ const AddTenant = () => {
       return ""; // Return empty if upload fails
     }
   };
-  
 
   const handleAddTenant = async () => {
     if (!tenant.name || !tenant.unitNumber || !tenant.DOB) {
@@ -110,7 +118,9 @@ const AddTenant = () => {
     }
 
     // Convert DOB to Firebase Timestamp
-    const dobTimestamp = tenant.DOB ? Timestamp.fromDate(new Date(tenant.DOB)) : null;
+    const dobTimestamp = tenant.DOB
+      ? Timestamp.fromDate(new Date(tenant.DOB))
+      : null;
 
     // Handle file upload if a file was selected
     let imageUrl = "";
@@ -195,7 +205,7 @@ const AddTenant = () => {
 
       {/* Grid for Desktop, Single-column on Mobile */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {[ 
+        {[
           { label: "Name", name: "name" },
           { label: "Property Name", name: "propertyName" },
           { label: "Building #", name: "building" },
@@ -273,10 +283,18 @@ const AddTenant = () => {
 
       <div className="mt-6">
         <button
-          className="w-full bg-blue-500 text-white py-3 rounded-md font-semibold hover:bg-blue-600 transition"
+          className="w-full bg-gray-500 text-white py-3 rounded-md font-semibold hover:bg-gray-600 transition"
           onClick={handleAddTenant}
         >
           Add Tenant
+        </button>
+      </div>
+      <div className="mt-4">
+        <button
+          className="w-full bg-white text-gray-500 py-3 rounded-md font-semibold border border-gray-500 hover:bg-gray-100 transition"
+          onClick={() => navigate("/property-management")} // Navigate back or any desired cancel action
+        >
+          Cancel
         </button>
       </div>
     </div>
