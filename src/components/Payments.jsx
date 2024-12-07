@@ -132,65 +132,157 @@ const Payments = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.background}>
-    <video src={nyc} autoPlay loop muted playsInline style={styles.video}></video>
-    <div style={styles.overlay}></div>
-  </div>
-      <div style={styles.formContainer}>
-        <form onSubmit={handleSubmit} style={styles.checkoutForm}>
-          <h2 style={styles.formTitle}>Make a Payment</h2>
-          <label htmlFor="name" style={styles.label}>Full Name:</label>
-          <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" required style={styles.input} />
-          <label htmlFor="email" style={styles.label}>Email:</label>
-          <input type="email" id="email" value={email} onChange={(e) => { setEmail(e.target.value); localStorage.setItem('userEmail', e.target.value); }} placeholder="Enter your email" required style={styles.input} />
-          <label htmlFor="phone" style={styles.label}>Phone Number:</label>
-          <input type="text" id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Enter your phone number" required style={styles.input} />
-          <label htmlFor="paymentType" style={styles.label}>Payment Type:</label>
-          <select id="paymentType" value={paymentType} onChange={(e) => setPaymentType(e.target.value)} style={styles.dropdown}>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-lg bg-white shadow-md rounded-lg p-6"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+          Make a Payment
+        </h2>
+  
+        {/* Full Name Field */}
+        <div className="mb-4">
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+  
+        {/* Email Field */}
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+  
+        {/* Phone Number Field */}
+        <div className="mb-4">
+          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="Enter your phone number"
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+  
+        {/* Payment Type Dropdown */}
+        <div className="mb-4">
+          <label htmlFor="paymentType" className="block text-sm font-medium text-gray-700">
+            Payment Type
+          </label>
+          <select
+            id="paymentType"
+            value={paymentType}
+            onChange={(e) => setPaymentType(e.target.value)}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
             <option value="">--- Select Payment Type ---</option>
             <option value="VIP fee">VIP fee</option>
             <option value="Tenant fee">Tenant fee</option>
             <option value="Partner fee">Partner fee</option>
             <option value="Vendor fee">Vendor fee</option>
             <option value="Other">Other</option>
+            {/* Add more options as needed */}
           </select>
-          <label htmlFor="description" style={styles.label}>Description:</label>
-          <input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Payment description" required style={styles.input} />
-          <label htmlFor="amount" style={styles.label}>Amount:</label>
-          <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" required style={styles.input} />
-          <div className="w-full max-w-md mx-auto border border-gray-300 rounded-lg p-4 shadow-sm bg-white">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Card Details
-            </label>
+        </div>
+  
+        {/* Description Field */}
+        <div className="mb-4">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Payment description"
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+  
+        {/* Amount Field */}
+        <div className="mb-4">
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+            Amount
+          </label>
+          <input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+            required
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
+        </div>
+  
+        {/* Card Details Field */}
+        <div>
+          <label id="card-element-label" className="block text-sm font-medium text-gray-700">
+            Card Details
+          </label>
+          <div className="p-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm">
             <CardElement
               options={{
                 style: {
                   base: {
                     fontSize: '16px',
                     color: '#333',
-                    '::placeholder': {
-                      color: '#aaa',
-                    },
-                  },
-                  invalid: {
-                    color: '#e3342f',
+                    '::placeholder': { color: '#aaa' },
                   },
                 },
               }}
-              className="w-full"
+              aria-labelledby="card-element-label"
             />
           </div>
-          <button type="submit" style={paymentType === '' ? styles.disabledButton : styles.submitButton} disabled={loading || !stripe || !elements || paymentType === ''}>
-            {loading ? 'Processing...' : `Pay $${amount}`}
-          </button>
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
-        </form>
-        <button onClick={handleViewPaymentHistory} style={styles.historyButton}>View Payment History</button>
-      </div>
+        </div>
+
+  
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={!stripe || !elements || loading}
+          className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          {loading ? 'Processing...' : `Pay $${amount || 0}`}
+        </button>
+  
+        {/* View Payment History */}
+        <button
+          type="button"
+          onClick={handleViewPaymentHistory}
+          className="w-full bg-gray-600 text-white font-medium py-2 px-4 mt-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          View Payment History
+        </button>
+      </form>
     </div>
   );
+  
 };
 
 export default Payments;
