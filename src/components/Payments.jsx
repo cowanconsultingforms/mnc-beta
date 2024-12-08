@@ -54,6 +54,12 @@ const Payments = () => {
       return;
     }
 
+    if (amount <= 0) {
+      setErrorMessage('Please enter a valid amount.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/createPaymentIntent`, {
         method: 'POST',
@@ -132,12 +138,25 @@ const Payments = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="relative min-h-screen flex items-center justify-center p-6 sm:p-8 lg:p-12">
+      {/* Video Background */}
+      <video
+        className="absolute top-0 left-0 w-full h-full object-cover -z-10 filter-darkened"
+        src={nyc}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      ></video>
+  
+      {/* Foreground Content */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-lg bg-white shadow-md rounded-lg p-6"
+        className="w-full max-w-md sm:max-w-lg bg-white shadow-lg rounded-lg p-4 sm:p-6 lg:p-8 relative z-10"
       >
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+        {/* Title */}
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 text-center mb-6 tracking-wide">
           Make a Payment
         </h2>
   
@@ -199,6 +218,7 @@ const Payments = () => {
             value={paymentType}
             onChange={(e) => setPaymentType(e.target.value)}
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            required
           >
             <option value="">--- Select Payment Type ---</option>
             <option value="VIP fee">VIP fee</option>
@@ -206,7 +226,6 @@ const Payments = () => {
             <option value="Partner fee">Partner fee</option>
             <option value="Vendor fee">Vendor fee</option>
             <option value="Other">Other</option>
-            {/* Add more options as needed */}
           </select>
         </div>
   
@@ -221,6 +240,7 @@ const Payments = () => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Payment description"
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            required
           />
         </div>
   
@@ -242,7 +262,7 @@ const Payments = () => {
   
         {/* Card Details Field */}
         <div>
-          <label id="card-element-label" className="block text-sm font-medium text-gray-700">
+          <label id="card-element-label" className="block text-sm font-medium text-gray-700 mb-1">
             Card Details
           </label>
           <div className="p-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm">
@@ -260,187 +280,188 @@ const Payments = () => {
             />
           </div>
         </div>
-
   
         {/* Submit Button */}
         <button
           type="submit"
           disabled={!stripe || !elements || loading}
-          className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full bg-black text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          {loading ? 'Processing...' : `Pay $${amount || 0}`}
+          {loading ? 'Processing...' : `Pay $${amount}`}
         </button>
+
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {successMessage && <div className="success-message">{successMessage}</div>}
   
         {/* View Payment History */}
         <button
           type="button"
           onClick={handleViewPaymentHistory}
-          className="w-full bg-gray-600 text-white font-medium py-2 px-4 mt-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          className="w-full bg-gray-700 text-white font-medium py-2 px-4 mt-3 rounded-md hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
         >
           View Payment History
         </button>
       </form>
     </div>
-  );
-  
+  );  
 };
 
 export default Payments;
 
 
-const styles = {
-  container: {
-    position: 'relative',
-    width: '100%',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    zoom: '65%',
-  },
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: -2,
-  },
-  video: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    zIndex: -2,
-    filter: 'brightness(0.85)', // Slightly dimmed for readability
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Light overlay for better visibility
-    zIndex: -1,
-  },
-  formContainer: {
-    position: 'relative',
-    zIndex: 1,
-    width: '100%',
-    maxWidth: '800px', // Balanced width for readability
-    backgroundColor: '#ffffff', // Clean, professional white background
-    borderRadius: '12px',
-    boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', // Light shadow for subtle depth
-    padding: '50px',
-    textAlign: 'center',
-  },
-  checkoutForm: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    alignItems: 'center',
-  },
-  formTitle: {
-    fontSize: '2.3rem', // Slightly larger for prominence
-    fontWeight: '600', // Balanced boldness
-    color: '#1a202c', // Neutral, professional dark color
-    textAlign: 'center', // Centered for better visual balance
-    marginBottom: '10px', // Space below the title
-    paddingBottom: '5px', // Padding for a clean underline effect
-    borderBottom: '2px solid #007bff', // Subtle blue underline for distinction
-    letterSpacing: '1px', // Slightly spaced letters for elegance
-    fontFamily: '"Poppins", sans-serif', // Modern, professional font
-  },
+// const styles = {
+//   container: {
+//     position: 'relative',
+//     width: '100%',
+//     minHeight: '100vh',
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     overflow: 'hidden',
+//     zoom: '65%',
+//   },
+//   background: {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     width: '100%',
+//     height: '100%',
+//     zIndex: -2,
+//   },
+//   video: {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     width: '100%',
+//     height: '100%',
+//     objectFit: 'cover',
+//     zIndex: -2,
+//     filter: 'brightness(0.85)', // Slightly dimmed for readability
+//   },
+//   overlay: {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     width: '100%',
+//     height: '100%',
+//     backgroundColor: 'rgba(0, 0, 0, 0.2)', // Light overlay for better visibility
+//     zIndex: -1,
+//   },
+//   formContainer: {
+//     position: 'relative',
+//     zIndex: 1,
+//     width: '100%',
+//     maxWidth: '800px', // Balanced width for readability
+//     backgroundColor: '#ffffff', // Clean, professional white background
+//     borderRadius: '12px',
+//     boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', // Light shadow for subtle depth
+//     padding: '50px',
+//     textAlign: 'center',
+//   },
+//   checkoutForm: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     gap: '20px',
+//     alignItems: 'center',
+//   },
+//   formTitle: {
+//     fontSize: '2.3rem', // Slightly larger for prominence
+//     fontWeight: '600', // Balanced boldness
+//     color: '#1a202c', // Neutral, professional dark color
+//     textAlign: 'center', // Centered for better visual balance
+//     marginBottom: '10px', // Space below the title
+//     paddingBottom: '5px', // Padding for a clean underline effect
+//     borderBottom: '2px solid #007bff', // Subtle blue underline for distinction
+//     letterSpacing: '1px', // Slightly spaced letters for elegance
+//     fontFamily: '"Poppins", sans-serif', // Modern, professional font
+//   },
   
-  label: {
-    fontSize: '1rem',
-    color: '#343a40', // Muted dark gray
-    marginBottom: '5px',
-    alignSelf: 'flex-start',
-    fontWeight: '500',
-  },
-  input: {
-    width: '100%',
-    height: '100%',
-    minHeight: '100%',
-    minWidth: '100%', 
-    padding: '12px',
-    borderRadius: '6px',
-    border: '1px solid #ced4da', // Light border
-    fontSize: '1rem',
-    boxSizing: 'border-box',
-    outline: 'none',
-    backgroundColor: '#fdfdfd',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-    boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.05)', // Subtle shadow for realism
-    overflow: 'visible',
-  },
-  inputFocus: {
-    borderColor: '#007bff', // Professional blue focus color
-    boxShadow: '0 0 5px rgba(0, 123, 255, 0.3)', // Subtle glow for focus
-  },
-  dropdown: {
-    width: '100%',
-    padding: '12px',
-    borderRadius: '6px',
-    border: '1px solid #ced4da',
-    fontSize: '1rem',
-    backgroundColor: '#ffffff',
-    outline: 'none',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-  },
-  submitButton: {
-    backgroundColor: '#007bff',
-    color: '#ffffff',
-    padding: '14px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    width: '100%',
-    fontSize: '1rem',
-    fontWeight: '600',
-    border: 'none',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Professional shadow
-    transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
-  },
-  submitButtonHover: {
-    backgroundColor: '#0056b3', // Darker blue for hover
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
-  },
-  disabledButton: {
-    backgroundColor: '#ced4da',
-    color: '#6c757d',
-    padding: '14px',
-    borderRadius: '8px',
-    cursor: 'not-allowed',
-    width: '100%',
-    fontSize: '1rem',
-    fontWeight: '600',
-    border: 'none',
-  },
-  historyButton: {
-    backgroundColor: '#6c757d',
-    color: '#ffffff',
-    padding: '12px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    width: '100%',
-    fontSize: '1rem',
-    border: 'none',
-    marginTop: '10px',
-    transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
-  },
-  // cardElement: {
-  //   border: '1px solid #cbd5e0',
-  //   borderRadius: '8px',
-  //   padding: '12px',
-  //   minHeight: '100%',
-  //   width: '800px',
-  //   boxSizing: 'border-box',
-  //   marginBottom: '8px',
-  //   fontSize: '1rem',
-  //   backgroundColor: '#fdfdfd',
-  // },
-};
+//   label: {
+//     fontSize: '1rem',
+//     color: '#343a40', // Muted dark gray
+//     marginBottom: '5px',
+//     alignSelf: 'flex-start',
+//     fontWeight: '500',
+//   },
+//   input: {
+//     width: '100%',
+//     height: '100%',
+//     minHeight: '100%',
+//     minWidth: '100%', 
+//     padding: '12px',
+//     borderRadius: '6px',
+//     border: '1px solid #ced4da', // Light border
+//     fontSize: '1rem',
+//     boxSizing: 'border-box',
+//     outline: 'none',
+//     backgroundColor: '#fdfdfd',
+//     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+//     boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.05)', // Subtle shadow for realism
+//     overflow: 'visible',
+//   },
+//   inputFocus: {
+//     borderColor: '#007bff', // Professional blue focus color
+//     boxShadow: '0 0 5px rgba(0, 123, 255, 0.3)', // Subtle glow for focus
+//   },
+//   dropdown: {
+//     width: '100%',
+//     padding: '12px',
+//     borderRadius: '6px',
+//     border: '1px solid #ced4da',
+//     fontSize: '1rem',
+//     backgroundColor: '#ffffff',
+//     outline: 'none',
+//     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+//   },
+//   submitButton: {
+//     backgroundColor: '#007bff',
+//     color: '#ffffff',
+//     padding: '14px',
+//     borderRadius: '8px',
+//     cursor: 'pointer',
+//     width: '100%',
+//     fontSize: '1rem',
+//     fontWeight: '600',
+//     border: 'none',
+//     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Professional shadow
+//     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+//   },
+//   submitButtonHover: {
+//     backgroundColor: '#0056b3', // Darker blue for hover
+//     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+//   },
+//   disabledButton: {
+//     backgroundColor: '#ced4da',
+//     color: '#6c757d',
+//     padding: '14px',
+//     borderRadius: '8px',
+//     cursor: 'not-allowed',
+//     width: '100%',
+//     fontSize: '1rem',
+//     fontWeight: '600',
+//     border: 'none',
+//   },
+//   historyButton: {
+//     backgroundColor: '#6c757d',
+//     color: '#ffffff',
+//     padding: '12px',
+//     borderRadius: '6px',
+//     cursor: 'pointer',
+//     width: '100%',
+//     fontSize: '1rem',
+//     border: 'none',
+//     marginTop: '10px',
+//     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+//   },
+//   cardElement: {
+//     border: '1px solid #cbd5e0',
+//     borderRadius: '8px',
+//     padding: '12px',
+//     minHeight: '100%',
+//     width: '800px',
+//     boxSizing: 'border-box',
+//     marginBottom: '8px',
+//     fontSize: '1rem',
+//     backgroundColor: '#fdfdfd',
+//   },
+// };
