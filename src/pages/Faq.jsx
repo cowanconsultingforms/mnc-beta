@@ -5,6 +5,7 @@ import "../css/faq.css";
 import { Dialog, Transition } from "@headlessui/react";
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
+import faq from '../assets/faq.mp4';
 
 
 function FAQPage() {
@@ -163,14 +164,23 @@ function FAQPage() {
     <div className="flex flex-col min-h-screen">
       {/* Video Background */}
       <div className="video-container">
+        <video
+          src={faq}
+          autoPlay
+          muted
+          loop
+          className="w-full h-full object-cover"
+        ></video>
+      
+      {/* <div className="video-container">
         <iframe
-          
           src="https://www.youtube.com/embed/YWGfcrqXo50?si=8khE0ad0Tpc1Uzaw&autoplay=1&mute=1&controls=0&loop=1&playlist=YWGfcrqXo50&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
           title="YouTube video player"
           frameBorder="0"
           allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          ></iframe>
+        ></iframe>
+        */}
       </div>
 
       {/* FAQ Content */}

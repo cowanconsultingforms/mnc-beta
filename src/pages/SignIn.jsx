@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 import SignInBackgroundImage from "../assets/img/sign-in-background.jpg";
 import OAuth from "../components/OAuth";
+import "../css/signin.css";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,9 +47,10 @@ const SignIn = () => {
     <div className="flex flex-col min-h-screen">
       {/* Main content */}
       <section
-        className="flex-grow object-cover h-[calc(100vh-48px)]"
+        className="flex-grow object-cover min-h-[calc(100vh-48px)] pb-12"
         style={{
           backgroundImage: `url(${SignInBackgroundImage})`,
+          backgroundSize: "cover",
         }}
       >
         <h1 className="text-3xl text-center py-12 font-bold">Sign In</h1>
@@ -123,38 +125,34 @@ const SignIn = () => {
                 <p className="text-xs text-center font-semibold mx-4">OR</p>
               </div>
 
-              {/* OAuth buttton */}
+              {/* OAuth button */}
               <OAuth />
             </form>
           </div>
         </div>
       </section>
 
-      {/* Footer Information */}
-      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
-        <p>info@mncdevelopment.com</p>
+      {/* Footer */}
+      <footer className="mt-auto justify-center items-center text-center mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
+        <p className="text-black" style={{ fontSize: "0.9rem" }}>info@mncdevelopment.com</p>
         <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
           <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-            <p>All rights reserved.</p>
+            <p className="text-black" style={{ fontSize: "0.9rem" }}>All rights reserved.</p>
             <span className="hidden md:block">|</span>
-            <p>© MNC Development, Inc. 2008-present.</p>
+            <p className="text-black" style={{ fontSize: "0.9rem" }}>© MNC Development, Inc. 2008-present.</p>
           </div>
           <span className="hidden lg:block">|</span>
-          <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
+          <p className="text-black" style={{ fontSize: "0.9rem" }}>31 Buffalo Avenue, Brooklyn, New York 11233</p>
         </div>
         <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-          <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+          <p className="text-black" style={{  fontSize: "0.9rem" }}>Phone: 1-718-771-5811 or 1-877-732-3492</p>
           <span className="hidden md:block">|</span>
-          <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+          <p className="text-black" style={{  fontSize: "0.9rem" }}>Fax: 1-877-760-2763 or 1-718-771-5900</p>
         </div>
-        <p className=" text-justify [text-align-last:center] ">
-          MNC Development and the MNC Development logos are trademarks of MNC
-          Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate
-          Broker fully supports the principles of the Fair Housing Act and the
-          Equal Opportunity Act. Listing information is deemed reliable, but is
-          not guaranteed.
+        <p className="text-center text-black" style={{ fontSize: "0.8rem" }}>
+          MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
         </p>
-      </div>
+      </footer>
     </div>
   );
 };
