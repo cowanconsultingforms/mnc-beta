@@ -85,6 +85,7 @@ const Home = () => {
   const [sortName, setSortName] = useState("");
   const [notFound, setNotFound] = useState(false);
   const notFoundRef = useRef(null);
+  const [selectedCategory, setSelectedCategory] = useState("Buy"); // Default to "Buy"
 
   const handleNotFound = (e) => {
     e.preventDefault();
@@ -92,6 +93,11 @@ const Home = () => {
       setNotFound(!notFound);
     }
   };
+
+  useEffect(() => {
+    fetchProperties();
+  }, [searchTerm, selectedCategory]);   
+  
 
   useEffect(() => {
     async function fetchData() {
@@ -189,62 +195,54 @@ const Home = () => {
   };
 
   // Submit function for searchbar
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchProperties(searchTerm);
+  const handleSearch = (event) => {
+    event.preventDefault();
+    fetchProperties(selectedCategory, searchTerm); // Refetch properties on search
   };
 
-  // Filters properties based on searchbar form data
-  const fetchProperties = async (searchTerm) => {
-    if (searchTerm !== "") {
-      const listingRef = collection(db, "propertyListings");
-      const category = getCategory(selectedButton);
-      let q = query(listingRef, where("type", "==", category));
-      const querySnap = await getDocs(q);
-      let listings = [];
-      querySnap.forEach((doc) => {
-        return listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
+  // Function to fetch properties by category
+  const fetchProperties = async () => {
+    try {
+      console.log("Fetching properties with:", { selectedCategory, searchTerm });
+  
+      // Fetch all properties from Firestore
+      const querySnapshot = await getDocs(collection(db, "propertyListings"));
+      const allProperties = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
+  
+      console.log("Fetched all properties:", allProperties);
+  
+      // Filter properties by selected category and search term
+      const filteredSuggestions = allProperties.filter((property) => {
+        const matchesCategory =
+          !selectedCategory || property.data.type.toLowerCase() === selectedCategory.toLowerCase();
+        const matchesSearchTerm =
+          !searchTerm ||
+          property.data.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.data.name.toLowerCase().includes(searchTerm.toLowerCase());
+  
+        return matchesCategory && matchesSearchTerm;
       });
-
-      const filteredSuggestions = listings.filter((listing) => {
-        const regexZipCode = /^\d{1,5}$/;
-        const regexCity = /^[a-zA-Z\s]+$/;
-
-        if (regexZipCode.test(searchTerm)) {
-          setZip("true");
-          setCity("false");
-          // console.log("zip", {zipcode});
-          return listing.data.address
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        }
-        if (regexCity.test(searchTerm)) {
-          setCity("true");
-          setZip("false");
-          return listing.data.address
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        }
-
-        setZip("false");
-        setCity("false");
-        return listing.data.address
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      });
-
-      // setSuggestions(uniqueSuggestions);
-      // setFilteredProperties(filteredProperties);
-      if (searchTerm == "") {
-        setSuggestions([]);
-      } else {
-        setSuggestions(filteredSuggestions);
-      }
+  
+      console.log("Filtered suggestions:", filteredSuggestions);
+  
+      setSuggestions(filteredSuggestions);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
     }
+  };  
+  
+  
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
   };
+
+  if (typeof selectedCategory !== "string" || typeof searchTerm !== "string") {
+    console.error("Invalid filters:", { selectedCategory, searchTerm });
+    return;
+  }  
 
   //Filters
   const toggleFilters = () => {
@@ -602,10 +600,13 @@ const Home = () => {
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedButton === 1 
+      ${selectedCategory === "buy" 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(1)}
+              onClick={() => {
+                setSelectedCategory("buy");
+                fetchProperties();
+              }}
             >
               Buy
             </button>
@@ -613,10 +614,13 @@ const Home = () => {
             {/* Rent button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedButton === 2 
+      ${selectedCategory === "rent" 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(2)}
+              onClick={() => {
+                setSelectedCategory("rent");
+                fetchProperties();
+              }}
             >
               Rent
             </button>
@@ -624,10 +628,13 @@ const Home = () => {
             {/* Sold button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedButton === 3 
+      ${selectedCategory === "sold" 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(3)}
+              onClick={() => {
+                setSelectedCategory("sold");
+                fetchProperties();
+              }}
             >
               Sold
             </button>
@@ -647,8 +654,11 @@ const Home = () => {
                 type="search"
                 placeholder={"Search by location or point of interest"}
                 value={searchTerm}
-                onChange={onChange}
-                onSubmit={handleSearch}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  fetchProperties(); // Trigger property fetch
+                }}
                 className="text-lg w-full px-4 ring-1 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
               ></input>
 
@@ -691,6 +701,7 @@ const Home = () => {
               <button
                 type="submit"
                 className="absolute right-[20px] top-[12px] cursor-pointer"
+                onClick={fetchProperties} // Fetch properties on search button click
               >
                 <AiOutlineSearch className="text-gray-700 text-2xl" />
               </button>
@@ -772,16 +783,17 @@ const Home = () => {
           )}
 
           <div className={`filter-panel ${showFilters ? "open" : ""}`}>
-            <span id="panel-title" className="font-sm ">
+            <span id="panel-title" className="font-semibold ">
               Explore This Neighborhood
               <button
                 id="close-filters2"
+                className="px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out bg-gray-600 text-white flex items-center justify-center"
                 onClick={() => {
                   closeFilters();
                   handleClick();
                 }}
               >
-                Close Filters
+                Close
               </button>
             </span>
 
@@ -838,7 +850,7 @@ const Home = () => {
                       setIsSortOpen(false);
                       setSortName("PRICE");
                     }}
-                    className="px-4 py-2  text-left text-sm text-gray-700 hover:bg-gray-100"
+                    className="px-4 py-2  text-left  text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Price
                   </button>
@@ -950,7 +962,7 @@ const Home = () => {
                     value={input1Value}
                     onChange={(e) => setInput1Value(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>
@@ -961,7 +973,7 @@ const Home = () => {
                     value={input2Value}
                     onChange={(e) => setInput2Value(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -985,7 +997,7 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1010,7 +1022,7 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 11 }, (_, i) => i + 1).map(
@@ -1033,7 +1045,7 @@ const Home = () => {
               >
                 <button
                   onClick={handleDecrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
                 >
                   -
                 </button>
@@ -1046,11 +1058,13 @@ const Home = () => {
                     height: "35px",
                     textAlign: "center",
                     fontSize: "14px",
+                    borderRadius:"8px",
+                    border: "0px solid",
                   }}
                 />
                 <button
                   onClick={handleIncrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "1px solid" }}
+                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
                 >
                   +
                 </button>
@@ -1075,7 +1089,7 @@ const Home = () => {
                     value={land1}
                     onChange={(e) => setLand(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>&nbsp;
@@ -1085,7 +1099,7 @@ const Home = () => {
                     value={land2}
                     onChange={(e) => setLand2(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -1106,7 +1120,7 @@ const Home = () => {
                     value={year1}
                     onChange={(e) => setYear1(e.target.value)}
                     placeholder="MIN"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
                 &nbsp;<span> - </span>&nbsp;
@@ -1116,7 +1130,7 @@ const Home = () => {
                     value={year2}
                     onChange={(e) => setYear2(e.target.value)}
                     placeholder="MAX"
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    className="text-sm w-42 h-9 rounded-md border border-gray-300 px-2"
                   />
                 </div>
               </div>
@@ -1137,7 +1151,7 @@ const Home = () => {
                       value = "None";
                     }
                   }}
-                  style={{ fontSize: "14px", width: "170px", height: "36px" }}
+                  style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
                 >
                   <option>None</option>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
@@ -1170,7 +1184,7 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "36px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1195,7 +1209,7 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px" }}
+                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1456,20 +1470,42 @@ const Home = () => {
           </div>
         </div>
       )}
-      {/* Search results (only displays when results are found) */}
-      {suggestions.length > 0 && (
-        <div className=" w-full max-w-6xl mx-auto flex items-center justify-center">
+
+      
+      {/* Render Search Results */}
+      {suggestions.length > 0 ? (
+        <div className="w-full max-w-6xl mx-auto flex items-center justify-center">
           <ul className="w-full sm:grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
-            {suggestions.map((listing) => (
+            {suggestions.map((suggestion) => (
               <ListingItem
-                key={listing.id}
-                id={listing.id}
-                listing={listing.data}
+                key={suggestion.id}
+                id={suggestion.id}
+                listing={suggestion.data}
               />
             ))}
           </ul>
         </div>
+      ) : (
+        <div className="w-full max-w-6xl mx-auto flex items-center justify-center mt-6 mb-20">
+          <div className="bg-gray-50 shadow-lg rounded-lg p-6 w-full max-w-xl">
+            <p className="text-gray-700 text-lg font-medium text-center">
+              No properties found for{" "}
+              <span className="font-bold">
+                "{searchTerm}"
+              </span>{" "}
+              in{" "}
+              <span className="font-bold capitalize">
+                {selectedCategory}
+              </span>
+              .
+            </p>
+            <p className="text-gray-500 font-semibold text-sm text-center mt-2">
+              Try searching with a different term or explore other categories.
+            </p>
+          </div>
+        </div>
       )}
+
 
       {/* Footer Information */}
       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
