@@ -114,6 +114,7 @@ const ListingsPage = () => {
           autoPlay
           muted
           loop
+          controls={false}
           className="w-full h-full object-cover"
         ></video>
 

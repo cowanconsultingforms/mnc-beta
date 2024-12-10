@@ -147,7 +147,7 @@ const Agents = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen">
       {/* Background video */}
       <div className="video-container">
         <video
@@ -265,12 +265,16 @@ const Agents = () => {
               </div>
 
               {/* Navigation arrows */}
-              <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={prevSlide}>
-                <FaChevronLeft className="text-white text-4xl" />
-              </div>
-              <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={nextSlide}>
-                <FaChevronRight className="text-white text-4xl" />
-              </div>
+              {topAgents.length > 0 && (
+                <>
+                  <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={prevSlide}>
+                    <FaChevronLeft className="text-white text-4xl" />
+                  </div>
+                  <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={nextSlide}>
+                    <FaChevronRight className="text-white text-4xl" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -17,7 +17,7 @@ import Spinner from "../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { db } from "../firebase";
-import "../css/admin.css";
+
 import { Menu } from '@headlessui/react';
 
 const Admin = () => {
@@ -60,6 +60,16 @@ const Admin = () => {
           }));
           setUsers(usersList);
           setFilteredUsers(usersList);
+
+          // Initialize checkboxValues and expirationDates
+          const initialCheckboxValues = {};
+          const initialExpirationDates = {};
+          usersList.forEach((user) => {
+            initialCheckboxValues[user.id] = user.data.isTopAgent || false;
+            initialExpirationDates[user.id] = user.data.expirationDate ? new Date(user.data.expirationDate.seconds * 1000) : null;
+          });
+          setCheckboxValues(initialCheckboxValues);
+          setExpirationDates(initialExpirationDates);
         }
       } catch (error) {
         toast.error("Failed to load users.");
@@ -71,18 +81,39 @@ const Admin = () => {
     fetchUser();
   }, [auth.currentUser.uid]);
 
-  const handleCheckboxChange = (userId) => {
+  const handleCheckboxChange = async (userId) => {
+    const newValue = !checkboxValues[userId];
     setCheckboxValues((prev) => ({
       ...prev,
-      [userId]: !prev[userId],
+      [userId]: newValue,
     }));
+
+    try {
+      const userDoc = doc(db, "users", userId);
+      await updateDoc(userDoc, {
+        isTopAgent: newValue,
+      });
+      toast.success("User updated successfully.");
+    } catch (error) {
+      toast.error("Failed to update user.");
+    }
   };
 
-  const handleDateChange = (date, userId) => {
+  const handleDateChange = async (date, userId) => {
     setExpirationDates((prev) => ({
       ...prev,
       [userId]: date,
     }));
+
+    try {
+      const userDoc = doc(db, "users", userId);
+      await updateDoc(userDoc, {
+        expirationDate: date,
+      });
+      toast.success("Expiration date updated successfully.");
+    } catch (error) {
+      toast.error("Failed to update expiration date.");
+    }
   };
 
   const handleDropdownChange = (option, userId) => {
@@ -102,41 +133,49 @@ const Admin = () => {
   };
 
   const MyDropdown = ({ userId }) => (
-    <Menu>
+    <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out">
         More
       </Menu.Button>
-      <Menu.Items className="absolute bg-white border border-gray-300 rounded shadow-lg mt-2">
-        <Menu.Item>
-          {({ active }) => (
-            <button
-              className="w-full text-left px-4 py-2 hover:bg-gray-300"
-              onClick={() => handleDropdownChange('payment-history', userId)}
-            >
-              View Payments
-            </button>
-          )}
-        </Menu.Item>
-        <Menu.Item>
-          {({ active }) => (
-            <button
-              className="w-full text-left px-4 py-2 hover:bg-gray-300"
-              onClick={() => handleDropdownChange('userDocuments', userId)}
-            >
-              View Documents
-            </button>
-          )}
-        </Menu.Item>
-        <Menu.Item>
-          {({ active }) => (
-            <button
-              className="w-full text-left px-4 py-2 hover:bg-gray-300"
-              onClick={() => handleDropdownChange('viewProfile', userId)}
-            >
-              View Profile
-            </button>
-          )}
-        </Menu.Item>
+      <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg outline-none z-50">
+        <div className="py-1">
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? 'bg-gray-100' : ''
+                } w-full text-left px-4 py-2 text-sm text-gray-700`}
+                onClick={() => handleDropdownChange('payment-history', userId)}
+              >
+                View Payments
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? 'bg-gray-100' : ''
+                } w-full text-left px-4 py-2 text-sm text-gray-700`}
+                onClick={() => handleDropdownChange('userDocuments', userId)}
+              >
+                View Documents
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? 'bg-gray-100' : ''
+                } w-full text-left px-4 py-2 text-sm text-gray-700`}
+                onClick={() => handleDropdownChange('viewProfile', userId)}
+              >
+                View Profile
+              </button>
+            )}
+          </Menu.Item>
+        </div>
       </Menu.Items>
     </Menu>
   );
