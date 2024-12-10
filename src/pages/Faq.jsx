@@ -5,6 +5,7 @@ import "../css/faq.css";
 import { Dialog, Transition } from "@headlessui/react";
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
+import faq from '../assets/faq.mp4';
 
 
 function FAQPage() {
@@ -13,7 +14,18 @@ function FAQPage() {
   const navigate = useNavigate();
   const auth = getAuth();
   const user = auth.currentUser ? auth.currentUser.uid : null;
+  const [showModal, setShowModal] = useState(false);
 
+  const handleStripeLinkClick = (e) => {
+    if (!user) {
+      e.preventDefault(); // Prevent navigation
+      setShowModal(true); // Show the popup
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   const faqData = [
     {
@@ -51,22 +63,87 @@ function FAQPage() {
     {
       question: "What's the step-by-step procedure to obtain the VIP membership?",
       answer: (
-        <span>
-          If interested in a VIP subscription, register for a normal user account. Then contact us for a VIP subscription quote. Pay the agreed yearly VIP membership fee via Zelle @ mncdevelopmentapartments@gmail.com. In the memo of the Zelle transfer, type: VIP yearly membership fee. Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 'VIP'.
-          <br />
-          <button onClick={() => navigate(`/payments/${user.id}`)}
-            style={{
-              color: 'blue',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
+        <>
+          <p className="list-decimal ml-6 mb-4 text-gray-700 text-[15.3px]">
+            If interested in a VIP subscription {' '}  
+            <a 
+              href="/sign-up" 
+              target="_blank" 
+              className="font-black text-gray-700 hover:underline"
             >
-            Go to Payment Page
-          </button>
-        </span>
+              register
+            </a> for a normal user account, if you have not done so already. Then email us for a VIP subscription quote
+            (<a 
+              href="mailto:team@mncdevelopment.com" 
+              className="font-black text-gray-700 hover:underline"
+            >
+              team@mncdevelopment.com
+            </a>). 
+            Then you must pay the requisite fee via Zelle or Stripe:
+          </p>
+          <ol className="list-decimal ml-6 mb-4 text-gray-700 text-[15.3px]">
+            <li className="mb-4">
+              Pay the agreed yearly VIP membership fee via Zelle using 
+              <span className="font-semibold"> mncdevelopmentapartments@gmail.com</span>. 
+              In the memo of the Zelle transfer, type: 
+              <span className="font-medium italic"> VIP yearly membership fee</span>. 
+              Within 48 hours of receipt of the Zelle payment, an admin will change your regular user account to 
+              <span className="font-semibold"> 'VIP'</span>.
+            </li>
+            <p className="font-semibold">OR</p> <br />
+            <li>
+              Pay the agreed yearly VIP membership fee via {' '}
+              <a 
+                href="/payments/:uid"
+                onClick={handleStripeLinkClick} // Check authentication on click
+                className="font-black text-gray-700 hover:underline"
+              >
+                Stripe
+              </a>.
+              In the memo section of the Stripe transfer, type: 
+              <span className="font-medium italic"> VIP yearly membership fee</span>. 
+              Within 48 hours of receipt of the Stripe payment, an admin will change your regular user account to 
+              <span className="font-semibold"> 'VIP'</span>.
+            </li>
+          </ol>
+
+          {/* Popup Given If User Not Logged In and Attempts to Access Stripe Payment Page */}
+          {showModal && (
+            <div
+              className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+              role="dialog"
+              aria-live="polite"
+            >
+              <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center justify-center">
+                  <span className="mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v6m0 0a2 2 0 01-2-2v-4m4 0v4a2 2 0 01-2 2zm-8-6V7a4 4 0 018-0v2a4 4 0 01-8 0z" />
+                    </svg>
+                  </span>
+                  Access Restricted
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You must be logged in to access the Stripe payment page. Please log in and try again.
+                </p>
+                <div className="flex justify-center space-x-4">
+                  <button
+                    onClick={() => window.location.href = '/sign-in'} // Redirect to login page
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={closeModal}
+                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       ),
     },
   ];
@@ -84,25 +161,26 @@ function FAQPage() {
   };
 
   return (
-    <div className="relative font-semibold text-gray-900">
+    <div className="flex flex-col min-h-screen">
       {/* Video Background */}
-      <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
+      <div className="video-container">
+        <video
+          src={faq}
+          autoPlay
+          muted
+          loop
+          className="w-full h-full object-cover"
+        ></video>
+      
+      {/* <div className="video-container">
         <iframe
-          className="absolute top-0 left-0 w-full h-full"
           src="https://www.youtube.com/embed/YWGfcrqXo50?si=8khE0ad0Tpc1Uzaw&autoplay=1&mute=1&controls=0&loop=1&playlist=YWGfcrqXo50&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
           title="YouTube video player"
           frameBorder="0"
           allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          style={{
-            width: '100vw',
-            height: '100vh',
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            pointerEvents: 'none',
-          }}
-        />
+        ></iframe>
+        */}
       </div>
 
       {/* FAQ Content */}
@@ -141,19 +219,19 @@ function FAQPage() {
           <div className="mt-6 flex justify-around">
             <button
               onClick={() => openPolicyDialog('privacy')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Privacy Policy
             </button>
             <button
               onClick={() => openPolicyDialog('terms')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Terms of Service
             </button>
             <button
               onClick={() => openPolicyDialog('copyright')}
-              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-gray-800 font-medium bg-gray-100 rounded-md hover:bg-gray-200 mr-1"
             >
               Copyright
             </button>

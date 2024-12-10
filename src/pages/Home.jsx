@@ -37,9 +37,9 @@ const Home = () => {
   const [selectedButton, setSelectedButton] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const imagesWithCaptions = [
-    { src: image1, caption: 'We buy property in any condition anywhere!' },
-    { src: image2, caption: 'We sell property at an affordable price.' },
-    { src: image3, caption: 'We develop in partnership with the community.' },
+    { src: image1, caption: "We buy property in any condition anywhere!" },
+    { src: image2, caption: "We sell property at an affordable price." },
+    { src: image3, caption: "We develop in partnership with the community." },
   ];
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
@@ -52,14 +52,13 @@ const Home = () => {
   const [notFound, setNotFound] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [selectedCaption, setSelectedCaption] = useState('');
+  const [selectedCaption, setSelectedCaption] = useState("");
 
   const [showToDoIcon, setShowToDoIcon] = useState(true);
- 
+
   const [userId, setUserId] = useState("");
 
   const notFoundRef = useRef(null);
-
 
   const handleImageClick = (img, caption) => {
     setSelectedImage(img);
@@ -71,8 +70,8 @@ const Home = () => {
 
   const closeModal = () => {
     setIsAnimating(false);
-    setSelectedCaption('');
-    setTimeout(() =>{
+    setSelectedCaption("");
+    setTimeout(() => {
       setSelectedImage(null);
     }, 500);
   };
@@ -153,6 +152,7 @@ const Home = () => {
       console.log("emptu");
     }
   };
+
   const copyNotificationsToUserNotifications = async (userId) => {
     const notificationsRef = collection(db, "notifications");
     const userRef = doc(db, "users", userId);
@@ -245,19 +245,21 @@ const Home = () => {
   };
 
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
+    const input = e.target.value;
+    setSearchTerm(input);
 
-    if (searchTerm !== "") {
-      // Displays results after 500ms delay
+    if (input.trim() !== "") {
       clearTimeout(timer);
       const newTimer = setTimeout(() => {
-        fetchProperties(searchTerm);
-      }, 500);
+        console.log(`Fetching for input: ${input}`);
+        fetchProperties(input);
+      }, 500); // 500ms delay
       setTimer(newTimer);
+    } else {
+      setSuggestions([]);
+      setPropertySuggestions([]);
     }
   };
-
-
 
   // Get the category based on the selectedButton
   const getCategory = (button) => {
@@ -268,9 +270,21 @@ const Home = () => {
         return "rent";
       case 3:
         return "sold";
+      default:
+        console.error("Invalid button selected:", button);
+        return "";
     }
   };
-  
+
+  const handleCategoryChange = (button) => {
+    console.log(`Category changed to button: ${button}`);
+    setSelectedButton(button);
+
+    // Re-fetch properties to ensure updated "PROPERTIES" section
+    if (searchTerm) {
+      fetchProperties(searchTerm, button); // Pass the category (button)
+    }
+  };
 
   // Submit function for searchbar
   const handleSearch = (e) => {
@@ -279,54 +293,73 @@ const Home = () => {
   };
 
   // Filters properties based on searchbar form data
-  const fetchProperties = async (searchTerm) => {
-    if (searchTerm !== "") {
-      const listingRef = collection(db, "propertyListings");
-  
-      const querySnap = await getDocs(query(listingRef));
-  
-      let listings = [];
+  const fetchProperties = async (searchTerm, selectedCategoryButton) => {
+    if (!searchTerm) {
+      setPropertySuggestions([]);
+      setSuggestions([]);
+      return;
+    }
+
+    const listingRef = collection(db, "propertyListings");
+    const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
+    console.log(
+      `Fetching properties for category: ${category}, searchTerm: ${searchTerm}`
+    );
+
+    try {
+      const querySnap = await getDocs(listingRef);
+      const listings = [];
       querySnap.forEach((doc) => {
         listings.push({
           id: doc.id,
           data: doc.data(),
         });
       });
-  
-      // Filter for property suggestions
-      const filteredProperties = listings.filter((listing) =>
-        listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+
+      console.log("Fetched listings:", listings);
+
+      // Filter for property suggestions based on category
+      const filteredProperties = listings.filter(
+        (listing) =>
+          listing.data.type === category &&
+          listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
       );
-  
+
+      console.log("Filtered properties:", filteredProperties);
+
       // Filter for cities and ZIP codes suggestions
+      const regexZipCode = /^\d{1,5}$/;
+      const regexCity = /^[a-zA-Z\s]+$/;
       const filteredSuggestions = listings.filter((listing) => {
-        const regexZipCode = /^\d{1,5}$/;
-        const regexCity = /^[a-zA-Z\s]+$/;
-  
         if (regexZipCode.test(searchTerm)) {
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
-  
         if (regexCity.test(searchTerm)) {
           return listing.data.address
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         }
-  
         return false;
       });
-  
-      // Update states
+
+      console.log("Filtered suggestions:", filteredSuggestions);
+
       setPropertySuggestions(filteredProperties);
       setSuggestions(filteredSuggestions);
-    } else {
+    } catch (error) {
+      console.error("Error fetching properties:", error);
       setPropertySuggestions([]);
       setSuggestions([]);
     }
   };
-  
+
+  useEffect(() => {
+    if (searchTerm) {
+      fetchProperties(searchTerm, selectedButton); // Re-fetch with the new category
+    }
+  }, [selectedButton]);
 
   const handleVip = () => {
     navigate("/faqPage");
@@ -339,7 +372,6 @@ const Home = () => {
     }
   };
 
-
   return (
     <>
       <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
@@ -347,14 +379,14 @@ const Home = () => {
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-6">
+          <div className="flex flex-row space-x-3 mt-6 disable-hover">
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
       ${selectedButton === 1 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(1)}
+              onClick={() => handleCategoryChange(1)}
             >
               Buy
             </button>
@@ -365,7 +397,7 @@ const Home = () => {
       ${selectedButton === 2 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(2)}
+               onClick={() => handleCategoryChange(2)}
             >
               Rent
             </button>
@@ -376,7 +408,7 @@ const Home = () => {
       ${selectedButton === 3 
         ? "bg-gray-600 text-white ring-gray-600" 
         : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
-              onClick={() => setSelectedButton(3)}
+              onClick={() => handleCategoryChange(3)}
             >
               Sold
             </button>
@@ -392,143 +424,146 @@ const Home = () => {
                 className="uc-omnibox-input cx-textField ring-1"
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
-                // value={searchTerm}
                 onChange={onChange}
                 style={{ width: "380px", borderRadius: "6px" }}
               />
-              {notFound && (
-                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                    <div className="flex">
-                      <p className="font-semibold">
-                        We couldn't find '{searchTerm}'
-                      </p>
-                      <button
-                        className="mx-0 font-semibold text-xl ml-auto"
-                        onClick={() => {
-                          setNotFound(false);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <br></br>
-                    <p>
-                      Please check the spelling, try clearing the search box, or
-                      try reformatting to match these examples:
-                    </p>
-                    <br></br>
-                    <span className="font-semibold">Address:</span> 123 Main St,
-                    Seattle, WA <br></br>
-                    <span className="font-semibold">Neighborhood: </span>
-                    Downtown
-                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                    <br></br>
-                    <span className="font-semibold">City: </span> 'Seattle' or
-                    'Seattle, WA' <br></br>
-                    <br></br> Don't see what you're looking for? Your search
-                    might be outside our service areas.
-                  </div>
-                </div>
-              )}
               <button
-              type="submit"
-              className="absolute right-[20px] top-[12px] cursor-pointer"
-            >
-              <AiOutlineSearch className="text-gray-700 text-2xl" />
-            </button>
-            </form>
-             {/* Search button */}
-             
-            {/* {notFound && (
-                <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                  <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                    <div className="flex">
-                      <p className="font-semibold">
-                        We couldn't find '{searchTerm}'
-                      </p>
-                      <button
-                        className="mx-0 font-semibold text-xl ml-auto"
-                        onClick={() => {
-                          setNotFound(false);
-                        }}
-                      >
-                        X
-                      </button>
-                    </div>
-                    <br></br>
-                    <p>
-                      Please check the spelling, try clearing the search box, or
-                      try reformatting to match these examples:
-                    </p>
-                    <br></br>
-                    <span className="font-semibold">Address:</span> 123 Main St,
-                    Seattle, WA <br></br>
-                    <span className="font-semibold">Neighborhood: </span>
-                    Downtown
-                    <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                    <br></br>
-                    <span className="font-semibold">City: </span> 'Seattle' or
-                    'Seattle, WA' <br></br>
-                    <br></br> Don't see what you're looking for? Your search
-                    might be outside our service areas.
-                    {console.log('sssss')}
-                  </div>
-                </div>
-              )} */}
-              
-              {/* Search Bar Suggestions */}
-              <div>
-                {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) && (
-                  <div style={styles.suggestionsDropdown}>
-                    <ul style={styles.suggestionsList}>
-                      {suggestions.length > 0 && (
-                        <>
-                          <li style={styles.categoryHeader}>Cities & ZIPs</li>
-                          {Array.from(
-                            new Set(
-                              suggestions.map((suggestion) => {
-                                const addressParts = suggestion.data.address.split(",");
-                                const city = addressParts[addressParts.length - 2]?.trim() || "Unknown City";
-                                const stateAndZip = addressParts[addressParts.length - 1]?.trim() || "Unknown State";
-                                const stateAndZipParts = stateAndZip.split(" ");
-                                const state = stateAndZipParts[0];
-                                return `${city}, ${state}`;
-                              })
-                            )
-                          ).map((cityStatePair, index) => (
-                            <li
-                              key={`city-${index}`}
-                              style={styles.suggestionItem}
-                              className="suggestion-item"
-                              onClick={() => navigate(`/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`)}
-                            >
-                              <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
-                            </li>
-                          ))}
-                        </>
-                      )}
+                type="button"
+                className="absolute right-[20px] top-[12px] cursor-pointer"
+                onClick={() => {
+                  if (suggestions.length > 0) {
+                    // Access the first suggestion under "PLACES"
+                    const firstSuggestion = suggestions[0];
+                    if (firstSuggestion?.data?.address) {
+                      // Extract city and state from the address
+                      const addressParts =
+                        firstSuggestion.data.address.split(",");
+                      const city =
+                        addressParts[addressParts.length - 2]?.trim() ||
+                        "Unknown City";
+                      const state =
+                        addressParts[addressParts.length - 1]
+                          ?.trim()
+                          .split(" ")[0] || "Unknown State";
 
-                      {propertySuggestions.length > 0 && (
-                        <>
-                          <li style={styles.categoryHeader}>Properties</li>
-                          {propertySuggestions.map((property) => (
-                            <li
-                              key={property.id}
-                              style={styles.suggestionItem}
-                              className="suggestion-item"
-                              onClick={() => navigate(`/category/${property.data.type}/${property.id}`)}
-                            >
-                              <span style={styles.suggestionIcon}>🏠</span> {property.data.address}
-                            </li>
-                          ))}
-                        </>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-    
+                      // Format the city-state pair
+                      const cityStatePair = `${city}, ${state}`;
+                      const suggestionUrl = `/afterSearch/${encodeURIComponent(
+                        cityStatePair.replace(/ /g, "%20")
+                      )}`;
+
+                      navigate(suggestionUrl); // Navigate to the formatted URL
+                    } else {
+                      console.warn(
+                        "First suggestion does not have a valid address."
+                      );
+                    }
+                  } else {
+                    console.warn("No suggestions available to navigate.");
+                  }
+                }}
+              >
+                <AiOutlineSearch className="text-gray-700 text-2xl" />
+              </button>
+            </form>
+
+            {/* Search Bar Suggestions or No Results */}
+            <div>
+              {searchTerm &&
+              (suggestions.length > 0 || propertySuggestions.length > 0) ? (
+                <div style={styles.suggestionsDropdown}>
+                  <ul style={styles.suggestionsList}>
+                    {/* PLACES Section */}
+                    {suggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PLACES</li>
+                        {Array.from(
+                          new Set(
+                            suggestions.map((suggestion) => {
+                              const addressParts =
+                                suggestion.data.address.split(",");
+                              const city =
+                                addressParts[addressParts.length - 2]?.trim() ||
+                                "Unknown City";
+                              const stateAndZip =
+                                addressParts[addressParts.length - 1]?.trim() ||
+                                "Unknown State";
+                              const stateAndZipParts = stateAndZip.split(" ");
+                              const state = stateAndZipParts[0];
+                              return `${city}, ${state}`;
+                            })
+                          )
+                        ).map((cityStatePair, index) => (
+                          <li
+                            key={`city-${index}`}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(
+                                `/afterSearch/${encodeURIComponent(
+                                  cityStatePair.replace(/ /g, "%20")
+                                )}`
+                              )
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>📍</span>{" "}
+                            {cityStatePair}
+                          </li>
+                        ))}
+                      </>
+                    )}
+
+                    {/* PROPERTIES Section */}
+                    {propertySuggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PROPERTIES</li>
+                        {propertySuggestions.map((property) => (
+                          <li
+                            key={property.id}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(
+                                `/category/${property.data.type}/${property.id}`
+                              )
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>🏠</span>{" "}
+                            {property.data.address}
+                          </li>
+                        ))}
+                      </>
+                    )}
+                  </ul>
+                </div>
+              ) : searchTerm &&
+                !suggestions.length &&
+                !propertySuggestions.length ? (
+                // No Results Message
+                <div className="no-results-message">
+                  <p>
+                    Please check the spelling, try clearing the search box, or
+                    try reformatting to match these examples:
+                  </p>
+                  <br />
+                  <span className="font-semibold">Address:</span> 123 Main St,
+                  Seattle, WA
+                  <br />
+                  <span className="font-semibold">Neighborhood:</span> Downtown
+                  <br />
+                  <span className="font-semibold">Zip:</span> 98115
+                  <br />
+                  <span className="font-semibold">City:</span> 'Seattle' or
+                  'Seattle, WA'
+                  <br />
+                  <br />
+                  <p>
+                    Don't see what you're looking for? Your search might be
+                    outside our service areas.
+                  </p>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
@@ -565,7 +600,9 @@ const Home = () => {
           onClick={closeModal}
         >
           <div
-            className={`relative p-4 rounded-md shadow-lg polaroid-container ${isAnimating ? 'show' : ''}`}
+            className={`relative p-4 rounded-md shadow-lg polaroid-container ${
+              isAnimating ? "show" : ""
+            }`}
           >
             <div className="polaroid-image-container">
               <img
@@ -609,7 +646,6 @@ const Home = () => {
 };
 
 export default Home;
-
 
 const styles = {
   suggestionsDropdown: {
@@ -656,8 +692,8 @@ const styles = {
     transform: "scale(1.02)",
   },
   suggestionIcon: {
-    fontSize: "18px",
-    color: "#6b7280",
+    filter: "grayscale(100%)", // Make the icon greyscale
+    marginRight: "8px", // Add spacing
+    fontSize: "1.2rem", // Optional: Adjust size
   },
 };
-

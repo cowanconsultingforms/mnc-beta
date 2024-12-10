@@ -11,3 +11,34 @@ body {
   height: 100vh;
 }
 
+/* General button styles */
+button {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover effect for desktop */
+button:hover {
+  background-color: #edf2f7; /* Light gray background on hover */
+  transform: scale(1.05); /* Slight enlargement */
+}
+
+/* Selected button state */
+button:focus, button:active {
+  background-color: #4a5568; /* Dark gray background for selected */
+  color: #ffffff; /* White text for contrast */
+  transform: none; /* No scaling */
+  box-shadow: none; /* No shadow */
+}
+
+/* Disable hover effects on mobile */
+@media (hover: none) and (pointer: coarse) {
+  button:hover {
+    background-color: inherit; /* No hover effect */
+    transform: none; /* No scaling */
+  }
+
+  button:focus, button:active {
+    background-color: #4a5568; /* Same selected style */
+    color: #ffffff; /* Ensure white text for visibility */
+  }
+}

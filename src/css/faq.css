@@ -1,15 +1,116 @@
-iframe {
+.video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.video-container iframe {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  object-fit: cover;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  z-index: 999999;
 }
 
-@media (max-width: 768px) {
-  iframe {
-    transform: scale(90); /* Slight zoom to fill the screen on mobile */
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .video-container iframe {
+    position: fixed;
+    top: 0;
+    left: -520px;
+    bottom: 0;
+    right: 0;
+    width: 330%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 999999;
   }
+}
+@media only screen and (min-width: 769px) and (max-width: 950px) {
+  /* For larger phones: */
+  .video-container iframe {
+    position: fixed;
+    top: 0;
+    left: -750px;
+    bottom: 0;
+    right: 0;
+    width: 260%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 999999;
+  }
+}
+@media only screen and (min-height: 1300px) and (max-height: 1366px) {
+  /* For tablets: */
+  .video-container iframe {
+    position: fixed;
+    top: 0;
+    left: -700px;
+    bottom: 0;
+    right: 0;
+    width: 260%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 999999;
+  }
+}
+
+@media only screen and (min-height: 1023px) and (max-height: 1024px) {
+  /* For large tablets: */
+  .video-container iframe {
+    position: fixed;
+    top: 0;
+    left: -190px;
+    bottom: 0;
+    right: 0;
+    width: 200%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 999999;
+  }
+}
+
+@media only screen and (min-height: 719px) and (max-height: 721px) {
+  /* For android phones: */
+  .video-container iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 200%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    z-index: 999999;
+  }
+}
+
+.legal-button{
+  margin-right: 40px;
 }
