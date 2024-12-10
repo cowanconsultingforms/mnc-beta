@@ -383,11 +383,9 @@ const Home = () => {
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-    ${
-      selectedButton === 1
-        ? "bg-gray-600 text-white ring-gray-600"
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
-    }`}
+      ${selectedButton === 1 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
               onClick={() => handleCategoryChange(1)}
             >
               Buy
@@ -396,12 +394,10 @@ const Home = () => {
             {/* Rent button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-    ${
-      selectedButton === 2
-        ? "bg-gray-600 text-white ring-gray-600"
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
-    }`}
-              onClick={() => handleCategoryChange(2)}
+      ${selectedButton === 2 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
+               onClick={() => handleCategoryChange(2)}
             >
               Rent
             </button>
@@ -409,11 +405,9 @@ const Home = () => {
             {/* Sold button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-    ${
-      selectedButton === 3
-        ? "bg-gray-600 text-white ring-gray-600"
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
-    }`}
+      ${selectedButton === 3 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
               onClick={() => handleCategoryChange(3)}
             >
               Sold

@@ -599,11 +599,10 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedCategory === "buy"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+      ${selectedCategory === "buy" 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
               onClick={() => {
                 setSelectedCategory("buy");
                 fetchProperties();
@@ -614,11 +613,10 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedCategory === "rent"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+      ${selectedCategory === "rent" 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
               onClick={() => {
                 setSelectedCategory("rent");
                 fetchProperties();
@@ -629,11 +627,10 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 font-medium ring-1 uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedCategory === "sold"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+      ${selectedCategory === "sold" 
+        ? "bg-gray-600 text-white ring-gray-600" 
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
               onClick={() => {
                 setSelectedCategory("sold");
                 fetchProperties();

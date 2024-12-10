@@ -246,20 +246,21 @@ const Home = () => {
   };
 
   const onChange = (e) => {
-    const input = e.target.value;
-    setSearchTerm(input);
+    const value = e.target.value;
+    setSearchTerm(value);
   
-    if (input.trim() !== "") {
-      clearTimeout(timer);
-      const newTimer = setTimeout(() => {
-        console.log(`Fetching for input: ${input}`);
-        fetchProperties(input);
-      }, 500); // 500ms delay
-      setTimer(newTimer);
-    } else {
-      setSuggestions([]);
-      setPropertySuggestions([]);
+    // Reset filter if searchTerm is cleared
+    if (value.trim() === "") {
+      fetchProperties(""); // Fetch without filtering
+      return;
     }
+  
+    // Apply delay for search filtering
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      fetchProperties(value);
+    }, 500);
+    setTimer(newTimer);
   };
 
   // Get the category based on the selectedButton
@@ -295,29 +296,29 @@ const Home = () => {
 
   // Filters properties based on searchbar form data
   const fetchProperties = async (searchTerm, selectedCategoryButton) => {
+    // Clear suggestions when the search term is empty
     if (!searchTerm) {
       setPropertySuggestions([]);
       setSuggestions([]);
       return;
     }
   
-    const listingRef = collection(db, "vipPropertyListings");
-    const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
-    console.log(`Fetching properties for category: ${category}, searchTerm: ${searchTerm}`);
-  
     try {
+      const listingRef = collection(db, "vipPropertyListings");
+      const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
+  
+      console.log(`Fetching properties for category: ${category}, searchTerm: ${searchTerm}`);
+  
+      // Fetch all listings from Firestore
       const querySnap = await getDocs(listingRef);
-      const listings = [];
-      querySnap.forEach((doc) => {
-        listings.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
+      const listings = querySnap.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
   
       console.log("Fetched listings:", listings);
   
-      // Filter for property suggestions based on category
+      // Filter for properties matching category and search term
       const filteredProperties = listings.filter(
         (listing) =>
           listing.data.type === category &&
@@ -326,25 +327,19 @@ const Home = () => {
   
       console.log("Filtered properties:", filteredProperties);
   
-      // Filter for cities and ZIP codes suggestions
+      // Filter for cities and ZIP codes based on the search term
       const regexZipCode = /^\d{1,5}$/;
       const regexCity = /^[a-zA-Z\s]+$/;
-      const filteredSuggestions = listings.filter((listing) => {
-        if (regexZipCode.test(searchTerm)) {
-          return listing.data.address
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        }
-        if (regexCity.test(searchTerm)) {
-          return listing.data.address
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        }
-        return false;
-      });
+  
+      const filteredSuggestions = listings.filter((listing) =>
+        regexZipCode.test(searchTerm) || regexCity.test(searchTerm)
+          ? listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+          : false
+      );
   
       console.log("Filtered suggestions:", filteredSuggestions);
   
+      // Update state with the results
       setPropertySuggestions(filteredProperties);
       setSuggestions(filteredSuggestions);
     } catch (error) {
