@@ -54,7 +54,7 @@ const Payments = () => {
       return;
     }
 
-    if (amount <= 0) {
+    if (amount < 1) {
       setErrorMessage('Please enter a valid amount.');
       setLoading(false);
       return;
@@ -285,7 +285,7 @@ const Payments = () => {
         <button
           type="submit"
           disabled={!stripe || !elements || loading}
-          className="w-full bg-black text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full bg-gray-700 text-white font-medium py-2 px-4 rounded-md hover:bg-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           {loading ? 'Processing...' : `Pay $${amount}`}
         </button>

@@ -29,6 +29,7 @@ const Admin = () => {
   const [filteredUsers, setFilteredUsers] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [checkboxValues, setCheckboxValues] = useState({});
   const [expirationDates, setExpirationDates] = useState({});
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -65,7 +66,6 @@ const Admin = () => {
           setUsers(usersList);
           setFilteredUsers(usersList);
 
-          // Initialize checkboxValues and expirationDates
           const initialCheckboxValues = {};
           const initialExpirationDates = {};
           usersList.forEach((user) => {
@@ -84,6 +84,22 @@ const Admin = () => {
 
     fetchUser();
   }, [auth.currentUser.uid]);
+
+  useEffect(() => {
+    if (users) {
+      const searchFiltered = users.filter(
+        (user) =>
+          user.data.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.data.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      const roleFiltered = selectedRole
+        ? searchFiltered.filter((user) => user.data.role === selectedRole)
+        : searchFiltered;
+
+      setFilteredUsers(roleFiltered);
+    }
+  }, [searchQuery, selectedRole, users]);
 
   const handleCheckboxChange = async (userId) => {
     const newValue = !checkboxValues[userId];
@@ -181,6 +197,22 @@ const Admin = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="p-3 w-full border border-gray-400 rounded bg-gray-50 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600"
           />
+          <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            className="mt-4 p-3 w-full border border-gray-400 rounded bg-gray-50 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600"
+          >
+            <option value="">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="agent">Agent</option>
+            <option value="client">Client</option>
+            <option value="partner">Partner</option>
+            <option value="staff">Staff</option>
+            <option value="superadmin">Superadmin</option>
+            <option value="vendor">Vendor</option>
+            <option value="vip">Vip</option>
+            <option value="user">User</option>
+          </select>
         </div>
 
         {!loading && filteredUsers?.length > 0 && (
@@ -191,6 +223,7 @@ const Admin = () => {
                 <thead className="text-xl uppercase bg-gray-300 text-gray-600">
                   <tr>
                     <th className="px-6 py-3">Name</th>
+                    <th className="px-6 py-3">Role</th>
                     <th className="px-6 py-3 text-right">Action</th>
                   </tr>
                 </thead>
@@ -203,6 +236,7 @@ const Admin = () => {
                       } hover:bg-gray-300 transition duration-200`}
                     >
                       <td className="px-6 py-4">{user.data.name}</td>
+                      <td className="px-6 py-4">{user.data.role}</td>
                       <td className="px-6 py-4 text-right">
                         <button
                           className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
@@ -218,85 +252,90 @@ const Admin = () => {
             </div>
           </div>
         )}
-      </div>
 
-      {selectedUser && (
-        <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          contentLabel="User Details"
-          className="modal"
-          overlayClassName="modal-overlay"
-        >
-          <div className="modal-content">
-            <h2 className="text-2xl font-bold mb-4">User Details</h2>
-            <p><strong>Email:</strong> {selectedUser.data.email}</p>
-            <p><strong>Role:</strong></p>
-            <select
-              value={selectedUser.data.role}
-              onChange={(e) => handleRoleChange(e, selectedUser.id)}
-              className="p-2 border rounded"
-            >
-              <option value="user">User</option>
-              <option value="agent">Agent</option>
-              <option value="admin">Admin</option>
-              <option value="superadmin">Superadmin</option>
-            </select>
-            {selectedUser.data.role === 'agent' && (
-              <div className="mt-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={checkboxValues[selectedUser.id] || false}
-                    onChange={() => handleCheckboxChange(selectedUser.id)}
-                    className="mr-2"
-                  />
-                  Top Agent
-                </label>
-                {checkboxValues[selectedUser.id] && (
-                  <DatePicker
-                    selected={expirationDates[selectedUser.id]}
-                    onChange={(date) => handleDateChange(date, selectedUser.id)}
-                    className="mt-2 p-1 border rounded w-full"
-                    placeholderText="Select expiration date"
-                    minDate={new Date()}
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    timeIntervals={1}
-                    dateFormat="Pp"
-                  />
-                )}
+        {selectedUser && (
+          <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            contentLabel="User Details"
+            className="modal"
+            overlayClassName="modal-overlay"
+          >
+            <div className="modal-content">
+              <h2 className="text-2xl font-bold mb-4">User Details</h2>
+              <p><strong>Email:</strong> {selectedUser.data.email}</p>
+              <p><strong>Role:</strong></p>
+              <select
+                value={selectedUser.data.role}
+                onChange={(e) => handleRoleChange(e, selectedUser.id)}
+                className="p-2 border rounded"
+              >
+                <option value="admin">Admin</option>
+                <option value="agent">Agent</option>
+                <option value="client">Client</option>
+                <option value="partner">Partner</option>
+                <option value="staff">Staff</option>
+                <option value="superadmin">Superadmin</option>
+                <option value="vendor">Vendor</option>
+                <option value="vip">Vip</option>
+                <option value="user">User</option>
+              </select>
+              {selectedUser.data.role === 'agent' && (
+                <div className="mt-4">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={checkboxValues[selectedUser.id] || false}
+                      onChange={() => handleCheckboxChange(selectedUser.id)}
+                      className="mr-2"
+                    />
+                    Top Agent
+                  </label>
+                  {checkboxValues[selectedUser.id] && (
+                    <DatePicker
+                      selected={expirationDates[selectedUser.id]}
+                      onChange={(date) => handleDateChange(date, selectedUser.id)}
+                      className="mt-2 p-1 border rounded w-full"
+                      placeholderText="Select expiration date"
+                      minDate={new Date()}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={1}
+                      dateFormat="Pp"
+                    />
+                  )}
+                </div>
+              )}
+              <div className="modal-buttons mt-4">
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
+                  onClick={() => handleDropdownChange('payment-history', selectedUser.id)}
+                >
+                  View Payments
+                </button>
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                  onClick={() => handleDropdownChange('userDocuments', selectedUser.id)}
+                >
+                  View Documents
+                </button>
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                  onClick={() => handleDropdownChange('viewProfile', selectedUser.id)}
+                >
+                  View Profile
+                </button>
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
               </div>
-            )}
-            <div className="modal-buttons mt-4">
-              <button
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
-                onClick={() => handleDropdownChange('payment-history', selectedUser.id)}
-              >
-                View Payments
-              </button>
-              <button
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
-                onClick={() => handleDropdownChange('userDocuments', selectedUser.id)}
-              >
-                View Documents
-              </button>
-              <button
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
-                onClick={() => handleDropdownChange('viewProfile', selectedUser.id)}
-              >
-                View Profile
-              </button>
-              <button
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
-                onClick={closeModal}
-              >
-                Close
-              </button>
             </div>
-          </div>
-        </Modal>
-      )}
+          </Modal>
+        )}
+      </div>
     </div>
   );
 };
