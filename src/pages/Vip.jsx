@@ -446,7 +446,7 @@ const Home = () => {
                   )[0]; // Get the first city-state pair
                   if (firstSuggestion) {
                     navigate(
-                      `/afterSearch/${encodeURIComponent(firstSuggestion.replace(/ /g, "%20"))}`
+                      `/vipAfterSearch/${encodeURIComponent(firstSuggestion.replace(/ /g, "%20"))}`
                     );
                   } else {
                     console.warn("No valid first suggestion available.");
@@ -486,7 +486,7 @@ const Home = () => {
                             className="suggestion-item"
                             onClick={() =>
                               navigate(
-                                `/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`
+                                `/vipAfterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`
                               )
                             }
                           >
