@@ -1,87 +1,264 @@
-import { getAuth } from "firebase/auth";
 import {
   collection,
-  documentId,
+  getDoc,
   getDocs,
   query,
+  doc,
   where,
+  setDoc,
+  updateDoc,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-
-import img1 from "../assets/img/mncthumbnail1.jpeg";
-import img2 from "../assets/img/mncthumbnail2.jpeg";
-import img3 from "../assets/img/mncthumbnail3.jpeg";
-import "../css/dealProgress.css";
 import { AiOutlineSearch } from "react-icons/ai";
-import Spinner from "../components/Spinner";
-import VipListingItem from "../components/VipListingItem";
+import "../css/Home1.css";
+import image1 from "../assets/img/mncthumbnail1.jpeg";
+import image2 from "../assets/img/mncthumbnail2.jpeg";
+import image3 from "../assets/img/mncthumbnail3.jpeg";
+import { Link } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
+import { app } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ToastContainer, toast } from "react-toastify";
+import { getMessaging } from "firebase/messaging";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import notification from "../assets/img/notification.png";
 
-const Vip = () => {
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const auth = getAuth();
+// import { createNotification } from "../firebase";
+// import { getFirebaseToken, onForegroundMessage } from "../firebase";
+import { useContext } from "react";
+const Home = () => {
+  const [suggestions, setSuggestions] = useState([]);
+  const [propertySuggestions, setPropertySuggestions] = useState([]);
   const [timer, setTimer] = useState(null);
   const [selectedButton, setSelectedButton] = useState(1);
-  const [vipFilteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const images = [img1, img2, img3];
+  const imagesWithCaptions = [
+    { src: image1, caption: 'We buy property in any condition anywhere!' },
+    { src: image2, caption: 'We sell property at an affordable price.' },
+    { src: image3, caption: 'We develop in partnership with the community.' },
+  ];
+  const [zipcode, setZip] = useState(false);
+  const [city, setCity] = useState(false);
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = useState("");
+  const [signed, setSigned] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
   const [notFound, setNotFound] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedCaption, setSelectedCaption] = useState('');
+
+  const [showToDoIcon, setShowToDoIcon] = useState(true);
+ 
+  const [userId, setUserId] = useState("");
+
   const notFoundRef = useRef(null);
 
-  const handleNotFound = (e) => {
-    e.preventDefault();
-    if (searchTerm !== "" && vipFilteredProperties.length == 0) {
-      setNotFound(!notFound);
+
+  const handleImageClick = (img, caption) => {
+    setSelectedImage(img);
+    setSelectedCaption(caption);
+    setTimeout(() => {
+      setIsAnimating(true);
+    }, 10);
+  };
+
+  const closeModal = () => {
+    setIsAnimating(false);
+    setSelectedCaption('');
+    setTimeout(() =>{
+      setSelectedImage(null);
+    }, 500);
+  };
+
+  const handleNotFoundRef = (e) => {
+    if (notFoundRef.current && !notFoundRef.current.contains(e.target)) {
+      setNotFound(false);
     }
   };
 
   useEffect(() => {
-    setLoading(true);
-    const fetchUser = async () => {
-      try {
-        // Get user info from firestore database
-        const userRef = collection(db, "users");
-        const userQuery = query(
-          userRef,
-          where(documentId(), "==", auth.currentUser.uid)
-        );
-        const user = [];
-        const userSnap = await getDocs(userQuery);
-        userSnap.forEach((doc) => {
-          return user.push(doc.data());
-        });
+    document.addEventListener("click", handleNotFoundRef);
+    return () => {
+      document.removeEventListener("click", handleNotFoundRef);
+    };
+  }, []);
 
-        // Gives access to vip listings if current account has vip role
-        if (!["vip", "agent", "admin", "superadmin"].includes(user[0]?.role)) {
-          // toast.error("You cannot access this page.");
-          navigate("/");
-        }
-        setLoading(false);
-      } catch (error) {
-        // Does not allow access to vip listings if firestore rules blocks unauthorized user from accessing page
-        toast.error("Insufficient permissions.");
-        navigate("/");
+  const getUserRole = async (uid) => {
+    const userRef = doc(db, "users", uid);
+
+    try {
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserRole(userData.role);
+      } else {
+        setUserRole(null); // Handle the case when the user document doesn't exist
       }
+    } catch (error) {
+      console.error("Error getting user document:", error);
+      setUserRole(null); // Handle errors by setting userRole to a fallback value
+    }
+  };
+
+  useEffect(() => {
+    const call = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUserId(user.uid);
+          await getUserRole(user.uid);
+          setSigned(true);
+          if (userRole == "admin") {
+            const userRef = doc(db, "users", user.uid);
+            const userSnapshot = await getDoc(userRef);
+
+            if (userSnapshot.exists()) {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            } else {
+              const userData = userSnapshot.data();
+              if (userData.clear === undefined) {
+                await updateDoc(userRef, { clear: false });
+              }
+            }
+            copyNotificationsToUserNotifications(userId);
+            fetchUserNotifications(userId);
+          }
+        } else {
+          console.log("User is not authenticated.");
+        }
+      });
     };
 
-    fetchUser();
-  }, [auth.currentUser.uid, navigate]);
+    call();
+  }, [userRole, userId]);
 
-  if (loading) {
-    return <Spinner />;
-  }
+  const fetchUserNotifications = async (userId) => {
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
 
-  // Updates search bar data when user types
+    if (!userSnapshot.empty) {
+      const userNotificationsData = userSnapshot.get("userNotifications");
+      setNotifications(userNotificationsData);
+    } else {
+      console.log("emptu");
+    }
+  };
+
+  const copyNotificationsToUserNotifications = async (userId) => {
+    const notificationsRef = collection(db, "notifications");
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      if (userData.clear === false) {
+        const userNotificationsData =
+          userSnapshot.data().userNotifications || [];
+        if (userNotificationsData.length === 0) {
+          const latestTimestamp = await getLatestTimestamp();
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", "==", latestTimestamp))
+          );
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        } else {
+          // Get the latest timestamp from the userNotificationsData
+          const latestTimestamp = userNotificationsData.reduce(
+            (latest, notification) =>
+              notification.timestamp > latest ? notification.timestamp : latest,
+            userNotificationsData[0].timestamp
+          );
+          // Query for notifications newer than the latestTimestamp
+          const querySnapshot = await getDocs(
+            query(notificationsRef, where("timestamp", ">", latestTimestamp))
+          );
+          // Append new notifications to userNotificationsData
+          querySnapshot.forEach((doc) => {
+            userNotificationsData.push(doc.data());
+          });
+          // Update the userNotifications field with the combined data
+          await updateDoc(userRef, {
+            userNotifications: userNotificationsData,
+          });
+        }
+      }
+    }
+  };
+
+  const getLatestTimestamp = async () => {
+    const notificationsCollectionRef = collection(db, "notifications");
+    const latestTimestampQuery = query(
+      notificationsCollectionRef,
+      orderBy("timestamp", "desc"),
+      limit(1)
+    );
+    try {
+      const querySnapshot = await getDocs(latestTimestampQuery);
+      if (!querySnapshot.empty) {
+        const latestNotification = querySnapshot.docs[0].data();
+        return latestNotification.timestamp;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting the latest timestamp:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showNotifications &&
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        toggleNotifications();
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  // // Function to retrieve user role from Firebase Firestore
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   const onChange = (e) => {
-    setSearchTerm(e.target.value);
-
-    // Displays results after 500ms delay
+    const value = e.target.value;
+    setSearchTerm(value);
+  
+    // Reset filter if searchTerm is cleared
+    if (value.trim() === "") {
+      fetchProperties(""); // Fetch without filtering
+      return;
+    }
+  
+    // Apply delay for search filtering
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
-      fetchProperties(searchTerm);
+      fetchProperties(value);
     }, 500);
     setTimer(newTimer);
   };
@@ -95,13 +272,20 @@ const Vip = () => {
         return "rent";
       case 3:
         return "sold";
+      default:
+        console.error("Invalid button selected:", button);
+        return "";
     }
   };
 
-  const createAddressTokens = (searchTerm) => {
-    // Split the searchTerm into individual tokens (words) and filter out empty strings
-    const tokens = searchTerm.split(" ").filter((token) => token.trim() !== "");
-    return tokens.map((token) => token.toLowerCase());
+  const handleCategoryChange = (button) => {
+    console.log(`Category changed to button: ${button}`);
+    setSelectedButton(button);
+  
+    // Re-fetch properties to ensure updated "PROPERTIES" section
+    if (searchTerm) {
+      fetchProperties(searchTerm, button); // Pass the category (button)
+    }
   };
 
   // Submit function for searchbar
@@ -111,37 +295,78 @@ const Vip = () => {
   };
 
   // Filters properties based on searchbar form data
-  const fetchProperties = async (searchTerm) => {
-    const listingRef = collection(db, "vipPropertyListings");
-
-    // Get the category based on the selectedButton
-    const category = getCategory(selectedButton);
-
-    // Build the query based on the selectedButton and the searchTerm
-    let q = query(listingRef, where("type", "==", category));
-
-    // If there's a searchTerm, add the where clause for address field
-    // If there's a searchTerm, create an array of address tokens and query against it
-
-    const querySnap = await getDocs(q);
-
-    // Adds all listings from query to 'listings' variable
-    let vipListings = [];
-    querySnap.forEach((doc) => {
-      //if searchTerm != null, only return properties that contian the search term in the address
-
-      return vipListings.push({
+  const fetchProperties = async (searchTerm, selectedCategoryButton) => {
+    // Clear suggestions when the search term is empty
+    if (!searchTerm) {
+      setPropertySuggestions([]);
+      setSuggestions([]);
+      return;
+    }
+  
+    try {
+      const listingRef = collection(db, "vipPropertyListings");
+      const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
+  
+      console.log(`Fetching properties for category: ${category}, searchTerm: ${searchTerm}`);
+  
+      // Fetch all listings from Firestore
+      const querySnap = await getDocs(listingRef);
+      const listings = querySnap.docs.map((doc) => ({
         id: doc.id,
         data: doc.data(),
-      });
-    });
-
-    const vipFilteredProperties = vipListings.filter((vipListing) =>
-      vipListing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    setFilteredProperties(vipFilteredProperties);
+      }));
+  
+      console.log("Fetched listings:", listings);
+  
+      // Filter for properties matching category and search term
+      const filteredProperties = listings.filter(
+        (listing) =>
+          listing.data.type === category &&
+          listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  
+      console.log("Filtered properties:", filteredProperties);
+  
+      // Filter for cities and ZIP codes based on the search term
+      const regexZipCode = /^\d{1,5}$/;
+      const regexCity = /^[a-zA-Z\s]+$/;
+  
+      const filteredSuggestions = listings.filter((listing) =>
+        regexZipCode.test(searchTerm) || regexCity.test(searchTerm)
+          ? listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
+          : false
+      );
+  
+      console.log("Filtered suggestions:", filteredSuggestions);
+  
+      // Update state with the results
+      setPropertySuggestions(filteredProperties);
+      setSuggestions(filteredSuggestions);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      setPropertySuggestions([]);
+      setSuggestions([]);
+    }
   };
+  
+  useEffect(() => {
+    if (searchTerm) {
+      fetchProperties(searchTerm, selectedButton); // Re-fetch with the new category
+    }
+  }, [selectedButton]);
+  
+
+  const handleVip = () => {
+    navigate("/faqPage");
+  };
+
+  const handleNotFound = (e) => {
+    e.preventDefault();
+    if (searchTerm !== "" && suggestions.length == 0) {
+      setNotFound(!notFound);
+    }
+  };
+  
 
   return (
     <div className="bg-gray-300 min-h-[calc(100vh-48px)] h-auto">
@@ -150,15 +375,15 @@ const Vip = () => {
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-6">
+          <div className="flex flex-row space-x-3 mt-6 disable-hover">
             {/* Buy button */}
             <button
               className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 1
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600" // Selected state
+                  : "bg-white text-black ring-gray-300" // Non-selected state
               }`}
-              onClick={() => setSelectedButton(1)}
+              onClick={() => handleCategoryChange(1)}
             >
               Buy
             </button>
@@ -167,10 +392,10 @@ const Vip = () => {
             <button
               className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 2
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600"
+                  : "bg-white text-black ring-gray-300"
               }`}
-              onClick={() => setSelectedButton(2)}
+              onClick={() => handleCategoryChange(2)}
             >
               Rent
             </button>
@@ -179,270 +404,269 @@ const Vip = () => {
             <button
               className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
                 selectedButton === 3
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
+                  ? "bg-gray-600 text-white ring-gray-600"
+                  : "bg-white text-black ring-gray-300"
               }`}
-              onClick={() => setSelectedButton(3)}
+              onClick={() => handleCategoryChange(3)}
             >
               Sold
             </button>
           </div>
         </div>
-
-        {/* Search bar + button */}
-        <form
-         onSubmit={(e) => handleNotFound(e)}
-          className="max-w-md mt-6 w-full text flex justify-center"
-        >
+        <div>
           {/* Search bar */}
-          <div className="w-full px-3 relative">
-            <input
-              type="search"
-              placeholder={"Search by location or point of interest"}
-              value={searchTerm}
-              onChange={onChange}
-              onSubmit={handleSearch}
-              className="text-lg w-full px-4 pr-9 py-2 text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300"
-            ></input>
-
-            {notFound && (
-              <div className=" fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-30">
-                <div ref={notFoundRef} className="w-auto h-auto bg-white p-5">
-                  <div className="flex">
-                    <p className="font-semibold">
-                      We couldn't find '{searchTerm}'
-                    </p>
-                    <button
-                      className="mx-0 font-semibold text-xl ml-auto"
-                      onClick={() => {
-                        setNotFound(false);
-                      }}
-                    >
-                      X
-                    </button>
-                  </div>
-                  <br></br>
-                  <p>
-                    Please check the spelling, try clearing the search box, or
-                    try reformatting to match these examples:
-                  </p>
-                  <br></br>
-                  <span className="font-semibold">Address:</span> 123 Main St,
-                  Seattle, WA <br></br>
-                  <span className="font-semibold">Neighborhood: </span>
-                  Downtown
-                  <br></br> <span className="font-semibold">Zip: </span> 98115{" "}
-                  <br></br>
-                  <span className="font-semibold">City: </span> 'Seattle' or
-                  'Seattle, WA' <br></br>
-                  <br></br> Don't see what you're looking for? Your search might
-                  be outside our service areas.
-                </div>
-              </div>
-            )}
-
-            {/* Search button */}
-            <button
-              type="submit"
-              className="absolute right-[20px] top-[12px] cursor-pointer"
-            >
-              <AiOutlineSearch className="text-gray-700 text-2xl" />
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* Search results (only displays when results are found) */}
-      {vipFilteredProperties.length > 0 && (
-        <div className=" w-full max-w-6xl mx-auto flex items-center justify-center">
-          <ul className="w-full sm:grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
-            {vipFilteredProperties.map((vipListing) => (
-              <VipListingItem
-                key={vipListing.id}
-                id={vipListing.id}
-                vipListing={vipListing.data}
+          <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
+            <form onSubmit={(e) => handleNotFound(e)}>
+              <input
+                type="text"
+                id="location-lookup-input"
+                className="uc-omnibox-input cx-textField ring-1"
+                placeholder="City, Neighborhood, Address, School, ZIP"
+                aria-label="city, zip, address, school"
+                onChange={onChange}
+                style={{ width: "380px", borderRadius: "6px" }}
               />
-            ))}
-          </ul>
-        </div>
-      )}
-      {/* <div className="mx-10 flex justify-center mb-10">
-        <div className="text-center max-w-4xl">
-          <p className="text-xl font-bold">"What to expect"</p>
-          <p className="mt-5">
-            "A private exclusive listing is an off-market home that can be
-            shared by a Compass agent directly with their colleagues and their
-            buyers. Property details aren’t disseminated widely and won’t appear
-            on public home search websites."
-          </p>
-          <div className="mt-5 flex justify-center space-x-4 mb-5">
-            <div className="max-w-xs relative">
-              <p className="text-lg  font-bold mr-4">Discretion</p>
-              <p className="text-sm mr-5">
-                "Privacy is the ultimate commodity and the decision to sell your
-                home is a personal one."
-              </p>
-              <div className="border-r border-solid border-black absolute top-0 bottom-0 right-0 h-full"></div>
-            </div>
-
-            <div className="max-w-xs relative">
-              <p className="text-lg font-bold mr-3">Flexibility</p>
-              <p className="text-sm mr-5">
-                "Decide when to share details about your home, including price,
-                more broadly on your own timing."
-              </p>
-              <div className="border-r border-solid border-black absolute top-0 bottom-0 right-0 h-full"></div>
-            </div>
-
-            <div className="max-w-xs relative">
-              <p className="text-lg font-bold mr-5">Quality</p>
-              <p className="text-sm mr-5">
-                "Retain exposure to Compass agents, including premium placement
-                on our agent facing platform."
-              </p>
-              <div className="border-r border-solid border-black absolute top-0 bottom-0 right-0 h-full"></div>
-            </div>
-
-            <div className="max-w-xs">
-              <p className="text-lg font-bold mr-2">Value</p>
-              <p className="text-sm">
-                "Get the best offer by testing the market privately to gather
-                key insights without your listing getting stale."
-              </p>
-              {/* No vertical line after the last div */}
-
-      {/* Thumbnail images */}
-      {/* <div className="middle" style={{maxWidth:"100%"}}>
-        <div
-          className="flex justify-center mx-auto "
-          style={{ maxWidth: "900px" }}
-        >
-          <div className="bg-white p-3" style={{maxHeight: "400px"}}>
-            <div
-              style={{
-                backgroundImage: `url(${img1})`,
-                backgroundSize: "cover",
-                height: "200px",
-                width: "350px",
-                marginBottom: "10px",
-                marginTop: "10px"
-              }}
-            >
-              {" "}
-            </div>
-            <div
-              style={{
-                backgroundImage: `url(${img2})`,
-                backgroundSize: "cover",
-                height: "150px",
-                width: "250px",
-                marginLeft: "90px",
-              }}
-            >
-              {" "}
-            </div>
-          </div>
-          <div>
-            <p className="font-semibold text-2xl mt-20 ml-5 mb-8">
-              "Reasons why you might choose to sell your home as a private
-              exclusive:
-            </p>
-            <ul className="list-disc pl-5 ml-5">
-              <li>New job or relocation</li>
-              <li>Family changes like marriage or divorce</li>
-              <li>Evolving financial circumstances</li>
-              <li>Health issues</li>
-              <li>Valuable belongings like art or furniture</li>
-              <li>Opposition to holding open houses"</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div className="flex justify-center mx-auto ">
-          <p style={{ maxWidth: "600px", marginTop: "50px" }}>
-           "My clients and I tested an aggressive price as a Private Exclusive
-            on Compass. Another agent brought buyers to see the home and they
-            submitted a full price, all cash offer within days. My clients said
-            this was the easiest, no hassle sale they’ve experienced!"
-          </p>
-          <div className="bg-white p-3 mb-2" style={{maxHeight: "225px"}}>
-          <div
-            style={{
-              backgroundImage: `url(${img3})`,
-              backgroundSize: "cover",
-              height: "200px",
-              width: "350px",
-              marginBottom: "10px",
-            }}
-          >
-            {" "}
-          </div>
-          </div>
-        </div>
-      </div> */}
-      {/* Thumbnail images */}
-      <div style={{maxWidth: "1150px", margin: "0 auto"}} className=" bg-white">
-        <div
-          className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg"
-          style={{
-            position: "relative",
-            bottom: "0PX",
-            left: "0px",
-            right: "0px",
-          }}
-        >
-          <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
-            {images.map((img, i) => (
-              <li
-                key={i}
-                className="h-[250px] w-full relative  flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
-                style={{
-                  backgroundImage: `url(${img})`, // Set the background image here
-                  backgroundRepeat: "no-repeat", // Prevent background image from repeating
-                  backgroundSize: "cover", // Adjust background image size as needed
-                  height: "200px",
+              <button
+                type="button"
+                className="ml-3 cursor-pointer"
+                onClick={() => {
+                  const firstSuggestion = Array.from(
+                    new Set(
+                      suggestions.map((suggestion) => {
+                        const addressParts = suggestion.data.address.split(",");
+                        const city =
+                          addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                        const stateAndZip =
+                          addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                        const stateAndZipParts = stateAndZip.split(" ");
+                        const state = stateAndZipParts[0];
+                        return `${city}, ${state}`;
+                      })
+                    )
+                  )[0]; // Get the first city-state pair
+                  if (firstSuggestion) {
+                    navigate(
+                      `/afterSearch/${encodeURIComponent(firstSuggestion.replace(/ /g, "%20"))}`
+                    );
+                  } else {
+                    console.warn("No valid first suggestion available.");
+                  }
                 }}
               >
-                <img
-                  className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
-                  loading="lazy"
-                  src={img}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+                <AiOutlineSearch className="text-gray-700 text-2xl" />
+              </button>
+            </form>
 
-        {/* Footer Information */}
-        <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg">
-          <p>info@mncdevelopment.com</p>
-          <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
-            <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-              <p>All rights reserved.</p>
-              <span className="hidden md:block">|</span>
-              <p>© MNC Development, Inc. 2008-present.</p>
+            {/* Search Bar Suggestions or No Results */}
+            <div>
+              {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) ? (
+                <div style={styles.suggestionsDropdown}>
+                  <ul style={styles.suggestionsList}>
+                    {/* PLACES Section */}
+                    {suggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PLACES</li>
+                        {Array.from(
+                          new Set(
+                            suggestions.map((suggestion) => {
+                              const addressParts = suggestion.data.address.split(",");
+                              const city =
+                                addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                              const stateAndZip =
+                                addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                              const stateAndZipParts = stateAndZip.split(" ");
+                              const state = stateAndZipParts[0];
+                              return `${city}, ${state}`;
+                            })
+                          )
+                        ).map((cityStatePair, index) => (
+                          <li
+                            key={`city-${index}`}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(
+                                `/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`
+                              )
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
+                          </li>
+                        ))}
+                      </>
+                    )}
+
+                    {/* PROPERTIES Section */}
+                    {propertySuggestions.length > 0 && (
+                      <>
+                        <li style={styles.categoryHeader}>PROPERTIES</li>
+                        {propertySuggestions.map((property) => (
+                          <li
+                            key={property.id}
+                            style={styles.suggestionItem}
+                            className="suggestion-item"
+                            onClick={() =>
+                              navigate(`/category/${property.data.type}/${property.id}`)
+                            }
+                          >
+                            <span style={styles.suggestionIcon}>🏠</span>{" "}
+                            {property.data.address}
+                          </li>
+                        ))}
+                      </>
+                    )}
+                  </ul>
+                </div>
+              ) : searchTerm && !suggestions.length && !propertySuggestions.length ? (
+                // No Results Message
+                <div className="no-results-message">
+                  <p>
+                    Please check the spelling, try clearing the search box, or try
+                    reformatting to match these examples:
+                  </p>
+                  <br />
+                  <span className="font-semibold">Address:</span> 123 Main St, Seattle, WA
+                  <br />
+                  <span className="font-semibold">Neighborhood:</span> Downtown
+                  <br />
+                  <span className="font-semibold">Zip:</span> 98115
+                  <br />
+                  <span className="font-semibold">City:</span> 'Seattle' or 'Seattle, WA'
+                  <br />
+                  <br />
+                  <p>Don't see what you're looking for? Your search might be outside our service areas.</p>
+                </div>
+              ) : null}
             </div>
-            <span className="hidden lg:block">|</span>
-            <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
           </div>
-          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-            <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
-            <span className="hidden md:block">|</span>
-            <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
-          </div>
-          <p className=" text-justify [text-align-last:center] ">
-            MNC Development and the MNC Development logos are trademarks of MNC
-            Development, Inc. MNC Development, Inc. as a NYS licensed Real
-            Estate Broker fully supports the principles of the Fair Housing Act
-            and the Equal Opportunity Act. Listing information is deemed
-            reliable, but is not guaranteed.
-          </p>
         </div>
+      </section>
+
+      {/* Thumbnail images */}
+      <div className="mb-6 mx-3 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+        <ul className="mx-auto max-w-6xl w-full flex flex-col space-y-3 justify-center items-center sm:flex-row sm:space-x-3 sm:space-y-0">
+          {imagesWithCaptions.map((imgObj, i) => (
+            <li
+              key={i}
+              className="h-[250px] w-full relative flex justify-between items-center shadow-md hover:shadow-xl rounded overflow-hidden transition-shadow duration-150"
+              style={{
+                backgroundImage: `url(${imgObj.src})`,
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                height: "200px",
+              }}
+              onClick={() => handleImageClick(imgObj.src, imgObj.caption)}
+            >
+              <img
+                className="grayscale h-[250px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in rounded"
+                loading="lazy"
+                src={imgObj.src}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Modal pop-up */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={closeModal}
+        >
+          <div
+            className={`relative p-4 rounded-md shadow-lg polaroid-container ${isAnimating ? 'show' : ''}`}
+          >
+            <div className="polaroid-image-container">
+              <img
+                src={selectedImage}
+                alt="Selected"
+                className="polaroid-image"
+              />
+            </div>
+            <p className="polaroid-caption">{selectedCaption}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Footer Information */}
+      <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">
+        <p>info@mncdevelopment.com</p>
+        <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+          <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+            <p>All rights reserved.</p>
+            <span className="hidden md:block">|</span>
+            <p>© MNC Development, Inc. 2008-present.</p>
+          </div>
+          <span className="hidden lg:block">|</span>
+          <p>31 Buffalo Avenue, Brooklyn, New York 11233</p>
+        </div>
+        <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+          <p>Phone: 1-718-771-5811 or 1-877-732-3492</p>
+          <span className="hidden md:block">|</span>
+          <p>Fax: 1-877-760-2763 or 1-718-771-5900</p>
+        </div>
+        <p className=" text-justify [text-align-last:center] ">
+          MNC Development and the MNC Development logos are trademarks of MNC
+          Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate
+          Broker fully supports the principles of the Fair Housing Act and the
+          Equal Opportunity Act. Listing information is deemed reliable, but is
+          not guaranteed.
+        </p>
       </div>
     </div>
   );
 };
 
-export default Vip;
+export default Home;
+
+
+const styles = {
+  suggestionsDropdown: {
+    position: "absolute",
+    top: "100%",
+    left: "0",
+    width: "100%",
+    maxHeight: "400px",
+    overflowY: "auto",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "12px",
+    boxShadow: "0 8px 15px rgba(0, 0, 0, 0.1)",
+    zIndex: 20,
+    animation: "fadeIn 0.3s ease",
+  },
+  suggestionsList: {
+    listStyle: "none",
+    margin: "0",
+    padding: "10px",
+  },
+  categoryHeader: {
+    padding: "12px 20px",
+    backgroundColor: "#f9fafb",
+    fontWeight: "600",
+    fontSize: "16px",
+    color: "#1f2937",
+    borderBottom: "1px solid #e5e7eb",
+    textTransform: "uppercase",
+  },
+  suggestionItem: {
+    padding: "12px 20px",
+    fontSize: "15px",
+    color: "#374151",
+    cursor: "pointer",
+    borderRadius: "8px",
+    transition: "background-color 0.2s ease, transform 0.1s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  suggestionItemHover: {
+    backgroundColor: "#f3f4f6",
+    transform: "scale(1.02)",
+  },
+  suggestionIcon: {
+    filter: 'grayscale(100%)', // Make the icon greyscale
+    marginRight: '8px', // Add spacing
+    fontSize: '1.2rem', // Optional: Adjust size
+  },
+};
