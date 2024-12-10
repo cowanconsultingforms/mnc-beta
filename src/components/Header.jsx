@@ -597,7 +597,7 @@ const Header = () => {
               FAQ
             </li>
             {/* agents */}
-            <li
+            {/* <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
@@ -609,7 +609,7 @@ const Header = () => {
               }}
             >
               Agents
-            </li>
+            </li> */}
 
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
@@ -885,7 +885,7 @@ const Header = () => {
               FAQ
             </li>
             {/* agents */}
-            <li
+            {/* <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
@@ -898,7 +898,7 @@ const Header = () => {
               }}
             >
               Agents
-            </li>
+            </li> */}
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
               <li

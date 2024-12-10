@@ -56,7 +56,7 @@ const ActionProvider = ({ createChatBotMessage, setState, children }) => {
     const message = createChatBotMessage(
       <p>
         Please use the following link to find agents:{" "}
-        <a href="https://mnc-development.web.app/agents" target="_blank" rel="noopener noreferrer">
+        <a href="https://mnc-development.web.app/listings" target="_blank" rel="noopener noreferrer">
           <span className="font-bold underline">Find Agents</span>
         </a>
       </p>
