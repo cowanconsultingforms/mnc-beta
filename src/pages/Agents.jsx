@@ -6,6 +6,7 @@ import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../css/agent.css";
+import agentsVid from "../assets/agentsVid.mp4";
 
 const Agents = () => {
   const [loading, setLoading] = useState(true);
@@ -146,16 +147,16 @@ const Agents = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Background video */}
       <div className="video-container">
-        <iframe
-          src="https://www.youtube.com/embed/37ZwT0H67R8?autoplay=1&mute=1&controls=0&loop=1&playlist=37ZwT0H67R8&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        <video
+          src={agentsVid}
+          autoPlay
+          muted
+          loop
+          className="w-full h-full object-cover"
+        ></video>
       </div>
 
       {/* Foreground content */}
@@ -264,10 +265,10 @@ const Agents = () => {
               </div>
 
               {/* Navigation arrows */}
-              <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
+              <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={prevSlide}>
                 <FaChevronLeft className="text-white text-4xl" />
               </div>
-              <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
+              <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={nextSlide}>
                 <FaChevronRight className="text-white text-4xl" />
               </div>
             </div>

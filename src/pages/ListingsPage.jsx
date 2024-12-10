@@ -7,6 +7,7 @@ import VipListingItem from "../components/VipListingItem";
 import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
+import listingVid from "../assets/listingVideo.mp4";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -108,14 +109,22 @@ const ListingsPage = () => {
     <div className="flex flex-col min-h-screen">
       {/* Video Background */}
       <div className="video-container">
-        <iframe
+        <video
+          src={listingVid}
+          autoPlay
+          muted
+          loop
+          className="w-full h-full object-cover"
+        ></video>
+
+        {/*<iframe
           className="absolute top-0 left-0 w-full h-full"
           src="https://www.youtube.com/embed/8BBE1Ui8yo4?si=5BNr_sLaivrlXusM&controls=0&autoplay=1&mute=1&loop=1&playlist=8BBE1Ui8yo4&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
           title="YouTube video player"
           frameBorder="0"
           allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-        />
+        /> */}
       </div>
       {/* VIP Listings Section */}
       {userRole && (userRole === "admin" || userRole === "agent" || userRole === "vipcustomer") && (
