@@ -37,9 +37,9 @@ const Home = () => {
   const [selectedButton, setSelectedButton] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const imagesWithCaptions = [
-    { src: image1, caption: 'We buy property in any condition anywhere!' },
-    { src: image2, caption: 'We sell property at an affordable price.' },
-    { src: image3, caption: 'We develop in partnership with the community.' },
+    { src: image1, caption: "We buy property in any condition anywhere!" },
+    { src: image2, caption: "We sell property at an affordable price." },
+    { src: image3, caption: "We develop in partnership with the community." },
   ];
   const [zipcode, setZip] = useState(false);
   const [city, setCity] = useState(false);
@@ -52,14 +52,13 @@ const Home = () => {
   const [notFound, setNotFound] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [selectedCaption, setSelectedCaption] = useState('');
+  const [selectedCaption, setSelectedCaption] = useState("");
 
   const [showToDoIcon, setShowToDoIcon] = useState(true);
- 
+
   const [userId, setUserId] = useState("");
 
   const notFoundRef = useRef(null);
-
 
   const handleImageClick = (img, caption) => {
     setSelectedImage(img);
@@ -71,8 +70,8 @@ const Home = () => {
 
   const closeModal = () => {
     setIsAnimating(false);
-    setSelectedCaption('');
-    setTimeout(() =>{
+    setSelectedCaption("");
+    setTimeout(() => {
       setSelectedImage(null);
     }, 500);
   };
@@ -248,7 +247,7 @@ const Home = () => {
   const onChange = (e) => {
     const input = e.target.value;
     setSearchTerm(input);
-  
+
     if (input.trim() !== "") {
       clearTimeout(timer);
       const newTimer = setTimeout(() => {
@@ -280,7 +279,7 @@ const Home = () => {
   const handleCategoryChange = (button) => {
     console.log(`Category changed to button: ${button}`);
     setSelectedButton(button);
-  
+
     // Re-fetch properties to ensure updated "PROPERTIES" section
     if (searchTerm) {
       fetchProperties(searchTerm, button); // Pass the category (button)
@@ -300,11 +299,13 @@ const Home = () => {
       setSuggestions([]);
       return;
     }
-  
+
     const listingRef = collection(db, "propertyListings");
     const category = getCategory(selectedCategoryButton || selectedButton); // Use passed category or current one
-    console.log(`Fetching properties for category: ${category}, searchTerm: ${searchTerm}`);
-  
+    console.log(
+      `Fetching properties for category: ${category}, searchTerm: ${searchTerm}`
+    );
+
     try {
       const querySnap = await getDocs(listingRef);
       const listings = [];
@@ -314,18 +315,18 @@ const Home = () => {
           data: doc.data(),
         });
       });
-  
+
       console.log("Fetched listings:", listings);
-  
+
       // Filter for property suggestions based on category
       const filteredProperties = listings.filter(
         (listing) =>
           listing.data.type === category &&
           listing.data.address.toLowerCase().includes(searchTerm.toLowerCase())
       );
-  
+
       console.log("Filtered properties:", filteredProperties);
-  
+
       // Filter for cities and ZIP codes suggestions
       const regexZipCode = /^\d{1,5}$/;
       const regexCity = /^[a-zA-Z\s]+$/;
@@ -342,9 +343,9 @@ const Home = () => {
         }
         return false;
       });
-  
+
       console.log("Filtered suggestions:", filteredSuggestions);
-  
+
       setPropertySuggestions(filteredProperties);
       setSuggestions(filteredSuggestions);
     } catch (error) {
@@ -353,13 +354,12 @@ const Home = () => {
       setSuggestions([]);
     }
   };
-  
+
   useEffect(() => {
     if (searchTerm) {
       fetchProperties(searchTerm, selectedButton); // Re-fetch with the new category
     }
   }, [selectedButton]);
-  
 
   const handleVip = () => {
     navigate("/faqPage");
@@ -371,7 +371,6 @@ const Home = () => {
       setNotFound(!notFound);
     }
   };
-  
 
   return (
     <>
@@ -383,11 +382,12 @@ const Home = () => {
           <div className="flex flex-row space-x-3 mt-6 disable-hover">
             {/* Buy button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 1
-                  ? "bg-gray-600 text-white ring-gray-600" // Selected state
-                  : "bg-white text-black ring-gray-300" // Non-selected state
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+    ${
+      selectedButton === 1
+        ? "bg-gray-600 text-white ring-gray-600"
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+    }`}
               onClick={() => handleCategoryChange(1)}
             >
               Buy
@@ -395,11 +395,12 @@ const Home = () => {
 
             {/* Rent button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 2
-                  ? "bg-gray-600 text-white ring-gray-600"
-                  : "bg-white text-black ring-gray-300"
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+    ${
+      selectedButton === 2
+        ? "bg-gray-600 text-white ring-gray-600"
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+    }`}
               onClick={() => handleCategoryChange(2)}
             >
               Rent
@@ -407,11 +408,12 @@ const Home = () => {
 
             {/* Sold button */}
             <button
-              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded hover:bg-gray-100 hover:text-gray-800 focus:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 3
-                  ? "bg-gray-600 text-white ring-gray-600"
-                  : "bg-white text-black ring-gray-300"
-              }`}
+              className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
+    ${
+      selectedButton === 3
+        ? "bg-gray-600 text-white ring-gray-600"
+        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+    }`}
               onClick={() => handleCategoryChange(3)}
             >
               Sold
@@ -440,11 +442,15 @@ const Home = () => {
                     const firstSuggestion = suggestions[0];
                     if (firstSuggestion?.data?.address) {
                       // Extract city and state from the address
-                      const addressParts = firstSuggestion.data.address.split(",");
+                      const addressParts =
+                        firstSuggestion.data.address.split(",");
                       const city =
-                        addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                        addressParts[addressParts.length - 2]?.trim() ||
+                        "Unknown City";
                       const state =
-                        addressParts[addressParts.length - 1]?.trim().split(" ")[0] || "Unknown State";
+                        addressParts[addressParts.length - 1]
+                          ?.trim()
+                          .split(" ")[0] || "Unknown State";
 
                       // Format the city-state pair
                       const cityStatePair = `${city}, ${state}`;
@@ -454,7 +460,9 @@ const Home = () => {
 
                       navigate(suggestionUrl); // Navigate to the formatted URL
                     } else {
-                      console.warn("First suggestion does not have a valid address.");
+                      console.warn(
+                        "First suggestion does not have a valid address."
+                      );
                     }
                   } else {
                     console.warn("No suggestions available to navigate.");
@@ -467,7 +475,8 @@ const Home = () => {
 
             {/* Search Bar Suggestions or No Results */}
             <div>
-              {searchTerm && (suggestions.length > 0 || propertySuggestions.length > 0) ? (
+              {searchTerm &&
+              (suggestions.length > 0 || propertySuggestions.length > 0) ? (
                 <div style={styles.suggestionsDropdown}>
                   <ul style={styles.suggestionsList}>
                     {/* PLACES Section */}
@@ -477,11 +486,14 @@ const Home = () => {
                         {Array.from(
                           new Set(
                             suggestions.map((suggestion) => {
-                              const addressParts = suggestion.data.address.split(",");
+                              const addressParts =
+                                suggestion.data.address.split(",");
                               const city =
-                                addressParts[addressParts.length - 2]?.trim() || "Unknown City";
+                                addressParts[addressParts.length - 2]?.trim() ||
+                                "Unknown City";
                               const stateAndZip =
-                                addressParts[addressParts.length - 1]?.trim() || "Unknown State";
+                                addressParts[addressParts.length - 1]?.trim() ||
+                                "Unknown State";
                               const stateAndZipParts = stateAndZip.split(" ");
                               const state = stateAndZipParts[0];
                               return `${city}, ${state}`;
@@ -494,11 +506,14 @@ const Home = () => {
                             className="suggestion-item"
                             onClick={() =>
                               navigate(
-                                `/afterSearch/${encodeURIComponent(cityStatePair.replace(/ /g, "%20"))}`
+                                `/afterSearch/${encodeURIComponent(
+                                  cityStatePair.replace(/ /g, "%20")
+                                )}`
                               )
                             }
                           >
-                            <span style={styles.suggestionIcon}>📍</span> {cityStatePair}
+                            <span style={styles.suggestionIcon}>📍</span>{" "}
+                            {cityStatePair}
                           </li>
                         ))}
                       </>
@@ -514,7 +529,9 @@ const Home = () => {
                             style={styles.suggestionItem}
                             className="suggestion-item"
                             onClick={() =>
-                              navigate(`/category/${property.data.type}/${property.id}`)
+                              navigate(
+                                `/category/${property.data.type}/${property.id}`
+                              )
                             }
                           >
                             <span style={styles.suggestionIcon}>🏠</span>{" "}
@@ -525,24 +542,31 @@ const Home = () => {
                     )}
                   </ul>
                 </div>
-              ) : searchTerm && !suggestions.length && !propertySuggestions.length ? (
+              ) : searchTerm &&
+                !suggestions.length &&
+                !propertySuggestions.length ? (
                 // No Results Message
                 <div className="no-results-message">
                   <p>
-                    Please check the spelling, try clearing the search box, or try
-                    reformatting to match these examples:
+                    Please check the spelling, try clearing the search box, or
+                    try reformatting to match these examples:
                   </p>
                   <br />
-                  <span className="font-semibold">Address:</span> 123 Main St, Seattle, WA
+                  <span className="font-semibold">Address:</span> 123 Main St,
+                  Seattle, WA
                   <br />
                   <span className="font-semibold">Neighborhood:</span> Downtown
                   <br />
                   <span className="font-semibold">Zip:</span> 98115
                   <br />
-                  <span className="font-semibold">City:</span> 'Seattle' or 'Seattle, WA'
+                  <span className="font-semibold">City:</span> 'Seattle' or
+                  'Seattle, WA'
                   <br />
                   <br />
-                  <p>Don't see what you're looking for? Your search might be outside our service areas.</p>
+                  <p>
+                    Don't see what you're looking for? Your search might be
+                    outside our service areas.
+                  </p>
                 </div>
               ) : null}
             </div>
@@ -582,7 +606,9 @@ const Home = () => {
           onClick={closeModal}
         >
           <div
-            className={`relative p-4 rounded-md shadow-lg polaroid-container ${isAnimating ? 'show' : ''}`}
+            className={`relative p-4 rounded-md shadow-lg polaroid-container ${
+              isAnimating ? "show" : ""
+            }`}
           >
             <div className="polaroid-image-container">
               <img
@@ -626,7 +652,6 @@ const Home = () => {
 };
 
 export default Home;
-
 
 const styles = {
   suggestionsDropdown: {
@@ -673,8 +698,8 @@ const styles = {
     transform: "scale(1.02)",
   },
   suggestionIcon: {
-    filter: 'grayscale(100%)', // Make the icon greyscale
-    marginRight: '8px', // Add spacing
-    fontSize: '1.2rem', // Optional: Adjust size
+    filter: "grayscale(100%)", // Make the icon greyscale
+    marginRight: "8px", // Add spacing
+    fontSize: "1.2rem", // Optional: Adjust size
   },
 };
