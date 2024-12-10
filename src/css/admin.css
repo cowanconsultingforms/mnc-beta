@@ -1,8 +1,9 @@
-html, body {
+/*
+ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-x: hidden; 
 }
 
 #root {
@@ -14,7 +15,7 @@ html, body {
 .admin-container {
   max-width: 100%;
   margin: 0 auto;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-x: hidden; 
 }
 
 .table-container {
@@ -26,10 +27,10 @@ footer {
   margin-top: auto;
 }
 
-/* Media query for portrait orientation on mobile devices */
+/* Media query for portrait orientation on mobile devices *//*
 @media only screen and (max-width: 768px) and (orientation: portrait) {
   .admin-container {
-    padding: 0 16px; /* Adjust padding to fit the content */
+    padding: 0 16px; 
   }
 
   .table-container {
@@ -38,18 +39,18 @@ footer {
 
   table {
     width: 100%;
-    table-layout: auto; /* Ensure table fits the content */
+    table-layout: auto; 
   }
 
   th, td {
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap; 
   }
 }
 
-/* Media query for desktops */
+/* Media query for desktops */ /*
 @media only screen and (min-width: 769px) {
   .admin-container {
-    padding: 0 32px; /* Adjust padding to fit the content */
+    padding: 0 32px; 
   }
 
   .table-container {
@@ -58,10 +59,74 @@ footer {
 
   table {
     width: 100%;
-    table-layout: fixed; /* Ensure table covers the entire screen */
+    table-layout: fixed; 
   }
 
   th, td {
-    white-space: normal; /* Allow text wrapping */
+    white-space: normal; 
+  }
+}
+
+
+*/
+
+/* Add this to your admin.css file */
+
+/* Add this to your admin.css file */
+/* Add this to your admin.css file */
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  z-index: 1000; /* Ensure the modal appears above other elements */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999; /* Ensure the overlay appears above other elements */
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Add space between elements */
+}
+
+.modal-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Add space between buttons */
+}
+
+.modal-buttons button {
+  flex: 1 1 auto; /* Allow buttons to grow and shrink */
+  min-width: 120px; /* Set a minimum width for buttons */
+}
+
+.table-cell-right {
+  text-align: right;
+}
+
+/* Media query for portrait and landscape orientation on mobile devices */
+@media only screen and (max-width: 768px) {
+  .modal {
+    top: 10%;
+    transform: translate(-50%, 0); /* Adjust the modal position */
+    max-width: 90%; /* Ensure the modal fits within the viewport */
   }
 }

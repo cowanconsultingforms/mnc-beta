@@ -168,6 +168,8 @@ function FAQPage() {
           autoPlay
           muted
           loop
+          controls={false}
+          playsInline
           className="w-full h-full object-cover"
         ></video>
       

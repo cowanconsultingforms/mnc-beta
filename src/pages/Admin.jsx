@@ -12,13 +12,15 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Dropdown from "../components/Dropdown";
 import Spinner from "../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { db } from "../firebase";
+import "../css/admin.css";
+import Modal from 'react-modal';
 
-import { Menu } from '@headlessui/react';
+// Set the app element for accessibility
+Modal.setAppElement('#root');
 
 const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
@@ -29,6 +31,8 @@ const Admin = () => {
   const [currentUserRole, setCurrentUserRole] = useState("");
   const [checkboxValues, setCheckboxValues] = useState({});
   const [expirationDates, setExpirationDates] = useState({});
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -116,6 +120,26 @@ const Admin = () => {
     }
   };
 
+  const handleRoleChange = async (e, userId) => {
+    const newRole = e.target.value;
+    try {
+      const userDoc = doc(db, "users", userId);
+      await updateDoc(userDoc, {
+        role: newRole,
+      });
+      setSelectedUser((prev) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          role: newRole,
+        },
+      }));
+      toast.success("Role updated successfully.");
+    } catch (error) {
+      toast.error("Failed to update role.");
+    }
+  };
+
   const handleDropdownChange = (option, userId) => {
     switch (option) {
       case 'payment-history':
@@ -132,53 +156,15 @@ const Admin = () => {
     }
   };
 
-  const MyDropdown = ({ userId }) => (
-    <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out">
-        More
-      </Menu.Button>
-      <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg outline-none z-50">
-        <div className="py-1">
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={`${
-                  active ? 'bg-gray-100' : ''
-                } w-full text-left px-4 py-2 text-sm text-gray-700`}
-                onClick={() => handleDropdownChange('payment-history', userId)}
-              >
-                View Payments
-              </button>
-            )}
-          </Menu.Item>
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={`${
-                  active ? 'bg-gray-100' : ''
-                } w-full text-left px-4 py-2 text-sm text-gray-700`}
-                onClick={() => handleDropdownChange('userDocuments', userId)}
-              >
-                View Documents
-              </button>
-            )}
-          </Menu.Item>
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={`${
-                  active ? 'bg-gray-100' : ''
-                } w-full text-left px-4 py-2 text-sm text-gray-700`}
-                onClick={() => handleDropdownChange('viewProfile', userId)}
-              >
-                View Profile
-              </button>
-            )}
-          </Menu.Item>
-        </div>
-      </Menu.Items>
-    </Menu>
-  );
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedUser(null);
+  };
 
   if (loading) {
     return <Spinner />;
@@ -199,16 +185,13 @@ const Admin = () => {
 
         {!loading && filteredUsers?.length > 0 && (
           <div className="max-w-full mx-auto mt-7">
-            <h1 className="text-6xl text-center font-bold mb-8">User Management</h1>
+            <h1 className="text-5xl text-center font-bold mb-8">User Management</h1>
             <div className="overflow-x-auto shadow-md sm:rounded-lg mt-7">
               <table className="w-full text-sm text-left text-gray-700">
                 <thead className="text-xl uppercase bg-gray-300 text-gray-600">
                   <tr>
-                    <th className="px-6 py-3">Role</th>
-                    <th className="px-6 py-3">Top Agent</th>
-                    <th className="px-6 py-3">Email</th>
                     <th className="px-6 py-3">Name</th>
-                    <th className="px-6 py-3">Action</th>
+                    <th className="px-6 py-3 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-lg font-medium text-gray-700">
@@ -219,46 +202,14 @@ const Admin = () => {
                         index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                       } hover:bg-gray-300 transition duration-200`}
                     >
-                      <td onClick={() => setSelectedRow(user.id)} className="px-6 py-4">
-                        {currentUserRole === 'superadmin' ||
-                        (currentUserRole === 'admin' &&
-                          user.data.role !== 'admin' &&
-                          user.data.role !== 'superadmin') ? (
-                          <Dropdown userId={user.id} selected={selectedRow === user.id} />
-                        ) : (
-                          <div>{user.data.role}</div>
-                        )}
-                      </td>
-                      <td className="p-3 md:p-6 text-center">
-                        {user.data.role === 'agent' && (
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              checked={checkboxValues[user.id] || false}
-                              onChange={() => handleCheckboxChange(user.id)}
-                            />
-                            {checkboxValues[user.id] && (
-                              <DatePicker
-                                selected={expirationDates[user.id]}
-                                onChange={(date) => handleDateChange(date, user.id)}
-                                className="ml-2 p-1 border rounded"
-                                placeholderText="Select expiration date"
-                                minDate={new Date()}
-                                showTimeSelect
-                                timeFormat="HH:mm"
-                                timeIntervals={1}
-                                dateFormat="Pp"
-                              />
-                            )}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">{user.data.email}</td>
                       <td className="px-6 py-4">{user.data.name}</td>
-                      <td className="px-6 py-4">
-                        {currentUserRole === 'superadmin' || currentUserRole === 'admin' ? (
-                          <MyDropdown userId={user.id} />
-                        ) : null}
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
+                          onClick={() => openModal(user)}
+                        >
+                          More
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -268,6 +219,84 @@ const Admin = () => {
           </div>
         )}
       </div>
+
+      {selectedUser && (
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          contentLabel="User Details"
+          className="modal"
+          overlayClassName="modal-overlay"
+        >
+          <div className="modal-content">
+            <h2 className="text-2xl font-bold mb-4">User Details</h2>
+            <p><strong>Email:</strong> {selectedUser.data.email}</p>
+            <p><strong>Role:</strong></p>
+            <select
+              value={selectedUser.data.role}
+              onChange={(e) => handleRoleChange(e, selectedUser.id)}
+              className="p-2 border rounded"
+            >
+              <option value="user">User</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
+              <option value="superadmin">Superadmin</option>
+            </select>
+            {selectedUser.data.role === 'agent' && (
+              <div className="mt-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={checkboxValues[selectedUser.id] || false}
+                    onChange={() => handleCheckboxChange(selectedUser.id)}
+                    className="mr-2"
+                  />
+                  Top Agent
+                </label>
+                {checkboxValues[selectedUser.id] && (
+                  <DatePicker
+                    selected={expirationDates[selectedUser.id]}
+                    onChange={(date) => handleDateChange(date, selectedUser.id)}
+                    className="mt-2 p-1 border rounded w-full"
+                    placeholderText="Select expiration date"
+                    minDate={new Date()}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={1}
+                    dateFormat="Pp"
+                  />
+                )}
+              </div>
+            )}
+            <div className="modal-buttons mt-4">
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
+                onClick={() => handleDropdownChange('payment-history', selectedUser.id)}
+              >
+                View Payments
+              </button>
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                onClick={() => handleDropdownChange('userDocuments', selectedUser.id)}
+              >
+                View Documents
+              </button>
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                onClick={() => handleDropdownChange('viewProfile', selectedUser.id)}
+              >
+                View Profile
+              </button>
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
