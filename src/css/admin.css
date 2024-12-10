@@ -1,0 +1,67 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-container {
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+footer {
+  margin-top: auto;
+}
+
+/* Media query for portrait orientation on mobile devices */
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  .admin-container {
+    padding: 0 16px; /* Adjust padding to fit the content */
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    table-layout: auto; /* Ensure table fits the content */
+  }
+
+  th, td {
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+}
+
+/* Media query for desktops */
+@media only screen and (min-width: 769px) {
+  .admin-container {
+    padding: 0 32px; /* Adjust padding to fit the content */
+  }
+
+  .table-container {
+    overflow-x: hidden;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed; /* Ensure table covers the entire screen */
+  }
+
+  th, td {
+    white-space: normal; /* Allow text wrapping */
+  }
+}

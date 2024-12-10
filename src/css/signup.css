@@ -1,0 +1,30 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+}
+
+/* Media query for landscape orientation on mobile devices */
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+  #root {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 10px; /* Add padding to the footer */
+  }
+}

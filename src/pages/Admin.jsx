@@ -10,7 +10,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import Moment from "react-moment";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Dropdown from "../components/Dropdown";
@@ -18,6 +17,8 @@ import Spinner from "../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { db } from "../firebase";
+import "../css/admin.css";
+import { Menu } from '@headlessui/react';
 
 const Admin = () => {
   const [selectedRow, setSelectedRow] = useState();
@@ -51,94 +52,102 @@ const Admin = () => {
 
         if (["superadmin", "admin"].includes(role)) {
           const usersRef = collection(db, "users");
-          const q = query(usersRef, orderBy("timestamp", "desc"));
-          const querySnap = await getDocs(q);
-
-          let usersData = [];
-          querySnap.forEach((doc) => {
-            usersData.push({
-              id: doc.id,
-              data: doc.data(),
-            });
-          });
-          setUsers(usersData);
-          setFilteredUsers(usersData);
-
-          // Initialize checkbox and expiration date state
-          const initialCheckboxValues = {};
-          const initialExpirationDates = {};
-          usersData.forEach((user) => {
-            initialCheckboxValues[user.id] = user.data.isTopAgent || false;
-            initialExpirationDates[user.id] = user.data.expirationDate?.toDate() || null;
-          });
-          setCheckboxValues(initialCheckboxValues);
-          setExpirationDates(initialExpirationDates);
-        } else {
-          toast.error("You cannot access this page.");
-          navigate("/");
+          const usersQuery = query(usersRef, orderBy("timestamp", "desc"));
+          const usersSnap = await getDocs(usersQuery);
+          const usersList = usersSnap.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }));
+          setUsers(usersList);
+          setFilteredUsers(usersList);
         }
-        setLoading(false);
       } catch (error) {
-        toast.error("Insufficient permissions.");
-        navigate("/");
+        toast.error("Failed to load users.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
-  }, [auth.currentUser.uid, navigate]);
+  }, [auth.currentUser.uid]);
 
-  useEffect(() => {
-    if (searchQuery === "") {
-      setFilteredUsers(users);
-    } else {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      const filtered = users?.filter(user =>
-        user.data.email.toLowerCase().includes(lowerCaseQuery) ||
-        user.data.name.toLowerCase().includes(lowerCaseQuery)
-      );
-      setFilteredUsers(filtered);
-    }
-  }, [searchQuery, users]);
-
-  const updateUser = async (userId, isTopAgent, expirationDate) => {
-    const userDocRef = doc(db, "users", userId);
-    try {
-      await updateDoc(userDocRef, {
-        isTopAgent: isTopAgent,
-        expirationDate: expirationDate || null,
-      });
-      toast.success(`Top agent status ${isTopAgent ? 'granted' : 'revoked'}!`);
-    } catch (error) {
-      toast.error("Failed to update top agent status.");
-    }
-  };
-
-  const handleCheckboxChange = async (userId) => {
-    const newValue = !checkboxValues[userId];
-    setCheckboxValues((prevState) => ({
-      ...prevState,
-      [userId]: newValue,
+  const handleCheckboxChange = (userId) => {
+    setCheckboxValues((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
     }));
-
-    const expirationDate = newValue ? expirationDates[userId] : null;
-    await updateUser(userId, newValue, expirationDate);
   };
 
-  const handleDateChange = async (date, userId) => {
-    setExpirationDates((prevState) => ({
-      ...prevState,
+  const handleDateChange = (date, userId) => {
+    setExpirationDates((prev) => ({
+      ...prev,
       [userId]: date,
     }));
-    await updateUser(userId, checkboxValues[userId], date);
   };
+
+  const handleDropdownChange = (option, userId) => {
+    switch (option) {
+      case 'payment-history':
+        navigate(`/payment-history/${userId}`);
+        break;
+      case 'userDocuments':
+        navigate(`/userDocuments/${userId}`);
+        break;
+      case 'viewProfile':
+        navigate(`/viewProfile/${userId}`);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const MyDropdown = ({ userId }) => (
+    <Menu>
+      <Menu.Button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out">
+        More
+      </Menu.Button>
+      <Menu.Items className="absolute bg-white border border-gray-300 rounded shadow-lg mt-2">
+        <Menu.Item>
+          {({ active }) => (
+            <button
+              className="w-full text-left px-4 py-2 hover:bg-gray-300"
+              onClick={() => handleDropdownChange('payment-history', userId)}
+            >
+              View Payments
+            </button>
+          )}
+        </Menu.Item>
+        <Menu.Item>
+          {({ active }) => (
+            <button
+              className="w-full text-left px-4 py-2 hover:bg-gray-300"
+              onClick={() => handleDropdownChange('userDocuments', userId)}
+            >
+              View Documents
+            </button>
+          )}
+        </Menu.Item>
+        <Menu.Item>
+          {({ active }) => (
+            <button
+              className="w-full text-left px-4 py-2 hover:bg-gray-300"
+              onClick={() => handleDropdownChange('viewProfile', userId)}
+            >
+              View Profile
+            </button>
+          )}
+        </Menu.Item>
+      </Menu.Items>
+    </Menu>
+  );
 
   if (loading) {
     return <Spinner />;
   }
 
   return (
-    <div style={{ zoom: 0.825 }}>
-      <div className="min-h-screen h-auto bg-gradient-to-b from-gray-100 to-gray-200 text-gray-900 p-8">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
+      <div className="min-h-screen h-auto bg-gradient-to-b from-gray-100 to-gray-200 text-gray-900 p-8 admin-container">
         <div className="max-w-full mx-auto mt-auto">
           <input
             type="text"
@@ -152,7 +161,6 @@ const Admin = () => {
         {!loading && filteredUsers?.length > 0 && (
           <div className="max-w-full mx-auto mt-7">
             <h1 className="text-6xl text-center font-bold mb-8">User Management</h1>
-
             <div className="overflow-x-auto shadow-md sm:rounded-lg mt-7">
               <table className="w-full text-sm text-left text-gray-700">
                 <thead className="text-xl uppercase bg-gray-300 text-gray-600">
@@ -161,10 +169,7 @@ const Admin = () => {
                     <th className="px-6 py-3">Top Agent</th>
                     <th className="px-6 py-3">Email</th>
                     <th className="px-6 py-3">Name</th>
-                    <th className="px-6 py-3">Creation Date</th>
-                    <th className="px-6 py-3">Payment Management</th>
-                    <th className="px-6 py-3">Document Management</th>
-                    <th className="px-6 py-3">Profile Information</th>
+                    <th className="px-6 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-lg font-medium text-gray-700">
@@ -176,7 +181,10 @@ const Admin = () => {
                       } hover:bg-gray-300 transition duration-200`}
                     >
                       <td onClick={() => setSelectedRow(user.id)} className="px-6 py-4">
-                        {currentUserRole === "superadmin" || (currentUserRole === "admin" && user.data.role !== "admin" && user.data.role !== "superadmin") ? (
+                        {currentUserRole === 'superadmin' ||
+                        (currentUserRole === 'admin' &&
+                          user.data.role !== 'admin' &&
+                          user.data.role !== 'superadmin') ? (
                           <Dropdown userId={user.id} selected={selectedRow === user.id} />
                         ) : (
                           <div>{user.data.role}</div>
@@ -209,40 +217,9 @@ const Admin = () => {
                       <td className="px-6 py-4">{user.data.email}</td>
                       <td className="px-6 py-4">{user.data.name}</td>
                       <td className="px-6 py-4">
-                        <Moment local>{user.data.timestamp?.toDate()}</Moment>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        {currentUserRole === "superadmin" || currentUserRole === "admin" && (
-                          <button
-                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
-                            onClick={() => navigate(`/payment-history/${user.id}`)}
-                          >
-                            View Payments
-                          </button>
-                        )}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        {currentUserRole === "superadmin" || currentUserRole === "admin" && (
-                          <button
-                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
-                            onClick={() => navigate(`/userDocuments/${user.id}`)}
-                          >
-                            View Documents
-                          </button>
-                        )}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        {currentUserRole === "superadmin" || currentUserRole === "admin" && (
-                          <button
-                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
-                            onClick={() => navigate(`/viewProfile/${user.id}`)}
-                          >
-                            View Profile
-                          </button>
-                        )}
+                        {currentUserRole === 'superadmin' || currentUserRole === 'admin' ? (
+                          <MyDropdown userId={user.id} />
+                        ) : null}
                       </td>
                     </tr>
                   ))}
