@@ -71,8 +71,8 @@ const Home = () => {
   const [smartHome, setSmartHome] = useState("");
   const [ecoFriendly, setEcoFriendly] = useState("");
   const [parkingChecked, setParkingChecked] = useState(false);
-  const [filter, setFilter] = useState();
-  const [applyFilt, setApplyFilt] = useState();
+  const [filter, setFilter] = useState(false);
+  const [applyFilt, setApplyFilt] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [buttonText, setButtonText] = useState("Filters");
   const [zipcode, setZip] = useState(false);
@@ -86,6 +86,8 @@ const Home = () => {
   const [notFound, setNotFound] = useState(false);
   const notFoundRef = useRef(null);
   const [selectedCategory, setSelectedCategory] = useState("Buy"); // Default to "Buy"
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
 
   const handleNotFound = (e) => {
     e.preventDefault();
@@ -96,8 +98,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchProperties();
-  }, [searchTerm, selectedCategory]);   
-  
+  }, [searchTerm, selectedCategory]);
 
   useEffect(() => {
     async function fetchData() {
@@ -203,38 +204,43 @@ const Home = () => {
   // Function to fetch properties by category
   const fetchProperties = async () => {
     try {
-      console.log("Fetching properties with:", { selectedCategory, searchTerm });
-  
+      console.log("Fetching properties with:", {
+        selectedCategory,
+        searchTerm,
+      });
+
       // Fetch all properties from Firestore
       const querySnapshot = await getDocs(collection(db, "propertyListings"));
       const allProperties = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         data: doc.data(),
       }));
-  
+
       console.log("Fetched all properties:", allProperties);
-  
+
       // Filter properties by selected category and search term
       const filteredSuggestions = allProperties.filter((property) => {
         const matchesCategory =
-          !selectedCategory || property.data.type.toLowerCase() === selectedCategory.toLowerCase();
+          !selectedCategory ||
+          property.data.type.toLowerCase() === selectedCategory.toLowerCase();
         const matchesSearchTerm =
           !searchTerm ||
-          property.data.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.data.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           property.data.name.toLowerCase().includes(searchTerm.toLowerCase());
-  
+
         return matchesCategory && matchesSearchTerm;
       });
-  
+
       console.log("Filtered suggestions:", filteredSuggestions);
-  
+
       setSuggestions(filteredSuggestions);
     } catch (error) {
       console.error("Error fetching properties:", error);
     }
-  };  
-  
-  
+  };
+
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
@@ -242,11 +248,16 @@ const Home = () => {
   if (typeof selectedCategory !== "string" || typeof searchTerm !== "string") {
     console.error("Invalid filters:", { selectedCategory, searchTerm });
     return;
-  }  
+  }
 
-  //Filters
   const toggleFilters = () => {
-    setShowFilters(!showFilters);
+  setShowFilters(prev => !prev);  // Toggle the visibility of the filter menu
+};
+
+  
+
+  const resetButtonState = () => {
+    setIsFiltersOpen(false);  // Ensure the filters are closed
   };
 
   const applyFilters = async () => {
@@ -600,9 +611,11 @@ const Home = () => {
             {/* Buy button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedCategory === "buy" 
-        ? "bg-gray-600 text-white ring-gray-600" 
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
+      ${
+        selectedCategory === "buy"
+          ? "bg-gray-600 text-white ring-gray-600"
+          : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+      }`}
               onClick={() => {
                 setSelectedCategory("buy");
                 fetchProperties();
@@ -614,9 +627,11 @@ const Home = () => {
             {/* Rent button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedCategory === "rent" 
-        ? "bg-gray-600 text-white ring-gray-600" 
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
+      ${
+        selectedCategory === "rent"
+          ? "bg-gray-600 text-white ring-gray-600"
+          : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+      }`}
               onClick={() => {
                 setSelectedCategory("rent");
                 fetchProperties();
@@ -628,9 +643,11 @@ const Home = () => {
             {/* Sold button */}
             <button
               className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
-      ${selectedCategory === "sold" 
-        ? "bg-gray-600 text-white ring-gray-600" 
-        : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"}`}
+      ${
+        selectedCategory === "sold"
+          ? "bg-gray-600 text-white ring-gray-600"
+          : "bg-white text-black ring-gray-300 hover:bg-gray-100 hover:text-gray-800"
+      }`}
               onClick={() => {
                 setSelectedCategory("sold");
                 fetchProperties();
@@ -707,42 +724,41 @@ const Home = () => {
               </button>
             </div>
           </form>
-          {/* filters */}
-          <div style={{ marginTop: "20px", marginLeft: "55px" }}>
+          {/* Button container */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px", // Space between buttons
+              marginTop: "20px",
+            }}
+          >
+            {/* Filters button */}
             <button
-              id="close-button"
-              className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                buttonText === "Close Filters"
-                  ? "bg-gray-600 text-white"
-                  : "bg-white text-black"
-              }`}
-              onClick={() => {
-                handleClick();
-                setApplyFilt("false");
-                setFilter("true");
-                {
-                  toggleFilters();
-                }
-              }}
-              style={{ width: "140px", height: "auto" }}
-            >
-              {buttonText}
-            </button>
-          </div>
-          {/* save search */}
-          <div>
+          className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out ${
+            isFiltersOpen ? "bg-gray-600 text-white" : "bg-white text-black"
+          }`}
+          onClick={() => {
+            handleClick();  // Preserve your existing functionality
+            setApplyFilt("false");  // Reset applyFilt
+            setFilter("true");  // Set filter state
+            toggleFilters();  // Toggle Filters button state
+          }}
+          style={{ width: "140px" }}
+        >
+          {isFiltersOpen ? "Close Filters" : "Filters"} {/* Button text changes based on filter state */}
+        </button>
+
+            {/* Save Search button */}
             <button
-              className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
+              className={`px-4 py-2 font-medium uppercase shadow-md rounded ring-1 hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out ${
                 save === "false"
                   ? "bg-gray-600 text-white"
                   : "bg-white text-black"
               }`}
-              onClick={() => {
-                {
-                  saveFilters();
-                }
-              }}
-              style={{ marginLeft: "225px", width: "140px", height: "auto" }}
+              onClick={() => saveFilters()}
+              style={{ width: "140px" }}
             >
               Save Search
             </button>
@@ -997,7 +1013,13 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
+                    style={{
+                      fontSize: "14px",
+                      width: "170px",
+                      height: "35px",
+                      borderRadius: "8px",
+                      border: "0px solid",
+                    }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1022,7 +1044,13 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
+                    style={{
+                      fontSize: "14px",
+                      width: "170px",
+                      height: "35px",
+                      borderRadius: "8px",
+                      border: "0px solid",
+                    }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 11 }, (_, i) => i + 1).map(
@@ -1045,7 +1073,12 @@ const Home = () => {
               >
                 <button
                   onClick={handleDecrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
+                  style={{
+                    width: "50px",
+                    height: "35px",
+                    border: "0px solid",
+                    borderRadius: "8px",
+                  }}
                 >
                   -
                 </button>
@@ -1058,13 +1091,18 @@ const Home = () => {
                     height: "35px",
                     textAlign: "center",
                     fontSize: "14px",
-                    borderRadius:"8px",
+                    borderRadius: "8px",
                     border: "0px solid",
                   }}
                 />
                 <button
                   onClick={handleIncrementBathrooms}
-                  style={{ width: "50px", height: "35px", border: "0px solid", borderRadius:"8px" }}
+                  style={{
+                    width: "50px",
+                    height: "35px",
+                    border: "0px solid",
+                    borderRadius: "8px",
+                  }}
                 >
                   +
                 </button>
@@ -1151,7 +1189,13 @@ const Home = () => {
                       value = "None";
                     }
                   }}
-                  style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
+                  style={{
+                    fontSize: "14px",
+                    width: "170px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border: "0px solid",
+                  }}
                 >
                   <option>None</option>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
@@ -1184,7 +1228,13 @@ const Home = () => {
                         value = "NO MIN";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "36px", borderRadius:"8px", border: "0px solid" }}
+                    style={{
+                      fontSize: "14px",
+                      width: "170px",
+                      height: "36px",
+                      borderRadius: "8px",
+                      border: "0px solid",
+                    }}
                   >
                     <option>NO MIN</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1209,7 +1259,13 @@ const Home = () => {
                         value = "NO MAX";
                       }
                     }}
-                    style={{ fontSize: "14px", width: "170px", height: "35px", borderRadius:"8px", border: "0px solid" }}
+                    style={{
+                      fontSize: "14px",
+                      width: "170px",
+                      height: "35px",
+                      borderRadius: "8px",
+                      border: "0px solid",
+                    }}
                   >
                     <option>NO MAX</option>
                     {Array.from({ length: 10 }, (_, i) => i + 1).map(
@@ -1471,7 +1527,6 @@ const Home = () => {
         </div>
       )}
 
-      
       {/* Render Search Results */}
       {suggestions.length > 0 ? (
         <div className="w-full max-w-6xl mx-auto flex items-center justify-center">
@@ -1490,14 +1545,8 @@ const Home = () => {
           <div className="bg-gray-50 shadow-lg rounded-lg p-6 w-full max-w-xl">
             <p className="text-gray-700 text-lg font-medium text-center">
               No properties found for{" "}
-              <span className="font-bold">
-                "{searchTerm}"
-              </span>{" "}
-              in{" "}
-              <span className="font-bold capitalize">
-                {selectedCategory}
-              </span>
-              .
+              <span className="font-bold">"{searchTerm}"</span> in{" "}
+              <span className="font-bold capitalize">{selectedCategory}</span>.
             </p>
             <p className="text-gray-500 font-semibold text-sm text-center mt-2">
               Try searching with a different term or explore other categories.
@@ -1505,7 +1554,6 @@ const Home = () => {
           </div>
         </div>
       )}
-
 
       {/* Footer Information */}
       <div className="justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-white">

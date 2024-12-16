@@ -238,5 +238,19 @@
       color: #ffffff !important; /* Matches text-white */
       border-color: #4a5568 !important; /* Matches ring-gray-600 */
     }
+
+    .buy-sell-button {
+      transition: all 0.15s ease-in-out;
+    }
+    
+    .buy-sell-button-selected {
+      background-color: #4a5568; /* Gray */
+      color: white;
+      border-color: #4a5568;
+    }
+    .buy-sell-button:hover {
+      background-color: #edf2f7; /* Light Gray */
+      color: #2d3748; /* Dark Gray */
+    }
   }
   
