@@ -103,7 +103,7 @@ const ListingsPage = () => {
           (address?.street && address.street.toLowerCase().includes(lowerSearchTerm)) ||
           (address?.city && address.city.toLowerCase().includes(lowerSearchTerm)) ||
           (address?.state && address.state.toLowerCase().includes(lowerSearchTerm)) ||
-          (address?.zipCode && address.zipCode.includes(lowerSearchTerm))
+          (address?.zipCode && address.zipCode.toLowerCase().includes(lowerSearchTerm))
         );
       });
       setSuggestions(filteredSuggestions);
@@ -266,125 +266,146 @@ const ListingsPage = () => {
       {/* Foreground content */}
       <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "60px" }}>
         <div style={{ maxWidth: "100%" }}>
-          {/* Search bar */}
-          <h1 className="text-4xl font-bold text-white mb-6" style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)" }}>
-            Agents
-          </h1>
-          <form
-            className="mt-10 mb-15 flex items-center"
-            style={{
-              maxWidth: "456px",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-            onSubmit={handleSubmit}
-          >
-            <div className="search-bar-container" style={{ width: "100%", margin: "auto" }}>
-              <input
-                type="search"
-                placeholder="Search agents by address or name"
-                value={searchTerm}
-                onChange={onChange}
-                style={{
-                  width: "100%",
-                  maxWidth: "456px",
-                  boxShadow: "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)",
-                }}
-                className="search-bar rounded-md text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
-              />
-              {/* Suggestions */}
-              {suggestions.length > 0 && (
-                <div
-                  className="absolute bg-white shadow-lg z-10 w-full mt-1 rounded-md"
-                  style={{ width: "100%", maxWidth: "456px" }}
-                >
-                  {suggestions.map((suggestion) => (
-                    <Link
-                      key={suggestion.id}
-                      to={`/viewProfile/${suggestion.id}`}
-                      onClick={() => setSearchTerm(suggestion.data.name)}
-                    >
-                      <div className="py-2 px-4 hover:bg-gray-200 cursor-pointer">
-                        {suggestion.data.name} {suggestion.data.address?.city && `- ${suggestion.data.address.city}`}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </form>
-          {/* Agent Carousel */}
-          
-          <div className="mb-20 relative w-full flex justify-center">
-            <div
-              className="relative h-80 overflow-hidden md:h-96 flex items-center w-full max-w-3xl"
-              ref={carouselRef}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div
-                className="flex transition-transform duration-700 ease-in-out w-full"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-              >
-                {topAgents.length > 0 ? (
-                  topAgents.map((agent, index) => (
-                    <div
-                      key={agent.id}
-                      className="w-full flex-shrink-0"
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                    >
-                      <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
-                        <div className="flex h-full transition-transform duration-300 items-center p-4 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl shadow-2xl">
-                          {/* Agent Picture */}
-                          <div className="w-2/5 flex justify-center items-center">
-                            <img
-                              src={agent.data.imageUrl || "default-image-url"}
-                              className="rounded-full w-32 h-32 md:w-40 md:h-40 object-cover filter grayscale"
-                              alt={`${agent.data.name}'s profile`}
-                            />
-                          </div>
-                          {/* Testimonial Section */}
-                          <div className="w-3/5 flex flex-col justify-center items-center text-white text-center mr-10">
-                            {agent.data.testimonial && (
-                              <blockquote className="font-semibold italic text-sm md:text-lg flex justify-center items-center h-full">
-                                “{agent.data.testimonial}”
-                              </blockquote>
-                            )}
-                            <div className="short-divider">
-                            <hr className="w-full border-t border-white" />                            </div>
-                            <div className="w-full flex flex-col items-end justify-end">
-                              <p className="text-sm font-semibold md:text-md mr-7"> -  {agent.data.name}</p>
-                              <p className="text-xs font-semibold md:text-md mr-10">MNC Agent</p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-white">No top agents available at the moment.</p>
-                )}
-              </div>
 
-              {/* Navigation arrows */}
-              {topAgents.length > 0 && (
-                <>
-                  <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={prevSlide}>
-                    <FaChevronLeft className="text-white text-4xl" />
-                  </div>
-                  <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={nextSlide}>
-                    <FaChevronRight className="text-white text-4xl" />
-                  </div>
-                </>
-              )}
+          {/* Search bar */}
+          <div className="w-full flex justify-center mt-10 relative z-20">
+  <div className="search-bar-container" style={{ width: "100%", maxWidth: "456px", margin: "auto" }}>
+    <input
+      type="search"
+      placeholder="Search agents by address or name"
+      value={searchTerm}
+      onChange={onChange}
+      style={{
+        width: "100%",
+        boxShadow: "10px 10px 10px 0px rgba(1, 1, 0, 0), -10px -10px 10px 0px rgba(0, 0, 0, 0), 0px 10px 10px 0px rgba(0, 0, 0, 0), 0px -10px 10px 0px rgba(0, 0, 0, 0.6)",
+      }}
+      className="search-bar rounded-md text-lg text-gray-700 bg-white border border-white hover:ring-1 transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-gray-300"
+    />
+    {/* Suggestions */}
+    {suggestions.length > 0 && (
+      <div
+        className="absolute bg-white shadow-lg z-10 w-full mt-1 rounded-md"
+        style={{ width: "100%", maxWidth: "456px" }}
+      >
+        {suggestions.map((suggestion) => (
+          <Link
+            key={suggestion.id}
+            to={`/viewProfile/${suggestion.id}`}
+            onClick={() => setSearchTerm(suggestion.data.name)}
+          >
+            <div className="py-2 px-4 hover:bg-gray-200 cursor-pointer">
+              {suggestion.data.name} {suggestion.data.address?.city && `- ${suggestion.data.address.city}`}
             </div>
+          </Link>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+{/* Agent Carousel */}
+{topAgents.length > 0 && (
+  <div className="relative w-full flex justify-center mt-10">
+    <div
+      className="relative h-80 overflow-hidden md:h-96 flex items-center w-full max-w-3xl"
+      ref={carouselRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        className="flex transition-transform duration-700 ease-in-out w-full"
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+      >
+        {topAgents.map((agent, index) => (
+          <div
+            key={agent.id}
+            className="w-full flex-shrink-0"
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <Link to={`/viewProfile/${agent.id}`} className="block w-full h-full">
+              <div className="flex h-full transition-transform duration-300 items-center p-4 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl shadow-2xl">
+                {/* Agent Picture */}
+                <div className="w-2/5 flex justify-center items-center">
+                  <img
+                    src={agent.data.imageUrl || "default-image-url"}
+                    className="rounded-full w-32 h-32 md:w-40 md:h-40 object-cover filter grayscale"
+                    alt={`${agent.data.name}'s profile`}
+                  />
+                </div>
+                {/* Testimonial Section */}
+                <div className="w-3/5 flex flex-col justify-center items-center text-white text-center mr-10">
+                  {agent.data.testimonial && (
+                    <blockquote className="font-semibold italic text-sm md:text-lg flex justify-center items-center h-full">
+                      “{agent.data.testimonial}”
+                    </blockquote>
+                  )}
+                  <div className="short-divider">
+                    <hr className="w-full border-t border-white" />
+                  </div>
+                  <div className="w-full flex flex-col items-end justify-end">
+                    <p className="text-sm font-semibold md:text-md mr-7"> -  {agent.data.name}</p>
+                    <p className="text-xs font-semibold md:text-md mr-10">MNC Agent</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
           </div>
-        </div>
+        ))}
       </div>
 
+      {/* Navigation arrows */}
+      {topAgents.length > 1 && (
+        <>
+          <div className="hidden md:flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={prevSlide}>
+            <FaChevronLeft className="text-white text-4xl" />
+          </div>
+          <div className="hidden md:flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 carousel-arrow" onClick={nextSlide}>
+            <FaChevronRight className="text-white text-4xl" />
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
 
+{/* VIP Listings Section */}
+{userRole && (userRole === "admin" || userRole === "agent" || userRole === "vipcustomer") && (
+  <div>
+    <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
+      {vipListings.length > 0 ? (
+        <>
+          <h2 className="text-2xl text-center font-semibold mb-6 text-white mt-20">VIP Listings</h2>
+          <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+            {vipListings.map((vipListing) => (
+              <VipListingItem
+                key={vipListing.id}
+                id={vipListing.id}
+                vipListing={vipListing}
+                onDelete={() =>
+                  userRole &&
+                  (userRole === "admin" || userRole === "superadmin") &&
+                  deleteVipListing(vipListing.id)
+                }
+                onEdit={() =>
+                  userRole &&
+                  (userRole === "admin" || userRole === "superadmin") &&
+                  navigate(`/edit-vip-listing/${vipListing.id}`)
+                }
+                showActions={userRole && (userRole === "admin" || userRole === "superadmin")}
+              />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p className="text-white text-center">No VIP listings available at the moment.</p>
+      )}
+    </div>
+  </div>
+)}
+         </div>
+      </div>
 
       {/* VIP Listings Section */}
       {userRole && (userRole === "admin" || userRole === "agent" || userRole === "vipcustomer") && (
@@ -392,7 +413,7 @@ const ListingsPage = () => {
           <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
             {vipListings.length > 0 ? (
               <>
-              <h2 className="text-2xl text-center font-semibold mb-6 text-white">VIP Listings</h2>
+              <h2 className="text-2xl text-center font-semibold mb-6 text-white mt-20">VIP Listings</h2>
               <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
                 {vipListings.map((vipListing) => (
                   <VipListingItem

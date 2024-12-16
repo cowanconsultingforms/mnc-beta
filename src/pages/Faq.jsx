@@ -192,11 +192,11 @@ function FAQPage() {
             <div key={index} className="py-2">
               <button
                 onClick={() => handleClick(index)}  
-                className="flex w-full items-center justify-between p-4 text-lg font-medium text-gray-800 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none"
+                className="flex w-full items-center justify-between p-4 text-lg font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-300 focus:outline-none"
               >
                 <span>{item.question}</span>
                 <ChevronDownIcon
-                  className={`w-5 h-5 text-gray-500 transition-transform duration-300 
+                  className={`w-5 h-5 text-gray-800 transition-transform duration-300 
                     ${expandedIndex === index ? "transform rotate-180" : ""}
                   `}
                 />
@@ -207,7 +207,7 @@ function FAQPage() {
                   {item.link && (
                     <Link
                       to={item.link}
-                      className="text-blue-500 underline ml-1"
+                      className="text-black font-bold underline ml-1"
                     >
                       {item.linkText}
                     </Link>
@@ -515,7 +515,7 @@ function FAQPage() {
                   <div className="mt-4">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-400"
                       onClick={closePolicyDialog}
                     >
                       Close

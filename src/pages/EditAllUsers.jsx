@@ -590,20 +590,18 @@ const EditUser = () => {
             placeholder={user.about ? user.about : "About"}
           />
           {user.role === "agent" && (
-            <>
-              <label>Testimonial</label>
-              <textarea
-                className="w-full h-40 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
-                type="text"
-                id="testimonial"
-                value={testimonial}
-                onChange={onChange}
-                placeholder={
-                  user.testimonial ? user.testimonial : "Testimonial"
-                }
-              />
-            </>
-          )}
+          <>
+            <label htmlFor="testimonial">Testimonial</label>
+            <textarea
+              className="w-full h-40 text-lg text-gray-700 bg-white border border-white shadow-md rounded transition duration-150 ease-in-out focus:shadow-lg focus:text-gray-700 focus:bg-white focus:border-gray-300 mb-6"
+              id="testimonial"
+              value={formData.testimonial || user.testimonial || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, testimonial: e.target.value })
+              }
+            />
+          </>
+        )}
           <p>Date of Birth</p>
           <DatePicker
             selected={formData.dob}
