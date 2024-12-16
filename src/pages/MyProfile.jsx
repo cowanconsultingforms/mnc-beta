@@ -1,44 +1,25 @@
-import { useParams } from "react-router-dom";
-import {
-  getDoc,
-  doc,
-  setDoc,
-  updateDoc,
-  getDocs,
-  query,
-  collection,
-  where,
-  serverTimestamp,
-} from "firebase/firestore";
-import facebook from "../assets/img/fb.jpg";
-import instagram from "../assets/img/insta.jpg";
-import {
-  getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  updateProfile,
-  fetchSignInMethodsForEmail,
-} from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import facebook from "../assets/img/fb.jpg";
+import instagram from "../assets/img/insta.jpg";
 import { differenceInDays, addYears } from "date-fns";
 
 const MyProfile = () => {
   const [uid, setUid] = useState("");
   const navigate = useNavigate();
-  const [currentUser, seteCurrentUser] = "";
   const [user, setUser] = useState({
     name: "",
     email: "",
     role: "",
     address: "",
     imageUrl: "",
-  });
-  const [customer, setCustomer] = useState({
-    name: "",
-    email: "",
     phone: "",
+    numberOfKids: "",
+    spouseName: "",
+    dob: null,
     interested: "",
     dealTimeline: "",
     maxBudget: "",
@@ -47,14 +28,23 @@ const MyProfile = () => {
     preApprovalAmount: "",
     hasPreApprovalLetter: false,
     preApprovalExpiration: "",
+    requestStatus: "",
+    agent: "",
+    agentEmail: "",
+    about: "",
+    testimonial: "",
+    specialities: [],
+    educations: [],
+    facebookLink: "",
+    instagramLink: "",
   });
-  const auth = getAuth();
-  const [role, setRole] = useState("");
   const [remainingDays, setRemainingDays] = useState(0);
+  const auth = getAuth();
 
   const handleFacebookLogin = () => {
     window.location.href = user.facebookLink;
   };
+
   const handleInstagramLogin = () => {
     window.location.href = user.instagramLink;
   };
@@ -65,10 +55,9 @@ const MyProfile = () => {
     };
 
     fetchUser();
-  }, [uid, role]);
+  }, [uid]);
 
   const getUserRole = async () => {
-    const auth = getAuth();
     onAuthStateChanged(auth, async (user2) => {
       if (user2) {
         const userRef = doc(db, "users", user2.uid);
@@ -78,15 +67,13 @@ const MyProfile = () => {
 
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            setUser(userDoc.data());
-            setRole(userData.role);
+            setUser(userData);
             if (userData.subscription) {
               const subscriptionData = userData.subscription;
               const startDate = subscriptionData.toDate();
               const endDate = addYears(startDate, 1);
               const daysLeft = calculateRemainingDays(endDate);
               setRemainingDays(daysLeft);
-              
             }
           } else {
             console.log("User document not found.");
@@ -106,18 +93,10 @@ const MyProfile = () => {
 
   return (
     <div>
-      <section
-        style={{
-          height: "100%",
-          margin: 0,
-          padding: 0,
-          // opacity: showWorkWithAgent ? 0.6 : 1,
-          // backgroundColor: showWorkWithAgent ? "gray" : "white",
-        }}
-      >
+      <section style={{ height: "100%", margin: 0, padding: 0 }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-20">
           <div className="responsive-box mx-auto py-8 mt-6">
-            {/* Column 1: User Image */}
+            {/* Column 1: User Image and Social Media */}
             <div
               onClick={() => {
                 navigate(`/tenant/${uid}`);
@@ -195,12 +174,10 @@ const MyProfile = () => {
             </div>
           </div>
 
-          {/* Column 2: User Details */}
+          {/* Column 2: User Details, About, and Testimonial */}
           <div className="col-span-1 md:col-span-1">
-            {" "}
-            {/* Adjust width as needed */}
             <div>
-              <div className="text-left font-serif  mt-12 text-4xl">
+              <div className="text-left font-serif mt-12 text-4xl">
                 {user.name}
               </div>
               <div className="text-left sans-serif text-lg text-gray-500 mb-4">
@@ -229,94 +206,79 @@ const MyProfile = () => {
                   <span className="font-semibold">Phone: </span>
                   {user.phone}
                 </p>
-                <>
+                <p className="pb-3">
+                  <span className="font-semibold">Number of children: </span>
+                  {user.numberOfKids}
+                </p>
+                <p className="pb-3">
+                  <span className="font-semibold">Spouse name: </span>
+                  {user.spouseName}
+                </p>
+                {user.dob && (
                   <p className="pb-3">
-                    <span className="font-semibold">Number of children: </span>
-                    {user.numberOfKids}
+                    <span className="font-semibold">DOB: </span>
+                    {user.dob && user.dob.seconds
+                      ? new Date(user.dob.seconds * 1000).toLocaleDateString()
+                      : "Not available"}
                   </p>
-                  <p className="pb-3">
-                    <span className="font-semibold">Spouse name: </span>
-                    {user.spouseName}
-                  </p>
-                  {user.dob && (
+                )}
+                {user.requestStatus === "notCompleted" && (
+                  <>
                     <p className="pb-3">
-                      <span className="font-semibold">DOB: </span>
-                      {user.dob && user.dob.seconds
-                        ? new Date(user.dob.seconds * 1000).toLocaleDateString()
-                        : "Not available"}
+                      <span className="font-semibold">Interested In: </span>
+                      {user.interested}
                     </p>
-                  )}
-                  {user.requestStatus === "notCompleted" && (
-                    <>
-                      <p className="pb-3">
-                        <span className="font-semibold">Interested In: </span>
-                        {user.interested}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">Deal Timeline: </span>
-                        {user.dealTimeline}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">Max Budget: </span>
-                        {user.maxBudget}
-                      </p>
-
-                      <p className="pb-3">
-                        <span className="font-semibold">
-                          Household Income:{" "}
-                        </span>
-                        {user.houseldIncome}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">
-                          Lender Information:{" "}
-                        </span>
-                        {user.lenderInfo}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">
-                          Preapproval Amount:{" "}
-                        </span>
-                        {user.preApprovalAmount}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">
-                          Preapproval Expiration:{" "}
-                        </span>
-                        {user.preApprovalExpiration}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">Request Status: </span>
-                        {user.requestStatus}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">Agent: </span>
-                        {user.agent}
-                      </p>
-                      <p className="pb-3">
-                        <span className="font-semibold">Agent Email: </span>
-                        {user.agentEmail}
-                      </p>
-                    </>
-                  )}
-                </>
+                    <p className="pb-3">
+                      <span className="font-semibold">Deal Timeline: </span>
+                      {user.dealTimeline}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Max Budget: </span>
+                      {user.maxBudget}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Household Income: </span>
+                      {user.houseldIncome}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Lender Information: </span>
+                      {user.lenderInfo}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Preapproval Amount: </span>
+                      {user.preApprovalAmount}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">
+                        Preapproval Expiration:{" "}
+                      </span>
+                      {user.preApprovalExpiration}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Request Status: </span>
+                      {user.requestStatus}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Agent: </span>
+                      {user.agent}
+                    </p>
+                    <p className="pb-3">
+                      <span className="font-semibold">Agent Email: </span>
+                      {user.agentEmail}
+                    </p>
+                  </>
+                )}
+              </div>
+              <div className="mt-10">
+                <h1 className="text-3xl">About</h1>
+                <p className="text-base leading-6 font-normal">{user.about}</p>
+              </div>
+              <div className="mt-10">
+                <h1 className="text-3xl mb-3">Testimonial</h1>
+                <p className="text-base leading-6 font-normal">{user.testimonial}</p>
               </div>
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4 mx-10 mb-20">
-          <div className="col-span-1 "></div>
-          <div className="col-span-1 ">
-            <h1 className="text-3xl">About</h1>
-            <p className="text-base leading-6 font-normal">{user.about}</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4 mx-10 mb-20 justify-center ">
-        <div className="col-span-1"></div>
-        <div className="col-span-1">
-          <h1 className="text-3xl">Testimonial</h1>
-          <p className="text-base leading-6 font-normal">{user.testimonial}</p>
-        </div>
         </div>
       </section>
     </div>
