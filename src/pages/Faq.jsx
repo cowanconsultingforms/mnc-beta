@@ -61,7 +61,7 @@ function FAQPage() {
       answer: "As a paid VIP subscriber:\n\n1) Be the first to browse exclusive listings to RENT or BUY before they hit the market.\n2) SELL your home while maintaining your privacy. Listing your home as a private exclusive allows you to control what information is shared about you and your home while still getting exposure to top agents at MNC Development. A private exclusive listing is an off-market home that can be shared by an agent directly with their colleagues and their buyers. Property details aren't disseminated widely and won't appear on public home search websites.\n\nDiscretion: Privacy is the ultimate commodity and the decision to sell your home is a personal one.\nFlexibility: Decide when to share details about your home, including price, more broadly on your own timing.\nQuality: Retain exposure to Compass agents, including premium placement on our agent facing platform.\nValue: Get the best offer by testing the market privately to gather key insights without your listing getting stale.\n\nReasons why you might choose to sell your home as a private exclusive:\nNew job or relocation\nFamily changes like marriage or divorce\nEvolving financial circumstances\nHealth issues\nValuable belongings like art or furniture\nOpposition to holding open houses.\n\nContact us now for pricing.",
     },
     {
-      question: "What's the step-by-step procedure to obtain the VIP membership?",
+      question: "What's the procedure to obtain the VIP membership?",
       answer: (
         <>
           <p className="list-decimal ml-6 mb-4 text-gray-700 text-[15.3px]">
@@ -196,9 +196,9 @@ function FAQPage() {
               >
                 <span>{item.question}</span>
                 <ChevronDownIcon
-                  className={`w-5 h-5 text-gray-800 transition-transform duration-300 
-                    ${expandedIndex === index ? "transform rotate-180" : ""}
-                  `}
+                  className={`w-5 h-5 text-gray-800 transition-transform duration-300 ${
+                    expandedIndex === index ? "transform rotate-180" : ""
+                  }`}
                 />
               </button>
               {expandedIndex === index && (

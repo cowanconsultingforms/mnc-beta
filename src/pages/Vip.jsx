@@ -416,7 +416,7 @@ const Home = () => {
         <div>
           {/* Search bar */}
           <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
-            <form onSubmit={(e) => handleNotFound(e)}>
+            <form onSubmit={(e) => handleNotFound(e)} className="relative">
               <input
                 type="text"
                 id="location-lookup-input"
@@ -424,11 +424,11 @@ const Home = () => {
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
                 onChange={onChange}
-                style={{ width: "380px", borderRadius: "6px" }}
+                style={{ width: "380px", borderRadius: "6px", paddingRight: "40px" }} // Add padding to the right
               />
               <button
                 type="button"
-                className="ml-3 cursor-pointer"
+                className="absolute right-3 top-2.5"
                 onClick={() => {
                   const firstSuggestion = Array.from(
                     new Set(
