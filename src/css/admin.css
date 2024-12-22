@@ -130,3 +130,26 @@ footer {
     max-width: 90%; /* Ensure the modal fits within the viewport */
   }
 }
+
+/* Adjust font sizes for the admin page */
+.admin-container input,
+.admin-container select,
+.admin-container button {
+  font-size: 0.875rem; /* Adjust font size as needed */
+}
+
+.admin-container table th,
+.admin-container table td {
+  font-size: 0.875rem; /* Adjust font size as needed */
+}
+
+.modal-content h2 {
+  font-size: 1.5rem; /* Adjust font size as needed */
+}
+
+.modal-content p,
+.modal-content select,
+.modal-content label,
+.modal-content button {
+  font-size: 0.875rem; /* Adjust font size as needed */
+}

@@ -22,7 +22,6 @@ import CreateVipListing from "./pages/VipCreateListing";
 import VipEditListing from "./pages/VipEditListing";
 import VipListing from "./pages/VipListing";
 import AfterSearch from "./pages/AfterSearch";
-import VipAfterSearch from "./pages/vipAfterSearch";
 import MortgageCalculator from "./pages/MortgageCalculator";
 import config from "./pages/config";
 import MessageParser from "./pages/MessageParser";
@@ -35,7 +34,7 @@ import chatIcon from "../src/assets/img/ssss.png";
 import ManageUsersProfile from "./pages/ManageUsersProfile";
 import EditUser from "./pages/EditAllUsers";
 import ViewProfile from "./pages/ViewProfile";
-// import Agents from "./pages/Agents";
+import Agents from "./pages/Agents";
 import FAQPage from "./pages/Faq";
 import ManageRequests from "./pages/ManageRequests";
 import TrackDealsProgress from "./pages/TrackDealsProgress";
@@ -105,7 +104,6 @@ function App() {
           <Route path="/mortgageCalculator" element={<MortgageCalculator />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/afterSearch/:location" element={<AfterSearch />} />
-          <Route path="/vipAfterSearch/:location" element={<VipAfterSearch />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/offers" element={<Offers />} />
@@ -165,7 +163,7 @@ function App() {
           <Route path="/faqPage" element={<FAQPage />} />
           <Route path="/myProfile" element={<MyProfile />} />
           <Route path="/viewProfile/:uid" element={<ViewProfile />} />
-          {/* <Route path="/agents" element={<Agents />} /> */}
+          <Route path="/agents" element={<Agents />} />
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
           <Route path="/property-management" element={<PropertyManagement />} />

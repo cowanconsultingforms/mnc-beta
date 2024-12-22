@@ -597,7 +597,7 @@ const Header = () => {
               FAQ
             </li>
             {/* agents */}
-            {/* <li
+            <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
@@ -609,7 +609,7 @@ const Header = () => {
               }}
             >
               Agents
-            </li> */}
+            </li>
 
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
@@ -670,6 +670,23 @@ const Header = () => {
             >
               Home
             </li>
+            {/* VIP button */}
+            {["vip", "agent", "admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
+              ${!pathMatchRoute("/listings") && "text-gray-400"} ${
+                  pathMatchRoute("/listings") && "text-black"
+                }`}
+                onClick={() => {
+                  navigate("/listings");
+                  toggleMobileMenu();
+                  setToolsDropdownOpen(false);
+                  setToolsClicked(false);
+                }}
+              >
+                Listings
+              </li>
+            )}
 
             {/* VIP button */}
             {["vip", "agent", "admin", "superadmin"].includes(role) && (
@@ -688,23 +705,6 @@ const Header = () => {
                 VIP
               </li>
             )}
-          
-             {/* Listings button */}
-             <li
-              className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent
-                ${!pathMatchRoute("/listings") && "text-gray-400"} ${
-                  pathMatchRoute("/listings") && "text-black"
-                }`}
-              onClick={() => {
-                navigate("/listings"),
-                  toggleMobileMenu();
-                  setToolsDropdownOpen(false),
-                  setToolsClicked(false);
-              }}
-            >
-              Listings
-            </li>
-           
 
             {/* Map button */}
             <li
@@ -885,7 +885,7 @@ const Header = () => {
               FAQ
             </li>
             {/* agents */}
-            {/* <li
+            <li
               className={`cursor-pointer py-3 text-lg font-semibold border-b-[3px] border-b-transparent ${
                 !pathMatchRoute("/agents") &&
                 "text-gray-400 border-b-transparent"
@@ -898,7 +898,7 @@ const Header = () => {
               }}
             >
               Agents
-            </li> */}
+            </li>
             {/* Admin button */}
             {["admin", "superadmin"].includes(role) && (
               <li
