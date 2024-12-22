@@ -65,7 +65,7 @@ const ContactUs = () => {
       }}
     >
       <h1 className="text-3xl text-center pt-12 font-bold text-white" style={{ textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)" }}>
-        Contact MNC Development
+        Contact Us
       </h1>
       <h2 className="text-2xl text-center pb-12 font-semibold text-white" style={{ textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)" }}>
         We value your feedback!

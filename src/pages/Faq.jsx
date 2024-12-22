@@ -186,8 +186,13 @@ function FAQPage() {
       </div>
 
       {/* FAQ Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center p-4 min-h-screen">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-[10px_10px_30px_rgba(0,0,0,0.2)] overflow-auto">
+        <h1 className="text-3xl text-center font-bold text-gray-600 mb-6">
+          FAQ
+        </h1>
+        
+        
           {faqData.map((item, index) => (
             <div key={index} className="py-2">
               <button

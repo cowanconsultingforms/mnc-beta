@@ -217,14 +217,14 @@ const Admin = () => {
 
         {!loading && filteredUsers?.length > 0 && (
           <div className="max-w-full mx-auto mt-7">
-            <h1 className="text-5xl text-center font-bold mb-8">User Management</h1>
-            <div className="overflow-x-auto shadow-md sm:rounded-lg mt-7">
+            <h1 className="text-3xl text-center font-bold mb-8">User Management</h1>
+            <div className="overflow-x-hidden shadow-md sm:rounded-lg mt-7">
               <table className="w-full text-sm text-left text-gray-700">
                 <thead className="text-xl uppercase bg-gray-300 text-gray-600">
                   <tr>
-                    <th className="px-2 py-3">Name</th>
-                    <th className="px-2 py-3">Role</th>
-                    <th className="pr-20 py-3">Action</th>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-6 py-3">Role</th>
+                    <th className="px-6 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-lg font-medium text-gray-700">
@@ -235,9 +235,9 @@ const Admin = () => {
                         index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                       } hover:bg-gray-300 transition duration-200`}
                     >
-                      <td className="px-3 py-4">{user.data.name}</td>
-                      <td className="px-3 py-4">{user.data.role}</td>
-                      <td className="px-3 py-4">
+                      <td className="px-4 py-4">{user.data.name}</td>
+                      <td className="px-6 py-4">{user.data.role}</td>
+                      <td className="px-6 py-4">
                         <button
                           className="bg-gray-600 text-white mr-20 px-4 py-2 rounded-lg hover:bg-gray-500 transition duration-150 ease-in-out"
                           onClick={() => openModal(user)}
