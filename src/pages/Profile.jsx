@@ -38,8 +38,8 @@ const Profile = () => {
   const [vipListings, setVipListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCreateListing, setShowCreateListing] = useState(false);
+  const [showPropertyManagement, setShowPropertyManagement]= useState(false);
   const [showVIPCreateListing, setShowVIPCreateListing] = useState(false); // VIP
-
   const [signed, setSigned] = useState("false");
   // const [notificationMessage, setNotificationMessage] = useState('');
   // const [notificationSent, setNotificationSent] = useState(false);
@@ -135,9 +135,10 @@ const Profile = () => {
       if (["agent", "admin", "superadmin"].includes(user[0]?.role)) {
         setShowCreateListing(true);
         setShowVIPCreateListing(true); // VIP
+        setShowPropertyManagement(true);
         const listingRef = collection(db, "propertyListings");
         const vipListingRef = collection(db, "vipPropertyListings");
-
+      
         // Queries all listings
         const q = query(listingRef, orderBy("timestamp", "desc"));
         const querySnap = await getDocs(q);
@@ -350,7 +351,7 @@ const Profile = () => {
                   )}
                 </Menu.Item>
 
-                {showCreateListing && (
+                {showPropertyManagement && (
                   <Menu.Item>
                     {({ active }) => (
                       <Link
