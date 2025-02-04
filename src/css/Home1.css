@@ -1,264 +1,255 @@
 .filter-panel {
-    position: fixed;
-    top: 0;
-    right: -550px; 
-    width: 400px; 
-    height: 100%;
-    background-color: rgb(238, 231, 231);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    transition: right 0.3s ease;
-    z-index: 999; /* Ensure the panel appears above other content */
-    overflow-y: auto;
+  position: fixed;
+  top: 0;
+  right: -550px; 
+  width: 400px; 
+  height: 100%;
+  background-color: rgb(238, 231, 231);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s ease;
+  z-index: 999; /* Ensure the panel appears above other content */
+  overflow-y: auto;
 
-    @media (max-width: 768px) {
-      width: 100%; /* Make the panel full width on small screens */
-      right: -100%; /* Initially, off-screen to the right on small screens */
-    }
+  @media (max-width: 768px) {
+    width: 100%; /* Make the panel full width on small screens */
+    right: -100%; /* Initially, off-screen to the right on small screens */
   }
-  
- .open {
-    right: 0; /* Bring the panel into view */
-    @media (max-width: 768px) {
-      right: 0; /* Make it fully visible on small screens */
-    }
-  }
-  
-  /* Style the close button (you can add this button in the filter panel) */
-  #close-button {
-    position: absolute;
-    /* top: 10px;
-    right: 10px; */
-    cursor: pointer;
-  }
+}
 
-  #panel-title{
-    display: flex;
-    font-size: 20px;
-    font:bolder;
-    overflow: hidden;
-    font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
-    font-style: normal;
-    background-color: rgb(255, 255, 255);
+.open {
+  right: 0; /* Bring the panel into view */
+  @media (max-width: 768px) {
+    right: 0; /* Make it fully visible on small screens */
   }
+}
 
-  #close-filters2{
-    /* background-color: rgb(38, 74, 235); */
-    background-color: #4a5568;
-    width: 100px;
-    height: 27px;
-    margin-top: 1px;
-    margin-left: 15px;
-    color: white;
-    max-width: 130px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    position: relative;
-    font-size: 15px;
-    font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
-  }
+/* Style the close button (you can add this button in the filter panel) */
+#close-button {
+  position: absolute;
+  /* top: 10px;
+  right: 10px; */
+  cursor: pointer;
+}
 
-  .polaroid-container {
-    width: 50%;
-    max-width: 500px;
-    background-color: white;
-    border: 1px solid white; /* White border like Polaroid */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-    
-  }
-  
-  .polaroid-container .polaroid-image-container {
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .polaroid-container .polaroid-image {
-    width: 100%;
-    height: auto;
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out 0.5s; /* Animating the fade */
-  }
-  
-  .polaroid-container .polaroid-caption {
-    text-align: center;
-    margin-top: 10px;
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: transform 0.5s ease-in-out 1.3s, opacity 0.5s ease-in-out 1.3s; /* Delayed roll down */
-  }
-  
-  .polaroid-container.show {
-    opacity: 1;
-    transform: scale(1);
-  }
-  
-  .polaroid-container.show .polaroid-image {
-    opacity: 1;
-  }
-  
-  .polaroid-container.show .polaroid-caption {
-    transform: translateY(0);
-    opacity: 1;
-  }
+#panel-title{
+  display: flex;
+  font-size: 20px;
+  font:bolder;
+  overflow: hidden;
+  font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
+  font-style: normal;
+  background-color: rgb(255, 255, 255);
+}
 
+#close-filters2{
+  /* background-color: rgb(38, 74, 235); */
+  background-color: #4a5568;
+  width: 100px;
+  height: 27px;
+  margin-top: 1px;
+  margin-left: 15px;
+  color: white;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  font-size: 15px;
+  font-family: var(--font-familySans,"Compass Sans",Helvetica,Arial,sans-serif);
+}
+
+.polaroid-container {
+  width: 50%;
+  max-width: 500px;
+  background-color: white;
+  border: 1px solid white; /* White border like Polaroid */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  
+}
+
+.polaroid-container .polaroid-image-container {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.polaroid-container .polaroid-image {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out 0.5s; /* Animating the fade */
+}
+
+.polaroid-container .polaroid-caption {
+  text-align: center;
+  margin-top: 10px;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.5s ease-in-out 1.3s, opacity 0.5s ease-in-out 1.3s; /* Delayed roll down */
+}
+
+.polaroid-container.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.polaroid-container.show .polaroid-image {
+  opacity: 1;
+}
+
+.polaroid-container.show .polaroid-caption {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%; /* Just below the search bar */
+  left: 0;
+  width: 100%; /* Matches the width of the search bar */
+  max-height: 300px; /* Adjust this for scrollable content */
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestions-list li {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #4a5568;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestions-list li:hover {
+  background-color: #edf2f7;
+}
+
+.category-header {
+  padding: 12px 16px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #2d3748;
+  background-color: #f7fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.suggestion-item {
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+.suggestion-item:hover {
+  background-color: #e2e8f0; /* Slightly darker gray */
+  transform: scale(1.05); /* More noticeable enlargement */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+}
+
+
+.suggestion-item:active {
+  background-color: #cbd5e0; /* Darker gray */
+  transform: scale(0.98); /* Slightly shrink on click */
+}
+
+.no-results-message {
+  padding: 20px;
+  background: #fdfdfd; /* Lighter background */
+  border: 1px solid #e2e8f0; /* Soft border */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  color: #2d3748; /* Neutral text color */
+  font-size: 15px; /* Slightly larger font size */
+  line-height: 1.8; /* Better spacing between lines */
+}
+
+.no-results-message .font-semibold {
+  font-weight: 700; /* Bold labels */
+  color: #1a202c; /* Darker color for emphasis */
+}
+
+.no-results-message p {
+  margin: 10px 0; /* Space between paragraphs */
+}
+
+@media (max-width: 768px) {
+  .no-results-message {
+    padding: 12px; /* Adjust padding for smaller screens */
+    font-size: 13px; /* Slightly smaller font size */
+    margin-top: 12px; /* Adjust spacing */
+  }
+}
+.no-results-message {
+  position: absolute; /* Make it overlap content */
+  top: 100%; /* Position it below the search bar */
+  left: 0; /* Align it with the search bar */
+  width: 100%; /* Match the width of the search bar */
+  max-width: 600px; /* Optional: Limit width to ensure readability */
+  background-color: #ffffff; /* White background for consistency */
+  border: 1px solid #e2e8f0; /* Subtle border for separation */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  z-index: 1000; /* Ensure it appears above other content */
+  padding: 16px; /* Add space inside the box */
+  font-size: 14px; /* Standard font size */
+  line-height: 1.6; /* Improve readability */
+  color: #4a5568; /* Neutral text color */
+  text-align: left; /* Align text to the left */
+}
+
+/* Styling for bolded text in the message */
+.no-results-message .font-semibold {
+  font-weight: 700; /* Bold text for emphasis */
+  color: #1a202c; /* Darker color for important text */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+  .no-results-message {
+    font-size: 13px; /* Adjust font size for smaller screens */
+    padding: 12px; /* Adjust padding */
+    width: calc(100% - 32px); /* Add padding to match search bar spacing */
+    left: 16px; /* Center the message on smaller screens */
+  }
+}  
+
+@media (max-width: 768px) {
   .suggestions-dropdown {
-    position: absolute;
-    top: 100%; /* Just below the search bar */
-    left: 0;
-    width: 100%; /* Matches the width of the search bar */
-    max-height: 300px; /* Adjust this for scrollable content */
-    overflow-y: auto;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+    width: 100%; /* Full width for smaller screens */
+    max-height: 50vh; /* Adjust to fit smaller screens */
   }
-  
-  .suggestions-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .suggestions-list li {
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #4a5568;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .suggestions-list li:hover {
-    background-color: #edf2f7;
-  }
-  
-  .category-header {
-    padding: 12px 16px;
-    font-weight: bold;
-    font-size: 16px;
-    color: #2d3748;
-    background-color: #f7fafc;
-    border-bottom: 1px solid #e2e8f0;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .disable-hover button:hover {
+    background-color: #4a5568 !important; /* Matches bg-gray-600 */
+    color: #ffffff !important; /* Matches text-white */
+    border-color: #4a5568 !important; /* Matches ring-gray-600 */
   }
 
-  .suggestion-item {
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  .buy-sell-button {
+    transition: all 0.15s ease-in-out;
   }
   
-  
-  .suggestion-item:hover {
-    background-color: #e2e8f0; /* Slightly darker gray */
-    transform: scale(1.05); /* More noticeable enlargement */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+  .buy-sell-button-selected {
+    background-color: #4a5568; /* Gray */
+    color: white;
+    border-color: #4a5568;
   }
-  
-  
-  .suggestion-item:active {
-    background-color: #cbd5e0; /* Darker gray */
-    transform: scale(0.98); /* Slightly shrink on click */
+  .buy-sell-button:hover {
+    background-color: #edf2f7; /* Light Gray */
+    color: #2d3748; /* Dark Gray */
   }
-  
-  .no-results-message {
-    padding: 20px;
-    background: #fdfdfd; /* Lighter background */
-    border: 1px solid #e2e8f0; /* Soft border */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    color: #2d3748; /* Neutral text color */
-    font-size: 15px; /* Slightly larger font size */
-    line-height: 1.8; /* Better spacing between lines */
-  }
-  
-  .no-results-message .font-semibold {
-    font-weight: 700; /* Bold labels */
-    color: #1a202c; /* Darker color for emphasis */
-  }
-  
-  .no-results-message p {
-    margin: 10px 0; /* Space between paragraphs */
-  }
-
-  @media (max-width: 768px) {
-    .no-results-message {
-      padding: 12px; /* Adjust padding for smaller screens */
-      font-size: 13px; /* Slightly smaller font size */
-      margin-top: 12px; /* Adjust spacing */
-    }
-  }
-  .no-results-message {
-    position: absolute; /* Make it overlap content */
-    top: 100%; /* Position it below the search bar */
-    left: 0; /* Align it with the search bar */
-    width: 100%; /* Match the width of the search bar */
-    max-width: 600px; /* Optional: Limit width to ensure readability */
-    background-color: #ffffff; /* White background for consistency */
-    border: 1px solid #e2e8f0; /* Subtle border for separation */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    z-index: 1000; /* Ensure it appears above other content */
-    padding: 16px; /* Add space inside the box */
-    font-size: 14px; /* Standard font size */
-    line-height: 1.6; /* Improve readability */
-    color: #4a5568; /* Neutral text color */
-    text-align: left; /* Align text to the left */
-  }
-  
-  /* Styling for bolded text in the message */
-  .no-results-message .font-semibold {
-    font-weight: 700; /* Bold text for emphasis */
-    color: #1a202c; /* Darker color for important text */
-  }
-  
-  /* Responsive design for smaller screens */
-  @media (max-width: 600px) {
-    .no-results-message {
-      font-size: 13px; /* Adjust font size for smaller screens */
-      padding: 12px; /* Adjust padding */
-      width: calc(100% - 32px); /* Add padding to match search bar spacing */
-      left: 16px; /* Center the message on smaller screens */
-    }
-  }  
-  
-  @media (max-width: 768px) {
-    .suggestions-dropdown {
-      width: 100%; /* Full width for smaller screens */
-      max-height: 50vh; /* Adjust to fit smaller screens */
-    }
-  }
-
-
-  @media (hover: none) and (pointer: coarse) {
-    .disable-hover button:hover {
-      background-color: #4a5568 !important; /* Matches bg-gray-600 */
-      color: #ffffff !important; /* Matches text-white */
-      border-color: #4a5568 !important; /* Matches ring-gray-600 */
-    }
-  
-
-
-    .buy-sell-button {
-      transition: all 0.15s ease-in-out;
-    }
-    
-    .buy-sell-button-selected {
-      background-color: #4a5568; /* Gray */
-      color: white;
-      border-color: #4a5568;
-    }
-
-    .buy-sell-button:hover {
-      background-color: #edf2f7; /* Light Gray */
-      color: #2d3748; /* Dark Gray */
-    }
-  
-
-
-
-  }
-  
+}
