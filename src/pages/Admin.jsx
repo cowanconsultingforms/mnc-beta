@@ -150,6 +150,21 @@ const Admin = () => {
           role: newRole,
         },
       }));
+
+      setFilteredUsers((prevFilteredUsers) =>
+        prevFilteredUsers.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                data: {
+                  ...user.data,
+                  role: newRole,
+                },
+              }
+            : user
+        )
+      );
+
       toast.success("Role updated successfully.");
     } catch (error) {
       toast.error("Failed to update role.");
@@ -203,15 +218,16 @@ const Admin = () => {
             className="mt-4 p-3 w-full border border-gray-400 rounded bg-gray-50 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600"
           >
             <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="agent">Agent</option>
-            <option value="client">Client</option>
-            <option value="partner">Partner</option>
-            <option value="staff">Staff</option>
             <option value="superadmin">Superadmin</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="user">Users</option>
+            <option value="vip">Vips</option>
+            <option value="client">Clients</option>
+            <option value="tenant">Tenants</option>
+            <option value="agent">Agent</option>
             <option value="vendor">Vendor</option>
-            <option value="vip">Vip</option>
-            <option value="user">User</option>
+            <option value="partner">Partner</option>
           </select>
         </div>
 
@@ -270,15 +286,17 @@ const Admin = () => {
                 onChange={(e) => handleRoleChange(e, selectedUser.id)}
                 className="p-2 border rounded"
               >
-                <option value="admin">Admin</option>
-                <option value="agent">Agent</option>
-                <option value="client">Client</option>
-                <option value="partner">Partner</option>
-                <option value="staff">Staff</option>
-                <option value="superadmin">Superadmin</option>
-                <option value="vendor">Vendor</option>
-                <option value="vip">Vip</option>
-                <option value="user">User</option>
+                <option value="">All Roles</option>
+            <option value="superadmin">Superadmin</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="user">Users</option>
+            <option value="vip">Vips</option>
+            <option value="client">Clients</option>
+            <option value="tenant">Tenants</option>
+            <option value="agent">Agent</option>
+            <option value="vendor">Vendor</option>
+            <option value="partner">Partner</option>
               </select>
               {selectedUser.data.role === 'agent' && (
                 <div className="mt-4">
