@@ -270,15 +270,15 @@ const Admin = () => {
                 onChange={(e) => handleRoleChange(e, selectedUser.id)}
                 className="p-2 border rounded"
               >
-                <option value="admin">Admin</option>
-                <option value="agent">Agent</option>
-                <option value="client">Client</option>
-                <option value="partner">Partner</option>
-                <option value="staff">Staff</option>
                 <option value="superadmin">Superadmin</option>
-                <option value="vendor">Vendor</option>
-                <option value="vip">Vip</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
                 <option value="user">User</option>
+                <option value="vip">Vip</option>
+                <option value="client">Client</option>
+                <option value="agent">Agent</option>
+                <option value="vendor">Vendor</option>
+                <option value="partner">Partner</option>
               </select>
               {selectedUser.data.role === 'agent' && (
                 <div className="mt-4">
