@@ -150,6 +150,19 @@ const Admin = () => {
           role: newRole,
         },
       }));
+      setFilteredUsers((prevFilteredUsers) =>
+        prevFilteredUsers.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                data: {
+                  ...user.data,
+                  role: newRole,
+                },
+              }
+            : user
+        )
+      );
       toast.success("Role updated successfully.");
     } catch (error) {
       toast.error("Failed to update role.");
