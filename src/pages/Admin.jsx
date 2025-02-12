@@ -1,4 +1,4 @@
-import { getAuth } from "firebase/auth";
+import { getAuth, deleteUser } from "firebase/auth"; // Added deleteUser
 import {
   collection,
   documentId,
@@ -8,16 +8,19 @@ import {
   where,
   doc,
   updateDoc,
+  deleteDoc, // Added deleteDoc
 } from "firebase/firestore";
+import { ref, deleteObject, listAll } from "firebase/storage"; // Added Firebase Storage functions
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { db } from "../firebase";
+import { db, storage } from "../firebase"; // Ensure storage is imported
 import "../css/admin.css";
 import Modal from 'react-modal';
+
 
 // Set the app element for accessibility
 Modal.setAppElement('#root');
@@ -34,6 +37,8 @@ const Admin = () => {
   const [expirationDates, setExpirationDates] = useState({});
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -169,6 +174,57 @@ const Admin = () => {
         break;
       default:
         break;
+    }
+  };
+
+    // Function to show the confirmation modal
+  const handleConfirmDelete = (userId) => {
+    setUserToDelete(userId);
+    setShowConfirmModal(true);
+  };
+
+  // Function to delete the user after confirmation
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    const auth = getAuth();
+    
+    try {
+        // Step 1: Delete user's Firestore document
+        await deleteDoc(doc(db, "users", userToDelete));
+
+        // Step 2: Delete user's documents from Firestore
+        const docsRef = collection(db, `documents/${userToDelete}/files`);
+        const docsSnap = await getDocs(docsRef);
+        for (const document of docsSnap.docs) {
+            await deleteDoc(doc(db, `documents/${userToDelete}/files`, document.id));
+        }
+
+        // Step 3: Delete user's files from Firebase Storage
+        const storageRef = ref(storage, `documents/${userToDelete}`);
+        const fileList = await listAll(storageRef);
+        for (const file of fileList.items) {
+            await deleteObject(file);
+        }
+
+        // Step 4: Delete user from Firebase Authentication (if logged-in user has permission)
+        const userAuth = auth.currentUser;
+        if (userAuth?.uid === userToDelete) {
+            await deleteUser(userAuth);
+        }
+
+        // Step 5: Update UI
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete));
+        setFilteredUsers((prevFilteredUsers) =>
+            prevFilteredUsers.filter((user) => user.id !== userToDelete)
+        );
+
+        toast.success("User deleted successfully from all records.");
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        toast.error("Failed to delete user.");
+    } finally {
+        setShowConfirmModal(false); // Close the confirmation modal
+        setUserToDelete(null);
     }
   };
 
@@ -325,17 +381,53 @@ const Admin = () => {
                 >
                   View Profile
                 </button>
+
+                <button
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-150 ease-in-out"
+                  onClick={() => {
+                    closeModal();  // Close the first modal
+                    handleConfirmDelete(selectedUser.id);  // Open the confirmation modal
+                  }} 
+                >
+                  Delete User
+                </button>
+
                 <button
                   className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
                   onClick={closeModal}
                 >
                   Close
                 </button>
+
               </div>
             </div>
           </Modal>
         )}
+
       </div>
+        {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+            <div className="modal-buttons mt-4">
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-150 ease-in-out"
+                onClick={confirmDeleteUser}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-150 ease-in-out"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
