@@ -68,7 +68,7 @@ const ContactUs = () => {
         Contact Us
       </h1>
       <h2 className="text-2xl text-center pb-12 font-semibold text-white" style={{ textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)" }}>
-        We value your feedback!
+        We value your Needback!
       </h2>
 
       {/* Contact form */}

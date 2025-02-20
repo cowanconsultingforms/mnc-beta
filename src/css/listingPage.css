@@ -335,6 +335,9 @@ button:hover {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-appearance: none;
+  appearance: none;
+
 }
 
 .suggestions-dropdown {
@@ -369,4 +372,3 @@ button:hover {
   transform: scale(1.02);
 }
 
-/*Initial testing Redo */
