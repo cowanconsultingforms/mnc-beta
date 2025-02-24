@@ -424,11 +424,11 @@ const Home = () => {
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
                 onChange={onChange}
-                style={{ width: "380px", borderRadius: "6px", paddingRight: "40px" }} // Add padding to the right
+                style={{ width: "425px", borderRadius: "6px", paddingRight: "40px" }} // Add padding to the right
               />
               <button
                 type="button"
-                className="absolute right-3 top-2.5"
+                className="absolute right-[20px] top-[12px]"
                 onClick={() => {
                   const firstSuggestion = Array.from(
                     new Set(

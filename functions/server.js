@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const serviceAccount = require("./key.json");
 const nodemailer = require("nodemailer");
@@ -252,6 +252,7 @@ exports.deleteUser = functions.https.onRequest(async (req, res) => {
     }
   });
 });
+
 
 // Schedule the function to run every day at a specific time (e.g., midnight)
 const scheduledJob = schedule.scheduleJob("0 0 * * *", async () => {

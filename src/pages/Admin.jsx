@@ -20,6 +20,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { db, storage } from "../firebase"; // Ensure storage is imported
 import "../css/admin.css";
 import Modal from 'react-modal';
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 
 // Set the app element for accessibility
