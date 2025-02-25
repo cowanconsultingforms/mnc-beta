@@ -199,50 +199,36 @@ const Admin = () => {
     setShowConfirmModal(true);
   };
 
-  // Function to delete the user after confirmation
-  const confirmDeleteUser = async () => {
-    if (!userToDelete) return;
-    const auth = getAuth();
-    
-    try {
-        // Step 1: Delete user's Firestore document
-        await deleteDoc(doc(db, "users", userToDelete));
+  const functions = getFunctions();
+const deleteUserFunction = httpsCallable(functions, "deleteUser");
 
-        // Step 2: Delete user's documents from Firestore
-        const docsRef = collection(db, `documents/${userToDelete}/files`);
-        const docsSnap = await getDocs(docsRef);
-        for (const document of docsSnap.docs) {
-            await deleteDoc(doc(db, `documents/${userToDelete}/files`, document.id));
-        }
+const confirmDeleteUser = async () => {
+  if (!userToDelete) return;
+  const functions = getFunctions();
+  const auth = getAuth();
+  const deleteUserFunc = httpsCallable(functions, "deleteUser");
 
-        // Step 3: Delete user's files from Firebase Storage
-        const storageRef = ref(storage, `documents/${userToDelete}`);
-        const fileList = await listAll(storageRef);
-        for (const file of fileList.items) {
-            await deleteObject(file);
-        }
+  try {
+    // 🔹 Call Firebase function to delete user
+    const result = await deleteUserFunc({ userId: userToDelete });
 
-        // Step 4: Delete user from Firebase Authentication (if logged-in user has permission)
-        const userAuth = auth.currentUser;
-        if (userAuth?.uid === userToDelete) {
-            await deleteUser(userAuth);
-        }
-
-        // Step 5: Update UI
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete));
-        setFilteredUsers((prevFilteredUsers) =>
-            prevFilteredUsers.filter((user) => user.id !== userToDelete)
-        );
-
-        toast.success("User deleted successfully from all records.");
-    } catch (error) {
-        console.error("Error deleting user:", error);
-        toast.error("Failed to delete user.");
-    } finally {
-        setShowConfirmModal(false); // Close the confirmation modal
-        setUserToDelete(null);
+    if (result.data.success) {
+      toast.success("User deleted successfully!");
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete));
+      setFilteredUsers((prevFilteredUsers) => prevFilteredUsers.filter((user) => user.id !== userToDelete));
+    } else {
+      throw new Error(result.data.error || "Failed to delete user");
     }
-  };
+  } catch (error) {
+    console.error("🔥 Error deleting user:", error);
+    toast.error("Failed to delete user.");
+  } finally {
+    setShowConfirmModal(false);
+    setUserToDelete(null);
+  }
+};
+
+
 
   const openModal = (user) => {
     setSelectedUser(user);

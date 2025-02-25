@@ -228,55 +228,43 @@ const updateNumberOfDaysLeft = async () => {
   }
 };
 
-exports.deleteUser = functions.https.onRequest(async (req, res) => {
-  cors(req, res, async () => {
-    try {
-      // Assuming the userId is sent in the request body
-      const { userId } = req.body;
-
-      if (!userId) {
-        return res.status(400).send("User ID is required");
-      }
-
-      // Step 1: Delete user from Firebase Authentication
-      await admin.auth().deleteUser(userId);
-
-      // Perform the deletion logic here, for example:
-      await db.collection("users").doc(userId).delete();
-
-      console.log("User deleted successfully");
-      res.status(200).send("User deleted successfully");
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      res.status(500).send("Internal Server Error");
+exports.deleteUser = functions.https.onCall(async (data, context) => {
+  try {
+    // Ensure the request is authenticated and user is an admin
+    if (!context.auth || !["admin", "superadmin"].includes(context.auth.token.role)) {
+      console.error("Unauthorized access attempt");
+      return { error: "Unauthorized request" };
     }
-  });
-});
 
+    const { userId } = data;
+    if (!userId) {
+      console.error("Missing userId in request");
+      return { error: "User ID is required" };
+    }
 
-// Schedule the function to run every day at a specific time (e.g., midnight)
-const scheduledJob = schedule.scheduleJob("0 0 * * *", async () => {
-  console.log("Running scheduled job...");
-  await updateNumberOfDaysLeft();
-});
+    // Step 1: Delete the user from Firebase Authentication
+    try {
+      await admin.auth().deleteUser(userId);
+      console.log(`Successfully deleted user from Firebase Auth: ${userId}`);
+    } catch (authError) {
+      console.error("Error deleting user from Firebase Authentication:", authError);
+      return { error: "Failed to delete user from Authentication" };
+    }
 
-exports.updateUsersFunction = functions.pubsub
-  .schedule("every 24 hours")
-  .timeZone("UTC")
-  .onRun(async (context) => {
-    console.log("Running scheduled update...");
-    await updateNumberOfDaysLeft();
-    return null;
-  });
+    // Step 2: Delete the user document from Firestore
+    try {
+      await db.collection("users").doc(userId).delete();
+      console.log(`Successfully deleted user from Firestore: ${userId}`);
+    } catch (firestoreError) {
+      console.error("Error deleting user from Firestore:", firestoreError);
+      return { error: "Failed to delete user from Firestore" };
+    }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT, 10),
-  secure: process.env.SMTP_SECURE,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+    return { success: true, message: "User deleted successfully" };
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return { error: "Internal Server Error" };
+  }
 });
 
 exports.sendEmail = functions.https.onRequest(async (req, res) => {

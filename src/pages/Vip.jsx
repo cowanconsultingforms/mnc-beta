@@ -413,7 +413,7 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <div>
+      
           {/* Search bar */}
           <div className="w-full px-3 relative" style={{ marginTop: "20px" }}>
             <form onSubmit={(e) => handleNotFound(e)} className="relative">
@@ -424,11 +424,11 @@ const Home = () => {
                 placeholder="City, Neighborhood, Address, School, ZIP"
                 aria-label="city, zip, address, school"
                 onChange={onChange}
-                style={{ width: "425px", borderRadius: "6px", paddingRight: "40px" }} // Add padding to the right
+                style={{ width: "100%", borderRadius: "6px", paddingRight: "50px" }} // Add padding to the right 
               />
               <button
                 type="button"
-                className="absolute right-[20px] top-[12px]"
+                className="absolute right-[20px] top-[12px] cursor-pointer"
                 onClick={() => {
                   const firstSuggestion = Array.from(
                     new Set(
@@ -539,7 +539,6 @@ const Home = () => {
               ) : null}
             </div>
           </div>
-        </div>
       </section>
 
       {/* Thumbnail images */}
