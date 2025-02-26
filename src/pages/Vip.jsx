@@ -506,7 +506,7 @@ const Home = () => {
                             style={styles.suggestionItem}
                             className="suggestion-item"
                             onClick={() =>
-                              navigate(`/category/${property.data.type}/${property.id}`)
+                              navigate(`/vip/category/${property.data.type}/${property.id}`)
                             }
                           >
                             <span style={styles.suggestionIcon}>🏠</span>{" "}
