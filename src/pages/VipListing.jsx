@@ -28,6 +28,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Contact from "../components/Contact";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
+import { FaArrowLeft } from "react-icons/fa";
 
 const VipListing = () => {
   const params = useParams();
@@ -67,6 +68,16 @@ const VipListing = () => {
 
   return (
     <main>
+    {/* Back button */}
+      <div
+      className="fixed top-[13%] left-[3%] z-10 bg-white cursor-pointer border-2 border-gray-400 rounded-full w-12 h-12 flex justify-center items-center"
+      onClick={() => {
+      navigate(-1); // Navigate to the previous page
+      }}
+      >
+      <FaArrowLeft className="text-lg text-gray-600" />
+      </div>
+
       {/* Image carousel using Swiper component */}
       <Swiper
         slidesPerView={1}
