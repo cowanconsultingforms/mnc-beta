@@ -185,6 +185,53 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteUser = async (userId, userEmail) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (!user) {
+      toast.error("You must be logged in as an admin to delete users.");
+      return;
+    }
+  
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete ${userEmail}? This action is irreversible.`)) {
+      return;
+    }
+  
+    try {
+      // Get the admin's ID token
+      const idToken = await user.getIdToken();
+  
+      // Send request to delete user
+      const response = await fetch("https://us-central1-mnc-development.cloudfunctions.net/deleteUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, idToken }),
+      });
+  
+      if (response.ok) {
+        toast.success("User deleted successfully.");
+  
+        // Update the UI by removing the deleted user
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        setFilteredUsers((prevFilteredUsers) => prevFilteredUsers.filter((user) => user.id !== userId));
+  
+        // Close the modal after successful deletion
+        closeModal();
+      } else {
+        const errorMessage = await response.text();
+        toast.error(`Failed to delete user: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("An error occurred while deleting the user.");
+    }
+  };
+  
+
   const openModal = (user) => {
     setSelectedUser(user);
     setModalIsOpen(true);
@@ -338,6 +385,14 @@ const Admin = () => {
                 >
                   View Profile
                 </button>
+
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-150 ease-in-out"
+                  onClick={() => handleDeleteUser(selectedUser.id, selectedUser.data.email)}
+                >
+                  Delete User
+                </button>
+
                 <button
                   className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
                   onClick={closeModal}

@@ -29,31 +29,40 @@ const stripe = require('stripe')(stripeSecretKey);
 const db = admin.firestore();
 
 // Allowed origins for CORS
-const allowedOrigins = ['http://localhost:5175', 'https://us-central1-mnc-development.cloudfunctions.net'];
+const allowedOrigins = [
+  'http://localhost:5173',  //  Added the frontend for local dev
+  'http://localhost:5175',  
+  'https://your-production-url.com',  
+  'https://us-central1-mnc-development.cloudfunctions.net'
+];
+
 
 // CORS options setup
 const corsOptions = {
   origin: (origin, callback) => {
-    // Check if the incoming origin is in the list of allowed origins or if no origin is provided (like in server-to-server requests)
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'], //  Added DELETE
+  allowedHeaders: ['Content-Type', 'Authorization'], //  Added Authorization for Firebase tokens
+  credentials: true, //  Allow sending cookies/auth headers
 };
+
 
 // Function to handle preflight CORS requests
 const handleCors = (req, res) => {
   if (req.method === 'OPTIONS') {
     res.set('Access-Control-Allow-Origin', req.headers.origin);
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.status(204).send(''); // Send a 204 response for preflight requests
+    res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS'); //  Added DELETE
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); //  Added Authorization
+    res.set('Access-Control-Allow-Credentials', 'true'); //  Allow cookies/auth headers
+    res.status(204).send('');
   }
 };
+
 
 // Create Payment Intent endpoint for Stripe
 exports.createPaymentIntent = functions.https.onRequest((req, res) => {
@@ -229,29 +238,52 @@ const updateNumberOfDaysLeft = async () => {
 };
 
 exports.deleteUser = functions.https.onRequest(async (req, res) => {
-  cors(req, res, async () => {
+  cors(corsOptions)(req, res, async () => {
     try {
-      // Assuming the userId is sent in the request body
-      const { userId } = req.body;
-
-      if (!userId) {
-        return res.status(400).send("User ID is required");
+      if (req.method === "OPTIONS") {
+        res.set("Access-Control-Allow-Origin", req.headers.origin);
+        res.set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+        res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.status(204).send("");
+        return;
       }
 
-      // Step 1: Delete user from Firebase Authentication
+      const { userId, idToken } = req.body;
+
+      if (!userId || !idToken) {
+        return res.status(400).send("User ID and authentication token are required");
+      }
+
+      // Verify the Firebase ID token
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      if (!decodedToken) {
+        return res.status(401).send("Unauthorized request. Invalid token.");
+      }
+
+      // Check if the requester is an admin or superadmin
+      const adminDoc = await admin.firestore().collection("users").doc(decodedToken.uid).get();
+      const adminData = adminDoc.data();
+
+      if (!adminData || !["admin", "superadmin"].includes(adminData.role)) {
+        return res.status(403).send("Forbidden. Only admins can delete users.");
+      }
+
+      // Delete user from Firebase Authentication
       await admin.auth().deleteUser(userId);
 
-      // Perform the deletion logic here, for example:
-      await db.collection("users").doc(userId).delete();
+      // Delete user from Firestore
+      await admin.firestore().collection("users").doc(userId).delete();
 
-      console.log("User deleted successfully");
-      res.status(200).send("User deleted successfully");
+      console.log(`User ${userId} deleted successfully by admin ${decodedToken.uid}.`);
+      res.set("Access-Control-Allow-Origin", req.headers.origin); // Fixes CORS
+      res.status(200).send("User deleted successfully.");
     } catch (error) {
       console.error("Error deleting user:", error);
       res.status(500).send("Internal Server Error");
     }
   });
 });
+
 
 // Schedule the function to run every day at a specific time (e.g., midnight)
 const scheduledJob = schedule.scheduleJob("0 0 * * *", async () => {
