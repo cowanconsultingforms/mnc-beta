@@ -441,7 +441,7 @@ const EditListing = () => {
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="type"
@@ -452,7 +452,7 @@ const EditListing = () => {
               type === "rent" || type === "sold"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }disable-hover`}
+            }`}
           >
             Buy
           </button>
@@ -466,7 +466,7 @@ const EditListing = () => {
               type === "buy" || type === "sold"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }disable-hover`}
+            }`}
           >
             Rent
           </button>
@@ -480,7 +480,7 @@ const EditListing = () => {
               type === "rent" || type === "buy"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }disable-hover`}
+            }`}
           >
             Sold
           </button>
@@ -535,14 +535,14 @@ const EditListing = () => {
 
         {/* Parking availability buttons */}
         <p className="text-lg mt-6 font-semibold">Parking Spot</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="parking"
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!parking ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
+            ${!parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
           >
             Yes
           </button>
@@ -552,7 +552,7 @@ const EditListing = () => {
             value={false}
             onClick={onChange}
             className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${parking ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
+            ${parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
           >
             No
           </button>
@@ -560,14 +560,14 @@ const EditListing = () => {
 
         {/* Furnished buttons */}
         <p className="text-lg mt-6 font-semibold">Furnished</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="furnished"
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!furnished ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
+            ${!furnished ? "bg-white text-black" : "bg-gray-500 text-white"}`}
           >
             Yes
           </button>
@@ -641,14 +641,14 @@ const EditListing = () => {
 
         {/* Add discount buttons */}
         <p className="text-lg font-semibold">Add Discount?</p>
-        <div className="flex mb-6">
+        <div className="flex mt-6 disable-hover">
           <button
             type="button"
             id="offer"
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!offer ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
+            ${!offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
           >
             Yes
           </button>
@@ -658,7 +658,7 @@ const EditListing = () => {
             value={false}
             onClick={onChange}
             className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${offer ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
+            ${offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
           >
             No
           </button>
