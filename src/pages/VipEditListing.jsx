@@ -213,7 +213,7 @@ const VipEditListing = () => {
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="type"
@@ -307,7 +307,7 @@ const VipEditListing = () => {
 
         {/* Parking availability buttons */}
         <p className="text-lg mt-6 font-semibold">Parking Spot</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="parking"
@@ -332,7 +332,7 @@ const VipEditListing = () => {
 
         {/* Furnished buttons */}
         <p className="text-lg mt-6 font-semibold">Furnished</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="furnished"
@@ -413,7 +413,7 @@ const VipEditListing = () => {
 
         {/* Add discount buttons */}
         <p className="text-lg font-semibold">Add Discount?</p>
-        <div className="flex mb-6">
+        <div className="flex mb-6 disable-hover">
           <button
             type="button"
             id="offer"

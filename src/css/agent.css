@@ -217,6 +217,7 @@ button:hover {
     overflow: hidden;
     z-index: 999999;
   }
+  
   .carousel-arrow {
     display: none !important;
   }

@@ -267,10 +267,10 @@ const Agents = () => {
               </div>
 
               {/* Navigation arrows */}
-              <div className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 left" onClick={prevSlide}>
+              <div className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
                 <FaChevronLeft className="text-white text-4xl" />
               </div>
-              <div className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10 right" onClick={nextSlide}>
+              <div className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
                 <FaChevronRight className="text-white text-4xl" />
               </div>
             </div>

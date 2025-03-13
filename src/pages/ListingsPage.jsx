@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ListingItem from "../components/ListingItem";
-import VipListingItem from "../components/VipListingItem"; 
+import VipListingItem from "../components/VipListingItem";
 import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,34 @@ const ListingsPage = () => {
   const [userRole, setUserRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const playVideo = () => {
+      if (videoRef.current) {
+        videoRef.current
+          .play()
+          .catch((error) => console.error("Video autoplay prevented:", error));
+      }
+    };
+
+    playVideo(); // Play on mount
+
+    // Ensure video resumes when the user switches back to the tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        playVideo();
+      }
+    };
+
+    window.addEventListener("focus", playVideo);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", playVideo);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   // Fetch user role and VIP listings
   useEffect(() => {
@@ -82,6 +110,8 @@ const ListingsPage = () => {
 
   // Delete listing function
   const onDelete = (listingID) => {
+    const confirmed = window.confirm("Are you sure you want to delete this listing?");
+    if (!confirmed) return;
     const updatedListings = listings.filter((listing) => listing.id !== listingID);
     setListings(updatedListings);
     toast.success("The listing was deleted!");
@@ -92,8 +122,10 @@ const ListingsPage = () => {
     navigate(`/edit-listing/${listingID}`);
   };
 
-  // VIP listing delete
   const deleteVipListing = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this listing?");
+    if (!confirmed) return;
+
     try {
       const listingRef = doc(db, "vipPropertyListings", id);
       await deleteDoc(listingRef);
@@ -110,6 +142,7 @@ const ListingsPage = () => {
       {/* Video Background */}
       <div className="video-container">
         <video
+          ref={videoRef}
           src={listingVid}
           autoPlay
           muted
@@ -118,16 +151,8 @@ const ListingsPage = () => {
           playsInline
           className="w-full h-full object-cover"
         ></video>
-
-        {/*<iframe
-          className="absolute top-0 left-0 w-full h-full"
-          src="https://www.youtube.com/embed/8BBE1Ui8yo4?si=5BNr_sLaivrlXusM&controls=0&autoplay=1&mute=1&loop=1&playlist=8BBE1Ui8yo4&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        /> */}
       </div>
+
       {/* Foreground content */}
       <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "60px" }}>
         <div style={{ maxWidth: "100%" }}>
@@ -144,16 +169,8 @@ const ListingsPage = () => {
                           key={vipListing.id}
                           id={vipListing.id}
                           vipListing={vipListing}
-                          onDelete={() =>
-                            userRole &&
-                            (userRole === "admin" || userRole === "superadmin") &&
-                            deleteVipListing(vipListing.id)
-                          }
-                          onEdit={() =>
-                            userRole &&
-                            (userRole === "admin" || userRole === "superadmin") &&
-                            navigate(`/edit-vip-listing/${vipListing.id}`)
-                          }
+                          onDelete={() => userRole && (userRole === "admin" || userRole === "superadmin") && deleteVipListing(vipListing.id)}
+                          onEdit={() => userRole && (userRole === "admin" || userRole === "superadmin") && navigate(`/edit-vip-listing/${vipListing.id}`)}
                           showActions={userRole && (userRole === "admin" || userRole === "superadmin")}
                         />
                       ))}
@@ -166,49 +183,29 @@ const ListingsPage = () => {
             </div>
           )}
         </div>
-          </div>
-            {/* Regular Listings Section */}
-            <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
-              {!loading && listings.length > 0 && (
-                <>
-                  <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings</h2>
-                  <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-                    {listings.map((listing) => (
-                      <ListingItem
-                        key={listing.id}
-                        id={listing.id}
-                        listing={listing.data}
-                        onDelete={() => onDelete(listing.id)}
-                        onEdit={() => onEdit(listing.id)}
-                        showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
-                      />
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-            {/* Legal Section */}
-            <div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
-              <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
-              <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
-                <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-                  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>All rights reserved.</p> {/* Apply text shadow here */}
-                  <span className="hidden md:block">|</span>
-                  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>© MNC Development, Inc. 2008-present.</p> {/* Apply text shadow here */}
-                </div>
-                <span className="hidden lg:block">|</span>
-                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>31 Buffalo Avenue, Brooklyn, New York 11233</p> {/* Apply text shadow here */}
-              </div>
-              <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
-                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Phone: 1-718-771-5811 or 1-877-732-3492</p> {/* Apply text shadow here */}
-                <span className="hidden md:block">|</span>
-                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Fax: 1-877-760-2763 or 1-718-771-5900</p> {/* Apply text shadow here */}
-              </div>
-              <p className="text-center text-white text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
-                MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
-              </p>
-            </div>
-          </div>
+      </div>
+
+      {/* Regular Listings Section */}
+      <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
+        {!loading && listings.length > 0 && (
+          <>
+            <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings</h2>
+            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                  onDelete={() => onDelete(listing.id)}
+                  onEdit={() => onEdit(listing.id)}
+                  showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
