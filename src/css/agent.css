@@ -114,8 +114,28 @@ button:hover {
     overflow: hidden;
     z-index: 999999;
   }
+  /*
   .carousel-arrow {
     display: none !important;
+  }
+    */
+
+    .carousel-arrow {
+      z-index: 1000 !important; /* Ensures arrows are above everything */
+      pointer-events: auto !important; /* Ensures arrows remain clickable */
+  }
+
+  .carousel-arrow.right {
+      right: 5px; /* Adjust position so it's not overlapping */
+  }
+
+  .carousel-arrow.left {
+      left: 5px;
+  }
+
+  .carousel-arrow svg {
+      width: 30px; /* Slightly larger for better tapping */
+      height: 30px;
   }
 }
 

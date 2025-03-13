@@ -452,7 +452,7 @@ const EditListing = () => {
               type === "rent" || type === "sold"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }`}
+            }disable-hover`}
           >
             Buy
           </button>
@@ -466,7 +466,7 @@ const EditListing = () => {
               type === "buy" || type === "sold"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }`}
+            }disable-hover`}
           >
             Rent
           </button>
@@ -480,7 +480,7 @@ const EditListing = () => {
               type === "rent" || type === "buy"
                 ? "bg-white text-black"
                 : "bg-gray-500 text-white"
-            }`}
+            }disable-hover`}
           >
             Sold
           </button>
@@ -542,7 +542,7 @@ const EditListing = () => {
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            ${!parking ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
           >
             Yes
           </button>
@@ -552,7 +552,7 @@ const EditListing = () => {
             value={false}
             onClick={onChange}
             className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${parking ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            ${parking ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
           >
             No
           </button>
@@ -567,7 +567,7 @@ const EditListing = () => {
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!furnished ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            ${!furnished ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
           >
             Yes
           </button>
@@ -648,7 +648,7 @@ const EditListing = () => {
             value={true}
             onClick={onChange}
             className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${!offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            ${!offer ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
           >
             Yes
           </button>
@@ -658,7 +658,7 @@ const EditListing = () => {
             value={false}
             onClick={onChange}
             className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full
-            ${offer ? "bg-white text-black" : "bg-gray-500 text-white"}`}
+            ${offer ? "bg-white text-black" : "bg-gray-500 text-white"}disable-hover`}
           >
             No
           </button>
