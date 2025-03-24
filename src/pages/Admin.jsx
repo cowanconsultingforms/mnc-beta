@@ -263,15 +263,15 @@ const Admin = () => {
             className="mt-4 p-3 w-full border border-gray-400 rounded bg-gray-50 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600"
           >
             <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="agent">Agent</option>
-            <option value="client">Client</option>
-            <option value="partner">Partner</option>
-            <option value="staff">Staff</option>
             <option value="superadmin">Superadmin</option>
-            <option value="vendor">Vendor</option>
-            <option value="vip">Vip</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
             <option value="user">User</option>
+            <option value="vip">Vip</option>
+            <option value="client">Client</option>
+            <option value="agent">Agent</option>
+            <option value="vendor">Vendor</option>
+            <option value="partner">Partner</option>
           </select>
         </div>
 
