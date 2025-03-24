@@ -267,12 +267,29 @@ const Agents = () => {
               </div>
 
               {/* Navigation arrows */}
-              <div className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
+
+              <div
+                className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10"
+                onClick={prevSlide}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+              >
                 <FaChevronLeft className="text-white text-4xl" />
               </div>
-              <div className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
+
+
+              <div
+                className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10"
+                onClick={nextSlide}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+              >
                 <FaChevronRight className="text-white text-4xl" />
               </div>
+
+
             </div>
           </div>
         </div>
