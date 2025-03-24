@@ -387,7 +387,7 @@ const Admin = () => {
                 </button>
 
                 <button
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-150 ease-in-out"
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
                   onClick={() => handleDeleteUser(selectedUser.id, selectedUser.data.email)}
                 >
                   Delete User
