@@ -1481,6 +1481,7 @@ import {
                   key={suggestion.id}
                   id={suggestion.id}
                   listing={suggestion.data}
+                  isVip={true}
                 />
               ))}
             </ul>

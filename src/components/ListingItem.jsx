@@ -15,6 +15,7 @@ const ListingItem = ({
   isPropertyManagement,
   showActions, // Add the showActions prop here
   videoRef,
+  isVip = false,
 }) => {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -75,7 +76,7 @@ const ListingItem = ({
           to={
             isPropertyManagement
               ? `/property-management/${id}/tenants`
-              : `/category/${listing.type}/${id}`
+              : `${isVip ? "/vip" : ""}/category/${listing.type}/${id}`
           }
         >
           <div className="relative w-full h-60 mb-2">
