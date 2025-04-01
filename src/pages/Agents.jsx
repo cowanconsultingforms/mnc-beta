@@ -253,7 +253,7 @@ const Agents = () => {
                             <div className="short-divider">
                             <hr className="w-full border-t border-white" />                            </div>
                             <div className="w-full flex flex-col items-center justify-center mt-2">
-                              <p className="text-sm font-semibold md:text-md "> -  {agent.data.name}</p>
+                              <p className="text-sm font-semibold md:text-md "> {agent.data.name}</p>
                               <p className="text-xs font-semibold md:text-md ">MNC Agent</p>
                             </div>
                           </div>
