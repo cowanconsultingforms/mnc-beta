@@ -163,15 +163,15 @@ const ListingItem = ({
                 <div className="flex justify-center gap-4">
                   <button
                     onClick={cancelDelete}
-                    className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 transition-colors text-sm"
+                    className="px-5 py-2  border-gray-300 rounded-full text-gray-700 transition-colors text-sm text-blue-500"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmDelete}
-                    className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 transition-colors text-sm"
+                    className="px-5 py-2  border-gray-300 rounded-full text-gray-700 transition-colors text-sm text-blue-500"
                   >
-                    Yes, Delete
+                    Ok
                   </button>
                 </div>
               </div>
