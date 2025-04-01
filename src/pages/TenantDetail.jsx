@@ -9,6 +9,8 @@ const TenantDetail = () => {
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
   const [imageFile, setImageFile] = useState(null); // Store selected image file
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
 
 
   useEffect(() => {
@@ -264,14 +266,7 @@ const TenantDetail = () => {
               {/* Delete Tenant Button (only visible when not in editing mode) */}
               {!isEditing && (
                 <button
-                  onClick={() => {
-                    const confirmed = window.confirm(
-                      "Are you sure you want to delete this tenant? This action cannot be undone."
-                    );
-                    if (confirmed) {
-                      handleDeleteTenant();
-                    }
-                  }}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
                 >
                   Delete Tenant
@@ -281,6 +276,35 @@ const TenantDetail = () => {
           </>
         )}
       </div>
+
+      {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-[#1e1e1e] text-white rounded-2xl p-5 shadow-xl w-full max-w-sm text-center">
+              <p className="text-sm mb-6">
+                Are you sure you want to delete this tenant? This action cannot be undone.
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-5 py-2 rounded-full bg-[#3b4c52] hover:bg-[#4c636a] text-white transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleDeleteTenant();
+                    setShowDeleteConfirm(false);
+                  }}
+                  className="px-5 py-2 rounded-full bg-[#6ac5dd] hover:bg-[#5ab6ce] text-black font-medium transition-colors text-sm"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
     </div>
   ) : (
     <p>Tenant not found</p>
