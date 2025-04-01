@@ -154,29 +154,29 @@ const ListingItem = ({
         )}
       </li>
 
-      {showConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-[#1e1e1e] text-white rounded-2xl p-5 shadow-xl w-full max-w-sm text-center">
-              <p className="text-sm mb-6">
-                Are you sure you want to delete this listing?
-              </p>
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={cancelDelete}
-                  className="px-5 py-2 rounded-full bg-[#3b4c52] hover:bg-[#4c636a] text-white transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  className="px-5 py-2 rounded-full bg-[#6ac5dd] hover:bg-[#5ab6ce] text-black font-medium transition-colors text-sm"
-                >
-                  Yes, Delete
-                </button>
+        {showConfirm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white text-black rounded-2xl p-5 w-full max-w-sm text-center">
+                <p className="text-sm mb-6">
+                  Are you sure you want to delete this listing?
+                </p>
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={cancelDelete}
+                    className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 transition-colors text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 transition-colors text-sm"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
 
 
