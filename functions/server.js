@@ -1,4 +1,4 @@
-const functions = require("firebase-functions/v1");
+const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const serviceAccount = require("./key.json");
 const nodemailer = require("nodemailer");
@@ -270,11 +270,6 @@ exports.deleteUser = functions.https.onRequest(async (req, res) => {
 
       // Delete user from Firebase Authentication
       await admin.auth().deleteUser(userId);
-      console.log(`Successfully deleted user from Firebase Auth: ${userId}`);
-    } catch (authError) {
-      console.error("Error deleting user from Firebase Authentication:", authError);
-      return { error: "Failed to delete user from Authentication" };
-    }
 
       // Delete user from Firestore
       await admin.firestore().collection("users").doc(userId).delete();

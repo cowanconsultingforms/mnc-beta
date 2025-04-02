@@ -252,9 +252,9 @@ const Agents = () => {
                             )}
                             <div className="short-divider">
                             <hr className="w-full border-t border-white" />                            </div>
-                            <div className="w-full flex flex-col items-end justify-end">
-                              <p className="text-sm font-semibold md:text-md mr-7"> -  {agent.data.name}</p>
-                              <p className="text-xs font-semibold md:text-md mr-10">MNC Agent</p>
+                            <div className="w-full flex flex-col items-center justify-center mt-2">
+                              <p className="text-sm font-semibold md:text-md "> {agent.data.name}</p>
+                              <p className="text-xs font-semibold md:text-md ">MNC Agent</p>
                             </div>
                           </div>
                         </div>
@@ -267,12 +267,29 @@ const Agents = () => {
               </div>
 
               {/* Navigation arrows */}
-              <div className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={prevSlide}>
+
+              <div
+                className="flex absolute top-1/2 left-0 transform -translate-y-1/2 p-2 cursor-pointer z-10"
+                onClick={prevSlide}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+              >
                 <FaChevronLeft className="text-white text-4xl" />
               </div>
-              <div className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10" onClick={nextSlide}>
+
+
+              <div
+                className="flex absolute top-1/2 right-0 transform -translate-y-1/2 p-2 cursor-pointer z-10"
+                onClick={nextSlide}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
+              >
                 <FaChevronRight className="text-white text-4xl" />
               </div>
+
+
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
 import listingVid from "../assets/listingVideo.mp4";
+import { useRef } from "react";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -17,33 +18,6 @@ const ListingsPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const videoRef = useRef(null);
-
-  useEffect(() => {
-    const playVideo = () => {
-      if (videoRef.current) {
-        videoRef.current
-          .play()
-          .catch((error) => console.error("Video autoplay prevented:", error));
-      }
-    };
-
-    playVideo(); // Play on mount
-
-    // Ensure video resumes when the user switches back to the tab
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        playVideo();
-      }
-    };
-
-    window.addEventListener("focus", playVideo);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener("focus", playVideo);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
 
   // Fetch user role and VIP listings
   useEffect(() => {
@@ -183,29 +157,50 @@ const ListingsPage = () => {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Regular Listings Section */}
-      <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
-        {!loading && listings.length > 0 && (
-          <>
-            <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings</h2>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-              {listings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  id={listing.id}
-                  listing={listing.data}
-                  onDelete={() => onDelete(listing.id)}
-                  onEdit={() => onEdit(listing.id)}
-                  showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
-                />
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+            {/* Regular Listings Section */}
+            <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
+              {!loading && listings.length > 0 && (
+                <>
+                  <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings</h2>
+                  <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
+                    {listings.map((listing) => (
+                      <ListingItem
+                        key={listing.id}
+                        id={listing.id}
+                        listing={listing.data}
+                        onDelete={() => onDelete(listing.id)}
+                        onEdit={() => onEdit(listing.id)}
+                        showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
+                        videoRef={videoRef}
+                      />
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+            {/* Legal Section */}
+            <div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
+              <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
+              <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
+                <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+                  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>All rights reserved.</p> {/* Apply text shadow here */}
+                  <span className="hidden md:block">|</span>
+                  <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>© MNC Development, Inc. 2008-present.</p> {/* Apply text shadow here */}
+                </div>
+                <span className="hidden lg:block">|</span>
+                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>31 Buffalo Avenue, Brooklyn, New York 11233</p> {/* Apply text shadow here */}
+              </div>
+              <div className="md:flex md:flex-row md:justify-center md:items-center md:space-x-2">
+                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Phone: 1-718-771-5811 or 1-877-732-3492</p> {/* Apply text shadow here */}
+                <span className="hidden md:block">|</span>
+                <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>Fax: 1-877-760-2763 or 1-718-771-5900</p> {/* Apply text shadow here */}
+              </div>
+              <p className="text-center text-white text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
+                MNC Development and the MNC Development logos are trademarks of MNC Development, Inc. MNC Development, Inc. as a NYS licensed Real Estate Broker fully supports the principles of the Fair Housing Act and the Equal Opportunity Act. Listing information is deemed reliable, but is not guaranteed.
+              </p>
+            </div>
+          </div>
   );
 };
 

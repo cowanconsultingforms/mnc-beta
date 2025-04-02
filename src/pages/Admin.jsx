@@ -274,13 +274,12 @@ const Admin = () => {
             <option value="superadmin">Superadmin</option>
             <option value="admin">Admin</option>
             <option value="staff">Staff</option>
-            <option value="user">Users</option>
-            <option value="vip">Vips</option>
-            <option value="client">Clients</option>
-            <option value="tenant">Tenants</option>
+            <option value="user">User</option>
+            <option value="vip">Vip</option>
+            <option value="client">Client</option>
             <option value="agent">Agent</option>
-            <option value="vendor">Vendors</option>
-            <option value="partner">Partners</option>
+            <option value="vendor">Vendor</option>
+            <option value="partner">Partner</option>
           </select>
         </div>
 
@@ -397,7 +396,7 @@ const Admin = () => {
                 </button>
 
                 <button
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-150 ease-in-out"
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
                   onClick={() => handleDeleteUser(selectedUser.id, selectedUser.data.email)}
                 >
                   Delete User
