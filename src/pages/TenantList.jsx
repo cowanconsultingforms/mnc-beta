@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 const TenantList = () => {
@@ -14,29 +14,61 @@ const TenantList = () => {
     try {
       const docRef = doc(db, "propertyListings", listingId);
       const docSnap = await getDoc(docRef);
-
+  
       if (docSnap.exists()) {
         const data = docSnap.data();
-
-        let fetchedTenants = [];
-        if (Array.isArray(data.tenants)) {
-          fetchedTenants = data.tenants;
-        } else if (data.tenants) {
-          fetchedTenants = [data.tenants];
-        }
-
-        // Filter tenants based on the selected status filter
-        const filteredTenants = fetchedTenants.filter(
-          (tenant) => tenant.status === filter
+  
+        let fetchedTenants = Array.isArray(data.tenants)
+          ? data.tenants
+          : data.tenants
+          ? [data.tenants]
+          : [];
+  
+        const now = new Date();
+        let didUpdate = false;
+  
+        // Auto-mark and prepare updates
+        const updatedTenants = await Promise.all(
+          fetchedTenants.map(async (tenant) => {
+            const leaseEnd = tenant.leaseEndDate?.seconds
+              ? new Date(tenant.leaseEndDate.seconds * 1000)
+              : new Date(tenant.leaseEndDate);
+  
+            const shouldBeInactive =
+              leaseEnd && leaseEnd < now && tenant.status !== "inactive";
+  
+            if (shouldBeInactive) {
+              didUpdate = true;
+  
+              // Update individual tenant doc
+              const tenantDocRef = doc(db, "tenants", tenant.id);
+              await updateDoc(tenantDocRef, { status: "inactive" });
+  
+              return { ...tenant, status: "inactive" };
+            }
+  
+            return tenant;
+          })
         );
+  
+        // If any status changed, update the property listing document
+        if (didUpdate) {
+          await updateDoc(docRef, { tenants: updatedTenants });
+        }
+  
+        // Filter by selected filter
+        const mappedFilter = filter === "past" ? "inactive" : filter;
+        const filteredTenants = updatedTenants.filter(
+          (tenant) => tenant.status === mappedFilter
+        );
+  
         setTenants(filteredTenants);
-        console.log("Fetched tenants:", filteredTenants); // Debugging log
       } else {
         setError("No such document exists.");
       }
     } catch (error) {
       setError("Failed to fetch tenants.");
-      console.error("Fetch error:", error); // Debugging log
+      console.error("Fetch error:", error);
     } finally {
       setLoading(false);
     }
