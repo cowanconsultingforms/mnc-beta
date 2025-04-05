@@ -46,22 +46,30 @@ const TenantList = () => {
     fetchSingleListing(id);
   }, [id, filter]); // Fetch again if the filter or id changes
 
-  const formatDate = (timestamp) => {
-    if (timestamp && typeof timestamp.toDate === "function") {
-      const date = timestamp.toDate();
-      return date.toLocaleDateString();
+const formatDate = (timestamp) => {
+  if (!timestamp) return "N/A";
+
+  // Firestore Timestamp
+  if (typeof timestamp.toDate === "function") {
+    return timestamp.toDate().toISOString().split("T")[0];
+  }
+
+  // JavaScript Date object
+  if (timestamp instanceof Date) {
+    return timestamp.toISOString().split("T")[0];
+  }
+
+  // String format (e.g., "2024-04-04")
+  if (typeof timestamp === "string") {
+    const date = new Date(timestamp);
+    if (!isNaN(date)) {
+      return date.toISOString().split("T")[0];
     }
-    if (timestamp instanceof Date) {
-      return timestamp.toLocaleDateString();
-    }
-    if (typeof timestamp === "string") {
-      const date = new Date(timestamp);
-      if (!isNaN(date)) {
-        return date.toLocaleDateString();
-      }
-    }
-    return "N/A";
-  };
+  }
+
+  return "N/A";
+};
+
 
   if (loading) {
     return <p className="text-center text-lg">Loading tenants...</p>;

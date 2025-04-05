@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
 import { db } from "../firebase";
+import { Timestamp } from "firebase/firestore";
 
 const TenantDetail = () => {
   const { id, tenantId } = useParams();
@@ -10,6 +11,7 @@ const TenantDetail = () => {
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
   const [imageFile, setImageFile] = useState(null); // Store selected image file
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const tenantDocRef = doc(db, "tenants", tenantId);
 
 
 
@@ -51,6 +53,13 @@ const TenantDetail = () => {
       [name]: value,
     }));
   };
+  
+  const safeConvertToTimestamp = (value) => {
+    if (!value) return null;
+    if (value?.seconds) return value; // already a Timestamp
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : Timestamp.fromDate(date);
+  };
 
   const handleSaveChanges = async () => {
     try {
@@ -60,6 +69,16 @@ const TenantDetail = () => {
       if (docSnap.exists()) {
         // Get current tenants list from Firestore or initialize as an empty array
         const tenants = docSnap.data().tenants || [];
+
+        // Convert leaseStartDate, leaseEndDate, and DOB to Date objects
+        editableTenant.id = tenantId; // Ensure ID is preserved
+
+        editableTenant.leaseStartDate = safeConvertToTimestamp(editableTenant.leaseStartDate);
+        editableTenant.leaseEndDate = safeConvertToTimestamp(editableTenant.leaseEndDate);
+        editableTenant.DOB = safeConvertToTimestamp(editableTenant.DOB);
+
+
+
 
         // Update the specific tenant in the tenants array
         const updatedTenants = tenants.map((tenant) =>
@@ -73,6 +92,7 @@ const TenantDetail = () => {
 
         // Save the updated tenants array back to Firestore
         await updateDoc(docRef, { tenants: updatedTenants });
+        await updateDoc(tenantDocRef, editableTenant, { merge: true });
 
         setTenant(editableTenant); // Update display to match saved data
         setIsEditing(false); // Exit edit mode
@@ -183,17 +203,47 @@ const TenantDetail = () => {
             value: editableTenant?.guaranteeBond || "",
           },
           {
-            label: "Date of Birth",
-            name: "DOB",
-            value: editableTenant?.DOB
-              ? new Date(editableTenant.DOB.seconds * 1000).toLocaleDateString()
+            label: "Lease Start Date",
+            name: "leaseStartDate",
+            type: "date",
+            value: editableTenant?.leaseStartDate
+              ? typeof editableTenant.leaseStartDate === "string"
+                ? editableTenant.leaseStartDate
+                : new Date(editableTenant.leaseStartDate.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
               : "",
           },
-        ].map(({ label, name, value }) => (
+          {
+            label: "Lease End Date",
+            name: "leaseEndDate",
+            type: "date",
+            value: editableTenant?.leaseEndDate
+              ? typeof editableTenant.leaseEndDate === "string"
+                ? editableTenant.leaseEndDate
+                : new Date(editableTenant.leaseEndDate.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
+              : "",
+          },
+          {
+            label: "Date of Birth",
+            name: "DOB",
+            type: "date",
+            value: editableTenant?.DOB
+              ? typeof editableTenant.DOB === "string"
+                ? editableTenant.DOB
+                : new Date(editableTenant.DOB.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
+              : "",
+          },
+          
+        ].map(({ label, name, value, type = "text" }) => (
           <div key={label} className="flex flex-col">
             <label className="font-semibold">{label}:</label>
             <input
-              type="text"
+              type={type}
               name={name}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder={`Enter ${label}`}

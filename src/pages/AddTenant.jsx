@@ -40,6 +40,8 @@ const AddTenant = () => {
     internalNotes: "",
     status: "active",
     imageUrl: "", // New imageUrl field
+    leaseStartDate: "",
+    leaseEndDate: "",
   });
   const [file, setFile] = useState(null); // State to store the file
   const [error, setError] = useState("");
@@ -121,6 +123,15 @@ const AddTenant = () => {
     const dobTimestamp = tenant.DOB
       ? Timestamp.fromDate(new Date(tenant.DOB))
       : null;
+    
+      const leaseStartTimestamp = tenant.leaseStartDate
+      ? Timestamp.fromDate(new Date(tenant.leaseStartDate))
+      : null;
+    
+    const leaseEndTimestamp = tenant.leaseEndDate
+      ? Timestamp.fromDate(new Date(tenant.leaseEndDate))
+      : null;
+    
 
     // Handle file upload if a file was selected
     let imageUrl = "";
@@ -137,7 +148,14 @@ const AddTenant = () => {
 
     try {
       const tenantsRef = collection(db, "tenants");
-      const tenantData = { ...tenant, DOB: dobTimestamp, imageUrl };
+      const tenantData = {
+        ...tenant,
+        DOB: dobTimestamp,
+        leaseStartDate: leaseStartTimestamp,
+        leaseEndDate: leaseEndTimestamp,
+        imageUrl,
+      };
+      
 
       // Add the tenant to the Firestore collection
       const tenantDocRef = await addDoc(tenantsRef, tenantData);
@@ -216,6 +234,8 @@ const AddTenant = () => {
           { label: "SqFt", name: "sqFt" },
           { label: "Bedrooms", name: "bedrooms" },
           { label: "Security Deposit", name: "securityDeposit" },
+          { label: "Lease Start Date", name: "leaseStartDate", type: "date" },
+          { label: "Lease End Date", name: "leaseEndDate", type: "date" },
           { label: "Pet Deposit", name: "petDeposit" },
           { label: "Guarantee Bond", name: "guaranteeBond" },
           { label: "Date of Birth", name: "DOB", type: "date" },
