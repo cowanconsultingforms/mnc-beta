@@ -30,26 +30,49 @@ const TenantList = () => {
         // Auto-mark and prepare updates
         const updatedTenants = await Promise.all(
           fetchedTenants.map(async (tenant) => {
-            const leaseEnd = tenant.leaseEndDate?.seconds
-              ? new Date(tenant.leaseEndDate.seconds * 1000)
-              : new Date(tenant.leaseEndDate);
-  
-            const shouldBeInactive =
-              leaseEnd && leaseEnd < now && tenant.status !== "inactive";
-  
-            if (shouldBeInactive) {
-              didUpdate = true;
-  
-              // Update individual tenant doc
-              const tenantDocRef = doc(db, "tenants", tenant.id);
-              await updateDoc(tenantDocRef, { status: "inactive" });
-  
-              return { ...tenant, status: "inactive" };
+            const leaseEndRaw = tenant.leaseEndDate;
+        
+            let leaseEnd;
+            if (leaseEndRaw?.seconds) {
+              leaseEnd = new Date(leaseEndRaw.seconds * 1000);
+            } else if (typeof leaseEndRaw === "string") {
+              const parts = leaseEndRaw.includes("/")
+                ? leaseEndRaw.split("/")
+                : leaseEndRaw.split("-");
+              if (parts.length === 3) {
+                const [a, b, c] = parts;
+                leaseEnd = leaseEndRaw.includes("/")
+                  ? new Date(`${c}-${a}-${b}`)
+                  : new Date(`${a}-${b}-${c}`);
+              }
+            } else if (leaseEndRaw) {
+              leaseEnd = new Date(leaseEndRaw);
             }
-  
-            return tenant;
+        
+            let updatedTenant = tenant;
+        
+            const hasValidLeaseEnd = leaseEnd instanceof Date && !isNaN(leaseEnd);
+        
+            if (hasValidLeaseEnd) {
+              const shouldBeInactive = leaseEnd < now;
+              const correctStatus = shouldBeInactive ? "inactive" : "active";
+        
+              if (tenant.status !== correctStatus) {
+                didUpdate = true;
+        
+                const tenantDocRef = doc(db, "tenants", tenant.id);
+                await updateDoc(tenantDocRef, { status: correctStatus });
+        
+                updatedTenant = { ...tenant, status: correctStatus };
+              }
+            }
+        
+            //  DO NOT override status if leaseEnd is missing
+            return updatedTenant;
           })
         );
+        
+        
   
         // If any status changed, update the property listing document
         if (didUpdate) {
@@ -57,10 +80,41 @@ const TenantList = () => {
         }
   
         // Filter by selected filter
-        const mappedFilter = filter === "past" ? "inactive" : filter;
-        const filteredTenants = updatedTenants.filter(
-          (tenant) => tenant.status === mappedFilter
-        );
+        
+
+        const filteredTenants = updatedTenants.filter((tenant) => {
+          const leaseEndRaw = tenant.leaseEndDate;
+        
+          let leaseEnd;
+          if (leaseEndRaw?.seconds) {
+            leaseEnd = new Date(leaseEndRaw.seconds * 1000);
+          } else if (typeof leaseEndRaw === "string") {
+            const parts = leaseEndRaw.includes("/")
+              ? leaseEndRaw.split("/")
+              : leaseEndRaw.split("-");
+            if (parts.length === 3) {
+              const [a, b, c] = parts;
+              leaseEnd = leaseEndRaw.includes("/")
+                ? new Date(`${c}-${a}-${b}`)
+                : new Date(`${a}-${b}-${c}`);
+            }
+          } else if (leaseEndRaw) {
+            leaseEnd = new Date(leaseEndRaw);
+          }
+        
+          const isInactive = tenant.status === "inactive";
+          const leaseExpired = leaseEnd && leaseEnd < now;
+        
+          if (filter === "past") {
+            return isInactive || leaseExpired;
+          } else {
+            // If no leaseEndDate, show only if tenant is marked active
+            return !isInactive && (!leaseEnd || leaseEnd >= now);
+          }
+        });
+        
+        
+        
   
         setTenants(filteredTenants);
       } else {
