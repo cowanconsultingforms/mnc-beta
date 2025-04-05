@@ -275,8 +275,8 @@ const AddTenant = () => {
             value={tenant.status}
             onChange={handleInputChange}
           >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="active">Current Tenants</option>
+            <option value="inactive">Past Tenants</option>
           </select>
         </div>
 

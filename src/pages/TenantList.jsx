@@ -90,7 +90,7 @@ const formatDate = (timestamp) => {
               filter === "active" ? "bg-gray-500 text-white" : "bg-gray-200"
             }`}
           >
-            Active Tenants
+            Current Tenants
           </button>
           <button
             onClick={() => setFilter("past")}
@@ -107,7 +107,7 @@ const formatDate = (timestamp) => {
           {tenants.length === 0 ? (
             <p className="text-gray-600 text-center col-span-full">
               {filter === "active"
-                ? "No active tenants found for this property"
+                ? "No Current tenants found for this property"
                 : "No past tenants found for this property"}
             </p>
           ) : (
