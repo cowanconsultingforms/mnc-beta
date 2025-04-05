@@ -254,6 +254,22 @@ const TenantDetail = () => {
           </div>
         ))}
 
+        {/* Status Dropdown */}
+        <div className="flex flex-col">
+          <label className="font-semibold">Status:</label>
+          <select
+            name="status"
+            className="w-full p-2 border border-gray-300 rounded bg-white"
+            value={editableTenant?.status || "active"}
+            disabled={!isEditing}
+            onChange={handleInputChange}
+          >
+            <option value="active">Current Tenant</option>
+            <option value="inactive">Past Tenant</option>
+          </select>
+        </div>
+
+
         {/* Dropdown for Rental Type */}
         <div className="flex flex-col">
           <label className="font-semibold">Rental Type:</label>
