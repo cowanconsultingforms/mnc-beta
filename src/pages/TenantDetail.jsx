@@ -17,8 +17,14 @@ const TenantDetail = () => {
 
   useEffect(() => {
     const fetchTenantDetails = async () => {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         const tenantList = docSnap.data().tenants || []; // Default to empty array if tenants doesn't exist
@@ -63,8 +69,14 @@ const TenantDetail = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         // Get current tenants list from Firestore or initialize as an empty array
@@ -107,8 +119,14 @@ const TenantDetail = () => {
 
   const handleDeleteTenant = async () => {
     try {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         const tenants = docSnap.data().tenants || [];

@@ -9,11 +9,25 @@ const TenantList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("active"); // Add state for filter (active or past)
+  const [propertySource, setPropertySource] = useState("");
 
   const fetchSingleListing = async (listingId) => {
     try {
-      const docRef = doc(db, "propertyListings", listingId);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", listingId);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", listingId);
+        docSnap = await getDoc(docRef);
+      }
+
+      if (docRef.path.includes("propertyListings")) {
+        setPropertySource("propertyListings");
+      } else if (docRef.path.includes("properties")) {
+        setPropertySource("properties");
+      }
+      
+      
   
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -185,7 +199,7 @@ const formatDate = (timestamp) => {
             }`}
           >
             Past Tenants
-          </button>
+          </button>  
         </div>
 
         {/* Tenant List */}
@@ -217,7 +231,26 @@ const formatDate = (timestamp) => {
             ))
           )}
         </div>
+        
+        {propertySource && (
+            <div className="mt-8 text-center">
+              <Link
+                to={
+                  propertySource === "propertyListings"
+                    ? `/edit-listing/${id}`
+                    : `/edit-property/${id}`
+                }
+                className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition"
+              >
+                Show Property Details
+              </Link>
+            </div>
+        )}
+
       </div>
+
+
+
     </div>
   );
 };

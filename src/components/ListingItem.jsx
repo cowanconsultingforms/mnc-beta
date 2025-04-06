@@ -16,6 +16,7 @@ const ListingItem = ({
   showActions, // Add the showActions prop here
   videoRef,
   isVip = false,
+  source,
 }) => {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -73,11 +74,8 @@ const ListingItem = ({
       <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-2">
         <Link
           className="contents"
-          to={
-            isPropertyManagement
-              ? `/property-management/${id}/tenants`
-              : `${isVip ? "/vip" : ""}/category/${listing.type}/${id}`
-          }
+          to={`/property-management/${id}/tenants`}
+
         >
           <div className="relative w-full h-60 mb-2">
             <img

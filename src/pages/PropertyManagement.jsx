@@ -11,14 +11,41 @@ const PropertyManagement = () => {
 
   const fetchPropertyListings = async () => {
     try {
-      const listingRef = collection(db, "propertyListings");
-      const snapshot = await getDocs(listingRef);
-      const listings = snapshot.docs.map((doc) => ({
+      const [listingsSnap, propertiesSnap] = await Promise.all([
+        getDocs(collection(db, "propertyListings")),
+        getDocs(collection(db, "properties")),
+      ]);
+  
+      const listings = listingsSnap.docs.map((doc) => ({
         id: doc.id,
-        data: doc.data(),
+        data: { ...doc.data(), source: "propertyListings" },
       }));
-
-      setPropertyListings(listings);
+      
+  
+      const properties = propertiesSnap.docs.map((doc) => {
+        const data = doc.data();
+      
+        return {
+          id: doc.id,
+          data: {
+            ...data,
+            source: "properties",
+            imgs: Array.isArray(data.imgs)
+              ? data.imgs
+              : [
+                  {
+                    url: data.imageUrl || "",
+                    path:
+                      data.imageUrl?.split("?alt")[0].split("/o/")[1] || "",
+                  },
+                ],
+          },
+        };
+      });
+      
+  
+      const combined = [...listings, ...properties];
+      setPropertyListings(combined);
     } catch (error) {
       console.log("There was an error fetching property listings:", error);
     }
@@ -67,24 +94,33 @@ const PropertyManagement = () => {
         itemClass="carousel-item-padding-40-px"
       >
         {propertyListings.map((listing) => (
-          <ListingItem
-            key={listing.id}
-            id={listing.id}
-            listing={listing.data}
-            isPropertyManagement={true}
-          />
+            <ListingItem
+              key={listing.id}
+              id={listing.id}
+              listing={listing.data}
+              source={listing.data.source}
+              isPropertyManagement={true}
+            />
         ))}
       </Carousel>
 
       {/* Single Add Tenant Button - Positioned Below Carousel */}
       {propertyListings.length > 0 && (
-        <div className="flex justify-center mt-6">
+        <div className="flex flex-col items-center mt-6 space-y-4">
           <Link
             to={`/add-tenant/${propertyListings[0].id}`} // Link to AddTenant with the first property's ID
             className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
           >
             Add Tenant
           </Link>
+
+          <Link
+            to={`/add-property`} 
+            className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
+          >
+            Create Property
+          </Link>
+
         </div>
       )}
     </div>

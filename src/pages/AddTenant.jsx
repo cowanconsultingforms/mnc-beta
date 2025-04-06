@@ -49,13 +49,16 @@ const AddTenant = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const listingRef = collection(db, "propertyListings");
-        const snapshot = await getDocs(listingRef);
-        const listings = snapshot.docs.map((doc) => ({
+        const propertyListingsSnap = await getDocs(collection(db, "propertyListings"));
+        const propertiesSnap = await getDocs(collection(db, "properties"));
+        
+        const combined = [...propertyListingsSnap.docs, ...propertiesSnap.docs].map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
-        setProperties(listings);
+        
+        setProperties(combined);
+        
 
         if (propertyId) {
           const selectedProperty = listings.find(
@@ -165,9 +168,22 @@ const AddTenant = () => {
       console.log("Tenant added with ID:", tenantId);
 
       // Fetch property data and update tenants array
-      const propertyRef = doc(db, "propertyListings", selectedPropertyId);
-      const propertyDoc = await getDoc(propertyRef);
+      let propertyRef = doc(db, "propertyListings", selectedPropertyId);
+      let propertyDoc = await getDoc(propertyRef);
+      
+      // If not found in propertyListings, try properties
+      if (!propertyDoc.exists()) {
+        propertyRef = doc(db, "properties", selectedPropertyId);
+        propertyDoc = await getDoc(propertyRef);
+      }
+      
+      if (!propertyDoc.exists()) {
+        setError("Property not found in either collection.");
+        return;
+      }
+      
       const propertyData = propertyDoc.data();
+      
 
       const updatedTenants = propertyData.tenants
         ? [...propertyData.tenants, { id: tenantId, ...tenantData }]
