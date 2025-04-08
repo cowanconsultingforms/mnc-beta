@@ -150,6 +150,19 @@ const Admin = () => {
           role: newRole,
         },
       }));
+      setFilteredUsers((prevFilteredUsers) =>
+        prevFilteredUsers.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                data: {
+                  ...user.data,
+                  role: newRole,
+                },
+              }
+            : user
+        )
+      );
       toast.success("Role updated successfully.");
     } catch (error) {
       toast.error("Failed to update role.");
@@ -171,6 +184,53 @@ const Admin = () => {
         break;
     }
   };
+
+  const handleDeleteUser = async (userId, userEmail) => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (!user) {
+      toast.error("You must be logged in as an admin to delete users.");
+      return;
+    }
+  
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete ${userEmail}? This action is irreversible.`)) {
+      return;
+    }
+  
+    try {
+      // Get the admin's ID token
+      const idToken = await user.getIdToken();
+  
+      // Send request to delete user
+      const response = await fetch("https://us-central1-mnc-development.cloudfunctions.net/deleteUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, idToken }),
+      });
+  
+      if (response.ok) {
+        toast.success("User deleted successfully.");
+  
+        // Update the UI by removing the deleted user
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        setFilteredUsers((prevFilteredUsers) => prevFilteredUsers.filter((user) => user.id !== userId));
+  
+        // Close the modal after successful deletion
+        closeModal();
+      } else {
+        const errorMessage = await response.text();
+        toast.error(`Failed to delete user: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("An error occurred while deleting the user.");
+    }
+  };
+  
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -203,15 +263,15 @@ const Admin = () => {
             className="mt-4 p-3 w-full border border-gray-400 rounded bg-gray-50 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600"
           >
             <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="agent">Agent</option>
-            <option value="client">Client</option>
-            <option value="partner">Partner</option>
-            <option value="staff">Staff</option>
             <option value="superadmin">Superadmin</option>
-            <option value="vendor">Vendor</option>
-            <option value="vip">Vip</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
             <option value="user">User</option>
+            <option value="vip">Vip</option>
+            <option value="client">Client</option>
+            <option value="agent">Agent</option>
+            <option value="vendor">Vendor</option>
+            <option value="partner">Partner</option>
           </select>
         </div>
 
@@ -270,15 +330,15 @@ const Admin = () => {
                 onChange={(e) => handleRoleChange(e, selectedUser.id)}
                 className="p-2 border rounded"
               >
-                <option value="admin">Admin</option>
-                <option value="agent">Agent</option>
-                <option value="client">Client</option>
-                <option value="partner">Partner</option>
-                <option value="staff">Staff</option>
                 <option value="superadmin">Superadmin</option>
-                <option value="vendor">Vendor</option>
-                <option value="vip">Vip</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
                 <option value="user">User</option>
+                <option value="vip">Vip</option>
+                <option value="client">Client</option>
+                <option value="agent">Agent</option>
+                <option value="vendor">Vendor</option>
+                <option value="partner">Partner</option>
               </select>
               {selectedUser.data.role === 'agent' && (
                 <div className="mt-4">
@@ -325,6 +385,14 @@ const Admin = () => {
                 >
                   View Profile
                 </button>
+
+                <button
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
+                  onClick={() => handleDeleteUser(selectedUser.id, selectedUser.data.email)}
+                >
+                  Delete User
+                </button>
+
                 <button
                   className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-150 ease-in-out"
                   onClick={closeModal}

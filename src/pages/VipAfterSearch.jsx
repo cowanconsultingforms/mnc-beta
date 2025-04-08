@@ -596,7 +596,7 @@ import {
             {/* Logo */}
             {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
   
-            <div className="flex flex-row space-x-3 mt-6">
+            <div className="flex flex-row space-x-3 mt-6 disable-hover">
               {/* Buy button */}
               <button
                 className={`px-7 py-3 ring-1 font-medium uppercase shadow-md rounded transition duration-150 ease-in-out w-full 
@@ -1481,6 +1481,7 @@ import {
                   key={suggestion.id}
                   id={suggestion.id}
                   listing={suggestion.data}
+                  isVip={true}
                 />
               ))}
             </ul>

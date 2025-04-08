@@ -441,7 +441,7 @@ const EditListing = () => {
       <form onSubmit={onSubmit}>
         {/* Select buy/rent buttons */}
         <p className="text-lg mt-6 font-semibold">Buy / Rent / Sold</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="type"
@@ -535,7 +535,7 @@ const EditListing = () => {
 
         {/* Parking availability buttons */}
         <p className="text-lg mt-6 font-semibold">Parking Spot</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="parking"
@@ -560,7 +560,7 @@ const EditListing = () => {
 
         {/* Furnished buttons */}
         <p className="text-lg mt-6 font-semibold">Furnished</p>
-        <div className="flex ">
+        <div className="flex disable-hover">
           <button
             type="button"
             id="furnished"
@@ -641,7 +641,7 @@ const EditListing = () => {
 
         {/* Add discount buttons */}
         <p className="text-lg font-semibold">Add Discount?</p>
-        <div className="flex mb-6">
+        <div className="flex mt-6 disable-hover">
           <button
             type="button"
             id="offer"

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
 import listingVid from "../assets/listingVideo.mp4";
+import { useRef } from "react";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
@@ -16,6 +17,7 @@ const ListingsPage = () => {
   const [userRole, setUserRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const videoRef = useRef(null);
 
   // Fetch user role and VIP listings
   useEffect(() => {
@@ -110,6 +112,7 @@ const ListingsPage = () => {
       {/* Video Background */}
       <div className="video-container">
         <video
+          ref={videoRef}
           src={listingVid}
           autoPlay
           muted
@@ -181,6 +184,7 @@ const ListingsPage = () => {
                         onDelete={() => onDelete(listing.id)}
                         onEdit={() => onEdit(listing.id)}
                         showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
+                        videoRef={videoRef}
                       />
                     ))}
                   </ul>
