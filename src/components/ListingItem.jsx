@@ -72,11 +72,15 @@ const ListingItem = ({
   return (
     <>
       <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-2">
-        <Link
-          className="contents"
-          to={`/property-management/${id}/tenants`}
+      <Link
+        className="contents"
+        to={
+          source === "listingsPage"
+            ? `/category/${listing.type}/${id}`  
+            : `/property-management/${id}/tenants`
+        }        
+      >
 
-        >
           <div className="relative w-full h-60 mb-2">
             <img
               className="grayscale h-full w-full object-cover hover:scale-105 transition-transform duration-200 ease-in"
