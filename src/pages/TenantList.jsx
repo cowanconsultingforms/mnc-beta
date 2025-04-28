@@ -10,6 +10,7 @@ const TenantList = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("active"); // Add state for filter (active or past)
   const [propertySource, setPropertySource] = useState("");
+  const [listingType, setListingType] = useState("rent"); // default to rent
 
   const fetchSingleListing = async (listingId) => {
     try {
@@ -31,6 +32,11 @@ const TenantList = () => {
   
       if (docSnap.exists()) {
         const data = docSnap.data();
+
+        if (data?.type) {
+          setListingType(data.type); // save "buy", "rent", or "sold"
+        }
+      
   
         let fetchedTenants = Array.isArray(data.tenants)
           ? data.tenants
@@ -237,8 +243,8 @@ const formatDate = (timestamp) => {
               <Link
                 to={
                   propertySource === "propertyListings"
-                    ? `/edit-listing/${id}`
-                    : `/edit-property/${id}`
+                    ? `/category/${listingType}/${id}`
+                    : `/property-preview/${id}`
                 }
                 className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition"
               >

@@ -29,22 +29,31 @@ const ListingItem = ({
     setShowConfirm(false);
     try {
       const storage = getStorage();
-      const docRef = doc(db, "propertyListings", id);
+      const collectionName = source === "properties" ? "properties" : "propertyListings";
+      const docRef = doc(db, collectionName, id);
       const docSnap = await getDoc(docRef);
-
+  
       if (docSnap.exists()) {
         const deletedListing = docSnap.data();
-        const deletePromises = deletedListing.imgs.map((img) =>
-          deleteObject(ref(storage, img.path))
+        const imgs = Array.isArray(deletedListing.imgs)
+          ? deletedListing.imgs
+          : deletedListing.imageUrl
+          ? [{ path: deletedListing.imageUrl.split("?alt")[0].split("/o/")[1] }]
+          : [];
+  
+        const deletePromises = imgs.map((img) =>
+          deleteObject(ref(storage, img.path)).catch((err) => {
+            console.warn("Image deletion failed:", err);
+          })
         );
-
+  
         await Promise.all(deletePromises); // Wait for all delete promises to resolve
         await deleteDoc(docRef); // Delete the listing from Firestore
-
+  
         if (onDelete) {
           onDelete(); // Update parent state
         }
-
+  
         toast.success("The listing was deleted!"); // Notify the user
       } else {
         toast.error("Listing not found."); // Notify if the listing does not exist
@@ -54,7 +63,7 @@ const ListingItem = ({
       toast.error("Failed to delete the listing.");
     }
   };
-
+  
   const cancelDelete = () => {
     setShowConfirm(false);
     if (videoRef?.current && videoRef.current.paused) {
@@ -66,7 +75,11 @@ const ListingItem = ({
 
   const handleEdit = (event) => {
     event.stopPropagation(); // Prevents triggering the Link's onClick
-    navigate(`/edit-listing/${id}`);
+    if (source === "properties") {
+      navigate(`/edit-property/${id}`);
+    } else {
+      navigate(`/edit-listing/${id}`);
+    }
   };
 
   return (
@@ -78,7 +91,7 @@ const ListingItem = ({
           source === "listingsPage"
             ? `/category/${listing.type}/${id}`  
             : `/property-management/${id}/tenants`
-        }        
+        }
       >
 
           <div className="relative w-full h-60 mb-2">
@@ -134,7 +147,7 @@ const ListingItem = ({
         
         {/* Conditionally render the Edit and Delete buttons based on showActions */}
         {!showActions && <div className="mb-4"></div>}
-        {showActions && (
+        {(showActions || isPropertyManagement) && (
           <div className="flex justify-between w-full p-2 mt-2">
             <button
               type="button"
