@@ -89,7 +89,9 @@ const ListingItem = ({
         className="contents"
         to={
           source === "listingsPage"
-            ? `/category/${listing.type}/${id}`  
+            ? `/category/${listing.type}/${id}`
+            : source === "vipPage"
+            ? `/vip/category/${listing.type}/${id}`
             : `/property-management/${id}/tenants`
         }
       >

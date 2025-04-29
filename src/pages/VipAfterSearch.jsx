@@ -1483,6 +1483,7 @@ import {
                   id={suggestion.id}
                   listing={suggestion.data}
                   isVip={true}
+                  source="vipPage"
                 />
               ))}
             </ul>
