@@ -591,6 +591,7 @@ import {
   
     return (
       <>
+      <div className="bg-gray-300 min-h-[calc(100vh-48px)] h-auto"> 
         <section className="max-w-md mx-auto flex justify-center items-center flex-col mb-16 mt-16">
           <div className="w-full px-3">
             {/* Logo */}
@@ -1532,6 +1533,7 @@ import {
             Equal Opportunity Act. Listing information is deemed reliable, but is
             not guaranteed.
           </p>
+        </div>
         </div>
       </>
     );
