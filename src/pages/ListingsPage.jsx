@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
 import listingVid from "../assets/listingVideo.mp4";
-import { useRef } from "react";
+
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);

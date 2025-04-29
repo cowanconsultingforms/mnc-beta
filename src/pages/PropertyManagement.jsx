@@ -78,14 +78,22 @@ const PropertyManagement = () => {
 
       {/* Single Add Tenant Button - Positioned Below Carousel */}
       {propertyListings.length > 0 && (
-        <div className="flex justify-center mt-6">
+        <div className="flex flex-col items-center mt-6 space-y-4">
           <Link
             to={`/add-tenant/${propertyListings[0].id}`} // Link to AddTenant with the first property's ID
             className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
           >
             Add Tenant
           </Link>
+          
+          <Link
+      to="/PropertyDetail"
+      className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
+    >
+      Add Property
+    </Link>
         </div>
+       
       )}
     </div>
   );
