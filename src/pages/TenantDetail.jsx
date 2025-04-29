@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
 import { db } from "../firebase";
+import { Timestamp } from "firebase/firestore";
 
 const TenantDetail = () => {
   const { id, tenantId } = useParams();
@@ -10,13 +11,20 @@ const TenantDetail = () => {
   const [editableTenant, setEditableTenant] = useState(null); // Track changes locally
   const [imageFile, setImageFile] = useState(null); // Store selected image file
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const tenantDocRef = doc(db, "tenants", tenantId);
 
 
 
   useEffect(() => {
     const fetchTenantDetails = async () => {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         const tenantList = docSnap.data().tenants || []; // Default to empty array if tenants doesn't exist
@@ -51,15 +59,38 @@ const TenantDetail = () => {
       [name]: value,
     }));
   };
+  
+  const safeConvertToTimestamp = (value) => {
+    if (!value) return null;
+    if (value?.seconds) return value; // already a Timestamp
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : Timestamp.fromDate(date);
+  };
 
   const handleSaveChanges = async () => {
     try {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         // Get current tenants list from Firestore or initialize as an empty array
         const tenants = docSnap.data().tenants || [];
+
+        // Convert leaseStartDate, leaseEndDate, and DOB to Date objects
+        editableTenant.id = tenantId; // Ensure ID is preserved
+
+        editableTenant.leaseStartDate = safeConvertToTimestamp(editableTenant.leaseStartDate);
+        editableTenant.leaseEndDate = safeConvertToTimestamp(editableTenant.leaseEndDate);
+        editableTenant.DOB = safeConvertToTimestamp(editableTenant.DOB);
+
+
+
 
         // Update the specific tenant in the tenants array
         const updatedTenants = tenants.map((tenant) =>
@@ -73,6 +104,7 @@ const TenantDetail = () => {
 
         // Save the updated tenants array back to Firestore
         await updateDoc(docRef, { tenants: updatedTenants });
+        await updateDoc(tenantDocRef, editableTenant, { merge: true });
 
         setTenant(editableTenant); // Update display to match saved data
         setIsEditing(false); // Exit edit mode
@@ -87,8 +119,14 @@ const TenantDetail = () => {
 
   const handleDeleteTenant = async () => {
     try {
-      const docRef = doc(db, "propertyListings", id);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", id);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", id);
+        docSnap = await getDoc(docRef);
+      }
+      
 
       if (docSnap.exists()) {
         const tenants = docSnap.data().tenants || [];
@@ -183,17 +221,47 @@ const TenantDetail = () => {
             value: editableTenant?.guaranteeBond || "",
           },
           {
-            label: "Date of Birth",
-            name: "DOB",
-            value: editableTenant?.DOB
-              ? new Date(editableTenant.DOB.seconds * 1000).toLocaleDateString()
+            label: "Lease Start Date",
+            name: "leaseStartDate",
+            type: "date",
+            value: editableTenant?.leaseStartDate
+              ? typeof editableTenant.leaseStartDate === "string"
+                ? editableTenant.leaseStartDate
+                : new Date(editableTenant.leaseStartDate.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
               : "",
           },
-        ].map(({ label, name, value }) => (
+          {
+            label: "Lease End Date",
+            name: "leaseEndDate",
+            type: "date",
+            value: editableTenant?.leaseEndDate
+              ? typeof editableTenant.leaseEndDate === "string"
+                ? editableTenant.leaseEndDate
+                : new Date(editableTenant.leaseEndDate.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
+              : "",
+          },
+          {
+            label: "Date of Birth",
+            name: "DOB",
+            type: "date",
+            value: editableTenant?.DOB
+              ? typeof editableTenant.DOB === "string"
+                ? editableTenant.DOB
+                : new Date(editableTenant.DOB.seconds * 1000)
+                    .toISOString()
+                    .split("T")[0]
+              : "",
+          },
+          
+        ].map(({ label, name, value, type = "text" }) => (
           <div key={label} className="flex flex-col">
             <label className="font-semibold">{label}:</label>
             <input
-              type="text"
+              type={type}
               name={name}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder={`Enter ${label}`}
@@ -203,6 +271,22 @@ const TenantDetail = () => {
             />
           </div>
         ))}
+
+        {/* Status Dropdown */}
+        <div className="flex flex-col">
+          <label className="font-semibold">Status:</label>
+          <select
+            name="status"
+            className="w-full p-2 border border-gray-300 rounded bg-white"
+            value={editableTenant?.status || "active"}
+            disabled={!isEditing}
+            onChange={handleInputChange}
+          >
+            <option value="active">Current Tenant</option>
+            <option value="inactive">Past Tenant</option>
+          </select>
+        </div>
+
 
         {/* Dropdown for Rental Type */}
         <div className="flex flex-col">

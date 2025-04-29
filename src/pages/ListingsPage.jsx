@@ -173,6 +173,7 @@ const ListingsPage = () => {
                         onEdit={() => onEdit(listing.id)}
                         showActions={isAuthenticated && ["admin", "superadmin"].includes(userRole)}
                         videoRef={videoRef}
+                        source="listingsPage"
                       />
                     ))}
                   </ul>

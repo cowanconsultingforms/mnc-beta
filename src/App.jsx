@@ -52,6 +52,10 @@ import UserDocuments from "./pages/userDocuments";
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import ViewPaymentHistory from "./pages/ViewPaymentHistory";
+import AddProperty from "./pages/AddProperty";
+import EditProperty from "./pages/EditProperty"; // Adjust path if needed
+import PropertyPreview from "./pages/PropertyPreview";
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -169,7 +173,10 @@ function App() {
           <Route path="/manageRequests/:uid" element={<ManageRequests />} />
           <Route path="/trackDealsProgress" element={<TrackDealsProgress />} />
           <Route path="/property-management" element={<PropertyManagement />} />
+          <Route path="/add-property" element={<AddProperty />} />
+          <Route path="/edit-property/:id" element={<EditProperty />} />
           <Route path="/add-tenant/:propertyId" element={<AddTenant />} />
+          <Route path="/property-preview/:id" element={<PropertyPreview />} />
           <Route
             path="/property-management/:id/tenants"
             element={<TenantList />}

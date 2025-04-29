@@ -9,16 +9,49 @@ import { Link } from "react-router-dom";
 const PropertyManagement = () => {
   const [propertyListings, setPropertyListings] = useState([]);
 
+  const handleDelete = (id) => {
+    setPropertyListings((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
+  };
+
   const fetchPropertyListings = async () => {
     try {
-      const listingRef = collection(db, "propertyListings");
-      const snapshot = await getDocs(listingRef);
-      const listings = snapshot.docs.map((doc) => ({
+      const [listingsSnap, propertiesSnap] = await Promise.all([
+        getDocs(collection(db, "propertyListings")),
+        getDocs(collection(db, "properties")),
+      ]);
+  
+      const listings = listingsSnap.docs.map((doc) => ({
         id: doc.id,
-        data: doc.data(),
+        data: { ...doc.data(), source: "propertyListings" },
       }));
-
-      setPropertyListings(listings);
+      
+  
+      const properties = propertiesSnap.docs.map((doc) => {
+        const data = doc.data();
+      
+        return {
+          id: doc.id,
+          data: {
+            ...data,
+            source: "properties",
+            imgs: Array.isArray(data.imgs)
+              ? data.imgs
+              : [
+                  {
+                    url: data.imageUrl || "",
+                    path:
+                      data.imageUrl?.split("?alt")[0].split("/o/")[1] || "",
+                  },
+                ],
+          },
+        };
+      });
+      
+  
+      const combined = [...listings, ...properties];
+      setPropertyListings(combined);
     } catch (error) {
       console.log("There was an error fetching property listings:", error);
     }
@@ -66,14 +99,18 @@ const PropertyManagement = () => {
         dotListClass="custom-dot-list-style"
         itemClass="carousel-item-padding-40-px"
       >
-        {propertyListings.map((listing) => (
-          <ListingItem
-            key={listing.id}
-            id={listing.id}
-            listing={listing.data}
-            isPropertyManagement={true}
-          />
-        ))}
+{propertyListings
+  .filter((listing) => listing.data.source === "properties")
+  .map((listing) => (
+    <ListingItem
+      key={listing.id}
+      id={listing.id}
+      listing={listing.data}
+      source={listing.data.source}
+      isPropertyManagement={true}
+      onDelete={() => handleDelete(listing.id)}
+    />
+))}
       </Carousel>
 
       {/* Single Add Tenant Button - Positioned Below Carousel */}
@@ -85,13 +122,14 @@ const PropertyManagement = () => {
           >
             Add Tenant
           </Link>
-          
+
           <Link
-      to="/PropertyDetail"
-      className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
-    >
-      Add Property
-    </Link>
+            to={`/add-property`} 
+            className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
+          >
+            Create Property
+          </Link>
+
         </div>
        
       )}

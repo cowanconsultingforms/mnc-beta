@@ -40,6 +40,8 @@ const AddTenant = () => {
     internalNotes: "",
     status: "active",
     imageUrl: "", // New imageUrl field
+    leaseStartDate: "",
+    leaseEndDate: "",
   });
   const [file, setFile] = useState(null); // State to store the file
   const [error, setError] = useState("");
@@ -47,13 +49,16 @@ const AddTenant = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const listingRef = collection(db, "propertyListings");
-        const snapshot = await getDocs(listingRef);
-        const listings = snapshot.docs.map((doc) => ({
+        const propertyListingsSnap = await getDocs(collection(db, "propertyListings"));
+        const propertiesSnap = await getDocs(collection(db, "properties"));
+        
+        const combined = [...propertyListingsSnap.docs, ...propertiesSnap.docs].map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
-        setProperties(listings);
+        
+        setProperties(combined);
+        
 
         if (propertyId) {
           const selectedProperty = listings.find(
@@ -121,6 +126,15 @@ const AddTenant = () => {
     const dobTimestamp = tenant.DOB
       ? Timestamp.fromDate(new Date(tenant.DOB))
       : null;
+    
+      const leaseStartTimestamp = tenant.leaseStartDate
+      ? Timestamp.fromDate(new Date(tenant.leaseStartDate))
+      : null;
+    
+    const leaseEndTimestamp = tenant.leaseEndDate
+      ? Timestamp.fromDate(new Date(tenant.leaseEndDate))
+      : null;
+    
 
     // Handle file upload if a file was selected
     let imageUrl = "";
@@ -137,7 +151,14 @@ const AddTenant = () => {
 
     try {
       const tenantsRef = collection(db, "tenants");
-      const tenantData = { ...tenant, DOB: dobTimestamp, imageUrl };
+      const tenantData = {
+        ...tenant,
+        DOB: dobTimestamp,
+        leaseStartDate: leaseStartTimestamp,
+        leaseEndDate: leaseEndTimestamp,
+        imageUrl,
+      };
+      
 
       // Add the tenant to the Firestore collection
       const tenantDocRef = await addDoc(tenantsRef, tenantData);
@@ -147,9 +168,22 @@ const AddTenant = () => {
       console.log("Tenant added with ID:", tenantId);
 
       // Fetch property data and update tenants array
-      const propertyRef = doc(db, "propertyListings", selectedPropertyId);
-      const propertyDoc = await getDoc(propertyRef);
+      let propertyRef = doc(db, "propertyListings", selectedPropertyId);
+      let propertyDoc = await getDoc(propertyRef);
+      
+      // If not found in propertyListings, try properties
+      if (!propertyDoc.exists()) {
+        propertyRef = doc(db, "properties", selectedPropertyId);
+        propertyDoc = await getDoc(propertyRef);
+      }
+      
+      if (!propertyDoc.exists()) {
+        setError("Property not found in either collection.");
+        return;
+      }
+      
       const propertyData = propertyDoc.data();
+      
 
       const updatedTenants = propertyData.tenants
         ? [...propertyData.tenants, { id: tenantId, ...tenantData }]
@@ -216,6 +250,8 @@ const AddTenant = () => {
           { label: "SqFt", name: "sqFt" },
           { label: "Bedrooms", name: "bedrooms" },
           { label: "Security Deposit", name: "securityDeposit" },
+          { label: "Lease Start Date", name: "leaseStartDate", type: "date" },
+          { label: "Lease End Date", name: "leaseEndDate", type: "date" },
           { label: "Pet Deposit", name: "petDeposit" },
           { label: "Guarantee Bond", name: "guaranteeBond" },
           { label: "Date of Birth", name: "DOB", type: "date" },
@@ -255,8 +291,8 @@ const AddTenant = () => {
             value={tenant.status}
             onChange={handleInputChange}
           >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="active">Current Tenants</option>
+            <option value="inactive">Past Tenants</option>
           </select>
         </div>
 

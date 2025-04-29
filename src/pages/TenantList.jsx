@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 const TenantList = () => {
@@ -9,34 +9,140 @@ const TenantList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("active"); // Add state for filter (active or past)
+  const [propertySource, setPropertySource] = useState("");
+  const [listingType, setListingType] = useState("rent"); // default to rent
 
   const fetchSingleListing = async (listingId) => {
     try {
-      const docRef = doc(db, "propertyListings", listingId);
-      const docSnap = await getDoc(docRef);
+      let docRef = doc(db, "propertyListings", listingId);
+      let docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        docRef = doc(db, "properties", listingId);
+        docSnap = await getDoc(docRef);
+      }
 
+      if (docRef.path.includes("propertyListings")) {
+        setPropertySource("propertyListings");
+      } else if (docRef.path.includes("properties")) {
+        setPropertySource("properties");
+      }
+      
+      
+  
       if (docSnap.exists()) {
         const data = docSnap.data();
 
-        let fetchedTenants = [];
-        if (Array.isArray(data.tenants)) {
-          fetchedTenants = data.tenants;
-        } else if (data.tenants) {
-          fetchedTenants = [data.tenants];
+        if (data?.type) {
+          setListingType(data.type); // save "buy", "rent", or "sold"
         }
-
-        // Filter tenants based on the selected status filter
-        const filteredTenants = fetchedTenants.filter(
-          (tenant) => tenant.status === filter
+      
+  
+        let fetchedTenants = Array.isArray(data.tenants)
+          ? data.tenants
+          : data.tenants
+          ? [data.tenants]
+          : [];
+  
+        const now = new Date();
+        let didUpdate = false;
+  
+        // Auto-mark and prepare updates
+        const updatedTenants = await Promise.all(
+          fetchedTenants.map(async (tenant) => {
+            const leaseEndRaw = tenant.leaseEndDate;
+        
+            let leaseEnd;
+            if (leaseEndRaw?.seconds) {
+              leaseEnd = new Date(leaseEndRaw.seconds * 1000);
+            } else if (typeof leaseEndRaw === "string") {
+              const parts = leaseEndRaw.includes("/")
+                ? leaseEndRaw.split("/")
+                : leaseEndRaw.split("-");
+              if (parts.length === 3) {
+                const [a, b, c] = parts;
+                leaseEnd = leaseEndRaw.includes("/")
+                  ? new Date(`${c}-${a}-${b}`)
+                  : new Date(`${a}-${b}-${c}`);
+              }
+            } else if (leaseEndRaw) {
+              leaseEnd = new Date(leaseEndRaw);
+            }
+        
+            let updatedTenant = tenant;
+        
+            const hasValidLeaseEnd = leaseEnd instanceof Date && !isNaN(leaseEnd);
+        
+            if (hasValidLeaseEnd) {
+              const shouldBeInactive = leaseEnd < now;
+              const correctStatus = shouldBeInactive ? "inactive" : "active";
+        
+              if (tenant.status !== correctStatus) {
+                didUpdate = true;
+        
+                const tenantDocRef = doc(db, "tenants", tenant.id);
+                await updateDoc(tenantDocRef, { status: correctStatus });
+        
+                updatedTenant = { ...tenant, status: correctStatus };
+              }
+            }
+        
+            //  DO NOT override status if leaseEnd is missing
+            return updatedTenant;
+          })
         );
+        
+        
+  
+        // If any status changed, update the property listing document
+        if (didUpdate) {
+          await updateDoc(docRef, { tenants: updatedTenants });
+        }
+  
+        // Filter by selected filter
+        
+
+        const filteredTenants = updatedTenants.filter((tenant) => {
+          const leaseEndRaw = tenant.leaseEndDate;
+        
+          let leaseEnd;
+          if (leaseEndRaw?.seconds) {
+            leaseEnd = new Date(leaseEndRaw.seconds * 1000);
+          } else if (typeof leaseEndRaw === "string") {
+            const parts = leaseEndRaw.includes("/")
+              ? leaseEndRaw.split("/")
+              : leaseEndRaw.split("-");
+            if (parts.length === 3) {
+              const [a, b, c] = parts;
+              leaseEnd = leaseEndRaw.includes("/")
+                ? new Date(`${c}-${a}-${b}`)
+                : new Date(`${a}-${b}-${c}`);
+            }
+          } else if (leaseEndRaw) {
+            leaseEnd = new Date(leaseEndRaw);
+          }
+        
+          const isInactive = tenant.status === "inactive";
+          const leaseExpired = leaseEnd && leaseEnd < now;
+        
+          if (filter === "past") {
+            return isInactive || leaseExpired;
+          } else {
+            // If no leaseEndDate, show only if tenant is marked active
+            return !isInactive && (!leaseEnd || leaseEnd >= now);
+          }
+        });
+        
+        
+        
+  
         setTenants(filteredTenants);
-        console.log("Fetched tenants:", filteredTenants); // Debugging log
       } else {
         setError("No such document exists.");
       }
     } catch (error) {
       setError("Failed to fetch tenants.");
-      console.error("Fetch error:", error); // Debugging log
+      console.error("Fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -46,22 +152,30 @@ const TenantList = () => {
     fetchSingleListing(id);
   }, [id, filter]); // Fetch again if the filter or id changes
 
-  const formatDate = (timestamp) => {
-    if (timestamp && typeof timestamp.toDate === "function") {
-      const date = timestamp.toDate();
-      return date.toLocaleDateString();
+const formatDate = (timestamp) => {
+  if (!timestamp) return "N/A";
+
+  // Firestore Timestamp
+  if (typeof timestamp.toDate === "function") {
+    return timestamp.toDate().toISOString().split("T")[0];
+  }
+
+  // JavaScript Date object
+  if (timestamp instanceof Date) {
+    return timestamp.toISOString().split("T")[0];
+  }
+
+  // String format (e.g., "2024-04-04")
+  if (typeof timestamp === "string") {
+    const date = new Date(timestamp);
+    if (!isNaN(date)) {
+      return date.toISOString().split("T")[0];
     }
-    if (timestamp instanceof Date) {
-      return timestamp.toLocaleDateString();
-    }
-    if (typeof timestamp === "string") {
-      const date = new Date(timestamp);
-      if (!isNaN(date)) {
-        return date.toLocaleDateString();
-      }
-    }
-    return "N/A";
-  };
+  }
+
+  return "N/A";
+};
+
 
   if (loading) {
     return <p className="text-center text-lg">Loading tenants...</p>;
@@ -91,7 +205,7 @@ const TenantList = () => {
             }`}
           >
             Past Tenants
-          </button>
+          </button>  
         </div>
 
         {/* Tenant List */}
@@ -99,7 +213,7 @@ const TenantList = () => {
           {tenants.length === 0 ? (
             <p className="text-gray-600 text-center col-span-full">
               {filter === "active"
-                ? "No current tenants found for this property"
+                ? "No Current tenants found for this property"
                 : "No past tenants found for this property"}
             </p>
           ) : (
@@ -123,7 +237,26 @@ const TenantList = () => {
             ))
           )}
         </div>
+        
+        {propertySource && (
+            <div className="mt-8 text-center">
+              <Link
+                to={
+                  propertySource === "propertyListings"
+                    ? `/category/${listingType}/${id}`
+                    : `/property-preview/${id}`
+                }
+                className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition"
+              >
+                Show Property Details
+              </Link>
+            </div>
+        )}
+
       </div>
+
+
+
     </div>
   );
 };
