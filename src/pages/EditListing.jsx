@@ -773,7 +773,7 @@ const EditListing = () => {
           className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
           onClick={() => handleEmail(regularPrice)}
         >
-          Edit Listing
+          Save
         </button>
       </form>
     </main>
