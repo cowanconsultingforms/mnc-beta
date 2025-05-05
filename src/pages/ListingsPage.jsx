@@ -137,7 +137,7 @@ const ListingsPage = () => {
           className="w-full h-full object-cover"
         ></video>
 
-                {/*<iframe
+                        {/*<iframe
           className="absolute top-0 left-0 w-full h-full"
           src="https://www.youtube.com/embed/8BBE1Ui8yo4?si=5BNr_sLaivrlXusM&controls=0&autoplay=1&mute=1&loop=1&playlist=8BBE1Ui8yo4&modestbranding=1&vq=hd2160&iv_load_policy=3&showinfo=0&rel=0"
           title="YouTube video player"
@@ -149,22 +149,22 @@ const ListingsPage = () => {
 
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, marginTop: "20px", textAlign: "center" }}>
-        <select
-          className="px-6 py-2 rounded-lg text-gray-700 font-semibold border border-gray-300 shadow-md hover:shadow-lg focus:outline-none"
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value === "buy") scrollToSection(buyRef);
-            else if (value === "rent") scrollToSection(rentRef);
-            else if (value === "sold") scrollToSection(soldRef);
-          }}
-        >
-          <option value="">Jump to Section</option>
-          <option value="buy">Listings To Buy</option>
-          <option value="rent">Listings to Rent</option>
-          <option value="sold">Listings Sold</option>
-        </select>
+      {/* Static Sidebar */}
+      <div className="fixed top-1/4 left-0 h-auto w-47 p-4 z-20 bg-black bg-opacity-60 text-white shadow-lg">
+        <h2 className="text-lg font-bold mb-4">Navigate</h2>
+        <ul className="space-y-3">
+          <li>
+            <button onClick={() => scrollToSection(buyRef)} className="w-full text-left hover:text-blue-300">Listings To Buy</button>
+          </li>
+          <li>
+            <button onClick={() => scrollToSection(rentRef)} className="w-full text-left hover:text-blue-300">Listings to Rent</button>
+          </li>
+          <li>
+            <button onClick={() => scrollToSection(soldRef)} className="w-full text-left hover:text-blue-300">Listings Sold</button>
+          </li>
+        </ul>
       </div>
+      <div style={{ position: "relative", zIndex: 1, marginTop: "20px", textAlign: "center" }}></div>
     {/* Foreground content */}
       <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "40px" }}>
         <div style={{ maxWidth: "100%" }}>
