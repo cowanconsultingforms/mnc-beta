@@ -422,6 +422,23 @@ const Header = () => {
               </li>
             )}
 
+              {/* Vip Listings button */}
+              {["vip", "agent", "admin", "superadmin"].includes(role) && (
+              <li
+                className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${
+                  !pathMatchRoute("/vip-listings") &&
+                  "text-gray-400 border-b-transparent"
+                } ${pathMatchRoute("/vip-listings") && "text-black border-b-gray-900"}
+                hover:text-gray-500 hover:border-b-gray-500 transition-all duration-300`}
+                onClick={() => {
+                  navigate("/vip-listings"), setToolsDropdownOpen(false);
+                  setToolsClicked(false);
+                }}
+              >
+                VIP Listings
+              </li>
+            )}
+
             {/* Map button */}
             <li
               className={`cursor-pointer py-3 text-sm font-semibold border-b-[3px] ${

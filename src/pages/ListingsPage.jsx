@@ -3,7 +3,6 @@ import { collection, getDocs, query, orderBy, doc, getDoc, deleteDoc } from "fir
 import { db } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ListingItem from "../components/ListingItem";
-import VipListingItem from "../components/VipListingItem"; 
 import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,6 @@ import listingVid from "../assets/listingVideo.mp4";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
-  const [vipListings, setVipListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,22 +41,6 @@ const ListingsPage = () => {
     };
 
     fetchUserRole();
-
- // Fetching VIP Listings
-    const fetchVIPListings = async () => {
-      try {
-        const q = query(collection(db, "vipPropertyListings"), orderBy("timestamp", "desc"));
-        const querySnapshot = await getDocs(q);
-        const listingsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setVipListings(listingsData);
-      } catch (error) {
-        console.error("Error fetching VIP listings: ", error);
-      }
-    };
-    fetchVIPListings();
   }, []);
 
   useEffect(() => {
@@ -95,19 +77,6 @@ const ListingsPage = () => {
    // Edit listing function
   const onEdit = (listingID) => {
     navigate(`/edit-listing/${listingID}`);
-  };
-
-    // VIP listing delete
-  const deleteVipListing = async (id) => {
-    try {
-      const listingRef = doc(db, "vipPropertyListings", id);
-      await deleteDoc(listingRef);
-      toast.success("VIP listing deleted successfully!");
-      setVipListings(vipListings.filter((listing) => listing.id !== id));
-    } catch (error) {
-      console.error("Error deleting VIP listing: ", error);
-      toast.error("Failed to delete VIP listing.");
-    }
   };
 
   const scrollToSection = (ref) => {
@@ -167,42 +136,7 @@ const ListingsPage = () => {
       <div style={{ position: "relative", zIndex: 1, marginTop: "20px", textAlign: "center" }}></div>
     {/* Foreground content */}
       <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "40px" }}>
-        <div style={{ maxWidth: "100%" }}>
-          {/* VIP Listings Section */}
-          {userRole && (userRole === "admin" || userRole === "agent" || userRole === "vipcustomer") && (
-            <div>
-              <div className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
-                {vipListings.length > 0 ? (
-                  <>
-                    <h2 className="text-2xl text-center font-semibold mb-6 text-white mt-20">VIP Listings</h2>
-                    <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
-                      {vipListings.map((vipListing) => (
-                        <VipListingItem
-                          key={vipListing.id}
-                          id={vipListing.id}
-                          vipListing={vipListing}
-                          onDelete={() =>
-                            userRole &&
-                            (userRole === "admin" || userRole === "superadmin") &&
-                            deleteVipListing(vipListing.id)
-                          }
-                          onEdit={() =>
-                            userRole &&
-                            (userRole === "admin" || userRole === "superadmin") &&
-                            navigate(`/edit-vip-listing/${vipListing.id}`)
-                          }
-                          showActions={userRole && (userRole === "admin" || userRole === "superadmin")}
-                        />
-                      ))}
-                    </ul>
-                  </>
-                ) : (
-                  <p className="text-white text-center">No VIP listings available at the moment.</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        <div style={{ maxWidth: "100%" }}></div>
 
         <div ref={buyRef} className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
           {listingsToBuy.length > 0 && (
