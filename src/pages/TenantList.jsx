@@ -228,9 +228,15 @@ const formatDate = (timestamp) => {
                   {tenant.name || "Unnamed Tenant"}
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  DOB:{" "}
+                  Lease Start:{" "}
                   <span className="font-medium text-gray-700">
-                    {tenant.DOB ? formatDate(tenant.DOB) : "N/A"}
+                    {tenant.leaseStartDate ? formatDate(tenant.leaseStartDate) : "N/A"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500">
+                  Lease End:{" "}
+                  <span className="font-medium text-gray-700">
+                    {tenant.leaseEndDate ? formatDate(tenant.leaseEndDate) : "N/A"}
                   </span>
                 </p>
               </Link>
