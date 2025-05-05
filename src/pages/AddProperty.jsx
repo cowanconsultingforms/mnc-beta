@@ -55,7 +55,7 @@ const AddProperty = () => {
   };
 
   const handleAddProperty = async () => {
-    if (!property.propertyName || !property.location) {
+    if (!property.propertyName || !property.location || !imageFile ) {
       setError("Property Name, Location, and Image are required.");
       return;
     }

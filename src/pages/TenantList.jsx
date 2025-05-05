@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 const TenantList = () => {
   const { id } = useParams();
@@ -11,6 +12,7 @@ const TenantList = () => {
   const [filter, setFilter] = useState("active"); // Add state for filter (active or past)
   const [propertySource, setPropertySource] = useState("");
   const [listingType, setListingType] = useState("rent"); // default to rent
+  const navigate = useNavigate();
 
   const fetchSingleListing = async (listingId) => {
     try {
@@ -188,6 +190,18 @@ const formatDate = (timestamp) => {
   return (
     <div className="flex justify-center bg-gray-50 py-10">
       <div className="max-w-6xl w-full px-4">
+
+        {/* Back Button */}
+          <div className="mb-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-200 transition"
+            >
+              ← Back
+            </button>
+          </div>
+
+
         {/* Filter Buttons */}
         <div className="mb-4 text-center">
           <button

@@ -126,7 +126,7 @@ const ListingsPage = () => {
             <button onClick={() => scrollToSection(buyRef)} className="w-full text-left hover:text-blue-300">Listings To Buy</button>
           </li>
           <li>
-            <button onClick={() => scrollToSection(rentRef)} className="w-full text-left hover:text-blue-300">Listings to Rent</button>
+            <button onClick={() => scrollToSection(rentRef)} className="w-full text-left hover:text-blue-300">Listings To Rent</button>
           </li>
           <li>
             <button onClick={() => scrollToSection(soldRef)} className="w-full text-left hover:text-blue-300">Listings Sold</button>
