@@ -108,7 +108,7 @@ const PropertyPreview = () => {
       </div>
 
       {/* Edit Button */}
-      <div className="text-center mt-6">
+      <div className="text-center mt-6 flex justify-center gap-4">
         <Link
           to={source === "properties" ? `/edit-property/${id}` : `/edit-listing/${id}`}
         >
@@ -116,6 +116,12 @@ const PropertyPreview = () => {
             Edit Property
           </button>
         </Link>
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
