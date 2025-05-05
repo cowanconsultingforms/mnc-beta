@@ -82,6 +82,7 @@ const PropertyManagement = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Property Management</h1>
+      <div className="mb-8"> 
       <Carousel
         swipeable={true}
         draggable={true}
@@ -97,7 +98,7 @@ const PropertyManagement = () => {
         containerClass="carousel-container"
         removeArrowOnDeviceType={["tablet", "mobile"]}
         dotListClass="custom-dot-list-style"
-        itemClass="carousel-item-padding-40-px"
+        itemClass="carousel-item-padding-40-px pb-10"
       >
 {propertyListings
   .filter((listing) => listing.data.source === "properties")
@@ -112,6 +113,7 @@ const PropertyManagement = () => {
     />
 ))}
       </Carousel>
+      </div>
 
       {/* Single Add Tenant Button - Positioned Below Carousel */}
       {propertyListings.length > 0 && (

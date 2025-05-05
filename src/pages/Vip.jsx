@@ -375,43 +375,49 @@ const Home = () => {
           {/* Logo */}
           {/* <img src={MncLogo} alt="logo" className="h-full w-full mt-20" /> */}
 
-          <div className="flex flex-row space-x-3 mt-6 disable-hover">
-            {/* Buy button */}
-            <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 1
-                  ? "bg-gray-600 text-white ring-gray-600" // Selected state
-                  : "bg-white text-black ring-gray-300" // Non-selected state
-              }`}
-              onClick={() => handleCategoryChange(1)}
-            >
-              Buy
-            </button>
+          <div className="flex flex-row space-x-3 mt-6">
+  {/* Buy button */}
+  <button
+   className={`px-7 py-3 font-medium uppercase rounded w-full 
+    transition-none shadow-none focus:outline-none active:shadow-none hover:shadow-none hover:bg-inherit hover:text-inherit
+    ${
+      selectedButton === 1
+        ? "bg-gray-600 text-white ring-gray-600"
+        : "bg-white text-black ring-gray-300"
+    }`}
+    onClick={() => handleCategoryChange(1)}
+  >
+    Buy
+  </button>
 
-            {/* Rent button */}
-            <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 2
-                  ? "bg-gray-600 text-white ring-gray-600"
-                  : "bg-white text-black ring-gray-300"
-              }`}
-              onClick={() => handleCategoryChange(2)}
-            >
-              Rent
-            </button>
+  {/* Rent button */}
+  <button
+    className={`px-7 py-3 font-medium uppercase rounded w-full 
+      transition-none shadow-none focus:outline-none active:shadow-none hover:shadow-none
+      ${
+        selectedButton === 2
+          ? "bg-gray-600 text-white ring-gray-600"
+          : "bg-white text-black ring-gray-300"
+      }`}
+    onClick={() => handleCategoryChange(2)}
+  >
+    Rent
+  </button>
 
-            {/* Sold button */}
-            <button
-              className={`px-7 py-3 font-medium uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                selectedButton === 3
-                  ? "bg-gray-600 text-white ring-gray-600"
-                  : "bg-white text-black ring-gray-300"
-              }`}
-              onClick={() => handleCategoryChange(3)}
-            >
-              Sold
-            </button>
-          </div>
+  {/* Sold button */}
+  <button
+    className={`px-7 py-3 font-medium uppercase rounded w-full 
+      transition-none shadow-none focus:outline-none active:shadow-none hover:shadow-none
+      ${
+        selectedButton === 3
+          ? "bg-gray-600 text-white ring-gray-600"
+          : "bg-white text-black ring-gray-300"
+      }`}
+    onClick={() => handleCategoryChange(3)}
+  >
+    Sold
+  </button>
+</div>
         </div>
         
           {/* Search bar */}
