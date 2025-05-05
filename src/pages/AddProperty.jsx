@@ -5,6 +5,21 @@ import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
+const geocodeAddress = async (address) => {
+  const apiKey = import.meta.env.VITE_API_KEY;
+  const encodedAddress = encodeURIComponent(address);
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.status === "OK") {
+    const { lat, lng } = data.results[0].geometry.location;
+    return { lat, lng };
+  } else {
+    console.error("Geocoding failed:", data.status);
+    return { lat: 0, lng: 0 };
+  }
+};
+
 const AddProperty = () => {
   const navigate = useNavigate();
   const [property, setProperty] = useState({
@@ -40,7 +55,7 @@ const AddProperty = () => {
   };
 
   const handleAddProperty = async () => {
-    if (!property.propertyName || !property.location) {
+    if (!property.propertyName || !property.location || !imageFile ) {
       setError("Property Name, Location, and Image are required.");
       return;
     }
@@ -49,6 +64,7 @@ const AddProperty = () => {
       setLoading(true);
       setError("");
 
+      const geolocation = await geocodeAddress(property.location);
       const imageUrl = await handleImageUpload();
       const imagePath = `images/${imageFile.name}-${uuidv4()}`; // crude fallback
 
@@ -80,15 +96,12 @@ const AddProperty = () => {
         regularPrice: "0",
         offer: false,
         type: "rent",
-        geolocation: {
-          lat: 0,
-          lng: 0,
-        },
+        geolocation,
         timestamp: Timestamp.now(),
       };
 
       await addDoc(collection(db, "properties"), normalizedProperty);
-    /*  await addDoc(collection(db, "propertyListings"), normalizedProperty); */
+          /*  await addDoc(collection(db, "propertyListings"), normalizedProperty); */
 
       navigate("/property-management");
     } catch (err) {

@@ -9,6 +9,22 @@ import {
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
+//  NEW: Helper function to geocode the address using Google Maps API
+const geocodeAddress = async (address) => {
+  const apiKey = import.meta.env.VITE_API_KEY;
+  const encodedAddress = encodeURIComponent(address);
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.status === "OK") {
+    const { lat, lng } = data.results[0].geometry.location;
+    return { lat, lng };
+  } else {
+    console.error("Geocoding failed:", data.status);
+    return { lat: 0, lng: 0 };
+  }
+};
+
 const EditProperty = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -105,6 +121,9 @@ const EditProperty = () => {
 
       const { url: imageUrl, path } = await handleImageUpload();
 
+      //  Automatically geocode the address before saving
+      const geolocation = await geocodeAddress(property.address || property.location);
+
       const updatedProperty = {
         ...property,
         totalFloors: Number(property.totalFloors),
@@ -122,6 +141,7 @@ const EditProperty = () => {
             path,
           },
         ],
+        geolocation, //  add geolocation field
         updatedAt: Timestamp.now(),
       };
 
@@ -224,7 +244,7 @@ const EditProperty = () => {
           onClick={handleUpdate}
           disabled={loading}
         >
-          {loading ? "Saving..." : "Save Changes"}
+          {loading ? "Saving..." : "Save "}
         </button>
       </div>
 

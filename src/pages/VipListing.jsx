@@ -67,6 +67,7 @@ const VipListing = () => {
   }
 
   return (
+    <div className="bg-gray-300 min-h-[calc(100vh-48px)]">
     <main>
     {/* Back button */}
       <div
@@ -280,6 +281,7 @@ const VipListing = () => {
         </div>
       </div>
     </main>
+    </div>
   );
 };
 
