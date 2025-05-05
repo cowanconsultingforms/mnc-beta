@@ -7,12 +7,14 @@ import { toast } from "react-toastify";
 import "../css/listingPage.css";
 import { useNavigate } from "react-router-dom";
 import listingVid from "../assets/listingVideo.mp4";
+import { FaBars } from "react-icons/fa";
 
 const ListingsPage = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const videoRef = useRef(null);
 
@@ -67,20 +69,25 @@ const ListingsPage = () => {
     fetchListings();
   }, []);
 
-    // Delete listing function
+  // Delete listing function
   const onDelete = (listingID) => {
     const updatedListings = listings.filter((listing) => listing.id !== listingID);
     setListings(updatedListings);
     toast.success("The listing was deleted!");
   };
 
-   // Edit listing function
+  // Edit listing function
   const onEdit = (listingID) => {
     navigate(`/edit-listing/${listingID}`);
   };
 
   const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({ behavior: "smooth" });
+    if (ref.current) {
+      const yOffset = -80; 
+      const y = ref.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      setSidebarOpen(false);
+    }
   };
 
   const listingsToBuy = listings.filter((listing) => listing.data.type === "buy");
@@ -118,8 +125,21 @@ const ListingsPage = () => {
 
       </div>
 
-      {/* Static Sidebar */}
-      <div className="fixed top-1/4 left-0 h-auto w-47 p-4 z-20 bg-black bg-opacity-60 text-white shadow-lg">
+      {/* Hamburger Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed top-20 left-4 z-30 text-white text-2xl bg-black bg-opacity-40 rounded p-2"
+      >
+        <FaBars />
+      </button>
+
+      {/* Collapsible Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-full w-47 pt-36 px-4 transition-transform duration-300 z-20 bg-black bg-opacity-60 text-white shadow-lg transform ${
+
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <h2 className="text-lg font-bold mb-4">Navigate</h2>
         <ul className="space-y-3">
           <li>
@@ -134,7 +154,7 @@ const ListingsPage = () => {
         </ul>
       </div>
       <div style={{ position: "relative", zIndex: 1, marginTop: "20px", textAlign: "center" }}></div>
-    {/* Foreground content */}
+      {/* Foreground content */}
       <div className="flex-grow flex flex-col items-center justify-start text-center" style={{ position: "relative", zIndex: 1, paddingTop: "40px" }}>
         <div style={{ maxWidth: "100%" }}></div>
 
@@ -203,7 +223,7 @@ const ListingsPage = () => {
             </>
           )}
         </div>
-      {/* Legal Section */}
+        {/* Legal Section */}
         <div className="relative z-20 justify-center items-center text-center mb-6 mx-3 flex flex-col max-w-6xl lg:mx-auto p-3 rounded shadow-lg bg-transparent text-white">
           <p className="text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>info@mncdevelopment.com</p> {/* Apply text shadow here */}
           <div className="lg:flex lg:flex-row lg:justify-center lg:items-center lg:space-x-2">
