@@ -244,7 +244,7 @@ const EditProperty = () => {
           onClick={handleUpdate}
           disabled={loading}
         >
-          {loading ? "Saving..." : "Save Changes"}
+          {loading ? "Saving..." : "Save "}
         </button>
       </div>
 

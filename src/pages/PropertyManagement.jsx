@@ -127,7 +127,7 @@ const PropertyManagement = () => {
             to={`/add-property`} 
             className="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-grey-700"
           >
-           Add Property
+            Add Property
           </Link>
 
         </div>

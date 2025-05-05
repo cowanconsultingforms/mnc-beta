@@ -85,12 +85,14 @@ const ListingItem = ({
   return (
     <>
       <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-2">
-      <Link
+            <Link
         className="contents"
         to={
-          source === "listingsPage"
-            ? `/category/${listing.type}/${id}`  
-            : `/property-management/${id}/tenants`
+          source === "properties"
+            ? `/property-management/${id}/tenants`
+            : source === "vipPage"
+            ? `/vip/category/${listing.type}/${id}`
+            : `/category/${listing.type}/${id}`
         }
       >
 

@@ -327,7 +327,7 @@ const TenantDetail = () => {
               onClick={handleSaveChanges}
               className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors mr-2"
             >
-              Save Changes
+              Save    
             </button>
             <button
               onClick={() => setIsEditing(false)}

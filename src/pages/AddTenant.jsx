@@ -322,7 +322,7 @@ const AddTenant = () => {
           className="w-full bg-gray-500 text-white py-3 rounded-md font-semibold hover:bg-gray-600 transition"
           onClick={handleAddTenant}
         >
-          Add Tenant
+          Save
         </button>
       </div>
       <div className="mt-4">
