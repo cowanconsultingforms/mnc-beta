@@ -90,10 +90,10 @@ const VipListingsPage = () => {
                 key={vipListing.id}
                 id={vipListing.id}
                 vipListing={vipListing}
-                onDelete={() =>
+                onDelete={(id) =>
                   userRole &&
                   (userRole === "admin" || userRole === "superadmin") &&
-                  deleteVipListing(vipListing.id)
+                  setVipListings((prev) => prev.filter((item) => item.id !== id))
                 }
                 onEdit={() => navigate(`/edit-vip-listing/${vipListing.id}`)}
                 showActions={userRole === "admin" || userRole === "superadmin"}
