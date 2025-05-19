@@ -181,7 +181,7 @@ const AddProperty = () => {
           onClick={handleAddProperty}
           disabled={loading}
         >
-          {loading ? "Adding..." : "Add Property"}
+          {loading ? "Adding..." : "Save"}
         </button>
       </div>
 

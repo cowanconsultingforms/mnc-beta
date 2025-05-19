@@ -183,7 +183,7 @@ const ListingsPage = () => {
         <div ref={rentRef} className="relative z-10 max-w-6xl px-3 mt-6 mx-auto">
           {listingsToRent.length > 0 && (
             <>
-              <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings to Rent</h2>
+              <h2 className="text-2xl text-center font-semibold mb-6 text-white">Listings To Rent</h2>
               <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-6 mb-6">
                 {listingsToRent.map((listing) => (
                   <ListingItem

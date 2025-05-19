@@ -760,6 +760,16 @@ const EditListing = () => {
     <p>No images to display</p>
   )}
 </div>
+
+          {/* Submit form data button */}
+          <button
+          type="submit"
+          className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
+          onClick={() => handleEmail(regularPrice)}
+        >
+          Save
+        </button>
+        
         <button
           onClick={cancelUpdate}
           className="mt-1 mb-2 w-full bg-gray-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-semibold hover:bg-gray-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-gray-800"
@@ -767,14 +777,7 @@ const EditListing = () => {
           Cancel
         </button>
 
-        {/* Submit form data button */}
-        <button
-          type="submit"
-          className="mb-6 w-full px-7 py-3 bg-gray-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-600 focus:shadow-lg active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out"
-          onClick={() => handleEmail(regularPrice)}
-        >
-          Save
-        </button>
+
       </form>
     </main>
   );

@@ -14,6 +14,7 @@ const PropertyPreview = () => {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: `${import.meta.env.VITE_API_KEY}`,
+    libraries: ["marker"],
   });
 
   useEffect(() => {
