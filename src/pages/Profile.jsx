@@ -367,30 +367,31 @@ const Profile = () => {
                   </Menu.Item>
                 )}
                 {/* Payment Management Button */}
-    <Menu.Item>
-      {({ active }) => (
-        <button
-          onClick={() => navigate("/payments/${user.id}")}
-          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
-        >
-          <FaMoneyBillWave className="mr-2" />
-          Payment Management
-        </button>
-      )}
-    </Menu.Item>
+                <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    to={`/payments/${userId}`}
+                    className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+                  >
+                    <FaMoneyBillWave className="mr-2" />
+                    Payment Management
+                  </Link>
+                )}
+              </Menu.Item>
 
-    {/* Document Management Button */}
-    <Menu.Item>
-      {({ active }) => (
-        <button
-          onClick={() => navigate("/userDocuments/${user.id}")}
-          className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
-        >
-          <AiOutlineFileText className="mr-2" />
-          Document Management
-        </button>
-      )}
-    </Menu.Item>
+                {/* Document Management Button */}
+                <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        to={`/userDocuments/${userId}`}
+                        className={`flex items-center w-full px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}
+                        onClick={() => setTimeout(() => setSigned(false), 0)} // Optional: to close menu
+                      >
+                        <AiOutlineFileText className="mr-2" />
+                        Document Management
+                      </Link>
+                    )}
+                  </Menu.Item>
               </Menu.Items>
             </Menu>
           </div>
